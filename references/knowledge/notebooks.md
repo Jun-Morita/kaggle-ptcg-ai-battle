@@ -1,0 +1,65 @@
+# Notebook Knowledge
+
+Public notebook から得た知識を要約する。
+
+## Entries
+
+```markdown
+## YYYY-MM-DD: title
+
+- Source:
+- Fetched at:
+- Author:
+- Competition:
+
+### Key Ideas
+- 
+
+### Useful for This Competition
+- 
+
+### Risks / Caveats
+- 
+
+### Experiment Candidates
+- 
+```
+
+## 2026-06-17: 運営公開ノートブック5本（raw: `references/raw/official_notebooks/`）
+
+- Source: Simulation コンペ公式（`pokemon-tcg-ai-battle`）
+- Fetched at: 2026-06-17 / Author: PTCGABC Team
+
+### A. RL & MCTS sample (`reinforcement-learning-and-mcts-sample-code.ipynb`)
+**AlphaZero 系の完全な自己対戦学習リファレンス。** これがRL路線の出発点。
+- モデル: Transformer encoder/decoder + `EmbeddingBag`（スパース特徴）。value ヘッド(encoder)+policy ヘッド(decoder)。
+- 特徴設計: 盤面(両者bench×8, active, player状態, 手札, 自デッキ, スタジアム, ターン)をスパースベクトル化。actionは OptionType ごとに decoder 特徴へ。
+- MCTS: Search API (`search_begin/step/end`)で前方展開。PUCT (c=0.4·√visit)、最多訪問選択。葉でNN評価しbackprop。`SEARCH_COUNT=10`（デモ用、小さい）。
+- 学習: 自己対戦→TD(λ=0.9)で value ラベル付け→Huber損失で value/policy 学習。5世代ループ。
+- **determinization が雑**: 自分deck/prizeはdeckからランダム、相手はSnorlax(id1072)/基本エネ(id1)で穴埋め（相手モデル化なし）。→ ここは改善余地。
+- 探索の副産物: 「今攻撃したら実際何点入るか」等を Search API で確定できる。**ルールベースにも有用**と明記。
+- デッキ検証エラー: 1=不正ID, 2=同名5枚以上(基本エネ除く), 3=基本ポケモン無し, 4=ACE SPEC 2枚以上。
+
+### B. ルールベース agent 4種（4つの完成デッキ付き）
+共通フロー: obs受領→合法手(select.option)列挙→各手をスコア→最高スコアを返す。Dragapult版は864行で最も精緻（カード個別知識・サイド交換評価 `prize_count/pokemon_score`・付与/手札スコア・ターン依存ヒューリスティック）。
+**4つの合法デッキ（baseline/対戦相手/Deck Score 参照に直接使える）:**
+- **Dragapult ex**（攻撃的・Crispin×4で早期攻撃）: Dreepy119×4, Drakloak120×4, Dragapult_ex121×3, Fezandipiti_ex140, Latias_ex184, Budew235×2, Meowth_ex1071, Rare_Candy1079×2, Unfair_Stamp1080, Buddy_Buddy_Poffin1086×4, Night_Stretcher1097×2, Crushing_Hammer1120×4, Ultra_Ball1121×4, Poke_Pad1152×3, Lucky_Helmet1156, Boss_Orders1182×3, Crispin1198×4, Brock_Scouting1210×2, Lillie_Determination1227×4, Team_Rocket_Watchtower1256×2, 基本炎2×4, 基本超5×4。
+- **Iono's Bellibolt ex**（エネ大量付与で Voltaic Chain 高火力）: Iono_Voltorb265×3, Tadbulb268×3, Bellibolt_ex269×3, Wattrel270×3, Kilowattrel271×3, Buddy_Buddy_Poffin1086×3, Night_Stretcher1097×2, Max_Rod1110, Energy_Retrieval1118, Ultra_Ball1121×3, Poke_Pad1152×2, Lillie1227×4, Canari1233×4, Levincia1254×3, 基本雷4×22。
+- **Mega Abomasnow ex**（Hammer-lanche=デッキトップ6枚discardの水エネ枚数×100）: Kyogre721×2, Snover722×4, Mega_Abomasnow_ex723×4, Ultra_Ball1121×4, Precious_Trolley1126, Carmine1192×4, Lillie1227×4, Surfing_Beach1262×3, 基本水3×34。
+- **Mega Lucario ex**（状況適応: Lucario/Hariyama/Solrock 使い分け）: Makuhita673×2, Hariyama674×2, Lunatone675×2, Solrock676×3, Riolu677×3, Mega_Lucario_ex678×4, Dusk_Ball1102×4, Switch1123×2, Premium_Power_Pro1141×4, Fighting_Gong1142×4, Poke_Pad1152×4, Hero_Cape1159, Boss_Orders1182×2, Carmine1192×4, Lillie1227×4, Gravity_Mountain1252×2, 基本闘6×13。
+
+### Useful for This Competition
+- 4デッキ＋4 agent をそのまま **評価相手プール（gauntlet）** にできる。ランダムより遥かに強い対戦相手。
+- Dragapult agent のスコアリング構造を雛形に、自前ルールベースを高速に作れる。
+- RL/MCTS は最終的な強さの本命。Search API の正しい使い方（determinization, PUCT, search_release）が学べる。
+- Strategy の Deck Score 用に、これらデッキを分析・改良した独自デッキを設計する材料。
+
+### Risks / Caveats
+- 公開コード＝全員が使える。差別化には改良（determinization 改善, 相手モデル化, デッキ調整, 探索強化）が必須。
+- MCTS サンプルの相手穴埋めは非現実的。本番性能には相手分布の推定が要る。
+- ルールベースは公式も「単体では上位困難」と明言。探索/学習との組合せが必要。
+
+### Experiment Candidates
+- exp002: 4ルールベース agent を移植し、gauntlet で相互勝率＋対ランダム勝率のベースライン表を作る。
+- exp003: Search API で1手読み（「攻撃の実ダメージ/勝敗」評価）を入れた軽量agent。
+- exp004+: MCTS サンプルを動かし、determinization と相手モデルを改善。

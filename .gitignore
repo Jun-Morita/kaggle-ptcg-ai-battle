@@ -1,0 +1,49 @@
+# Python
+.venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+
+# Jupyter
+.jupyter/
+.ipython/
+.virtual_documents/
+.ipynb_checkpoints/
+
+# Secrets
+.env
+.env.*
+.netrc
+kaggle.json
+
+# Local AI agent state
+.agents/
+.codex/
+.claude/
+
+# Kaggle data and outputs
+input/
+output/
+wandb/
+data/raw/
+data/interim/
+data/processed/
+data/external/
+data/sim_sample/
+references/raw/
+workspace/**/results/
+workspace/**/models/
+workspace/**/oof/
+workspace/**/catboost_info/
+submit/**/model/
+submit/**/models/
+submit/**/*.csv
+!submit/submissions.csv
+submit/**/*.zip
+submit/**/*.ipynb
+
+# System files
+.DS_Store
+Thumbs.db

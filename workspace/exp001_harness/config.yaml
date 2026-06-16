@@ -1,0 +1,15 @@
+# exp001: local match harness
+experiment: exp001_harness
+hypothesis: >
+  ローカルで2エージェントを対戦させ勝率/サイド差/手数/手番時間を集計できる
+  再利用可能なハーネスを作る。まずランダム同士の自己対戦で健全性を確認する。
+seed: 42
+n_games: 20
+swap_sides: true       # 先攻/後攻バイアスを相殺するため毎ゲーム手番を入れ替える
+cg_dir: data/sim_sample # cg エンジン(libcg.so)の場所
+matchup: random_vs_random
+metrics:
+  - winrate_agent0
+  - avg_moves
+  - max_move_time   # 1手の最大思考秒数(本番10分/試合の予算管理用)
+  - reasons         # 勝敗理由ヒストグラム(1:prize0 2:deckout 3:no-active 4:effect)
