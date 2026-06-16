@@ -47,3 +47,6 @@ submit/**/*.ipynb
 # System files
 .DS_Store
 Thumbs.db
+
+# Extracted competition/3rd-party agent code (regenerate via extract_policies.py)
+workspace/exp002_baselines/policies/

@@ -63,3 +63,52 @@ Public notebook から得た知識を要約する。
 - exp002: 4ルールベース agent を移植し、gauntlet で相互勝率＋対ランダム勝率のベースライン表を作る。
 - exp003: Search API で1手読み（「攻撃の実ダメージ/勝敗」評価）を入れた軽量agent。
 - exp004+: MCTS サンプルを動かし、determinization と相手モデルを改善。
+
+## 2026-06-17: [Beginner Guide] From Deck List to First Valid Sub（public, raw: `references/raw/public_notebooks/`）
+
+- Source: 公開ノートブック（kiyotah の公式 Mega Lucario サンプルがベース）。LB Score **770.4** / Bronze。
+- **agent・デッキは公式 Mega Lucario サンプルそのまま（未改良）**。価値は提出手順とベースライン値。
+
+### Key Ideas / Useful
+- **提出パッケージング手順**（`tarfile` で `submission.tar.gz` を作る）:
+  - `deck.csv`（60行のCard ID, ハードコード or dataset から読む）を書く。
+  - `main.py`（agent）を書く。`deck.csv` は `deck.csv` がなければ `/kaggle_simulations/agent/deck.csv` を読む。
+  - `cg/` フォルダを input から glob で探す（`/kaggle/input/**/sample_submission/cg` 等）。
+  - `tar.add("main.py", arcname="main.py")` ... `tar.add(cg_path, arcname="cg")` で **main.py をトップレベル**に。
+  - 提出前に `tar.getnames()` で中身（main.py がネストしてないか）を確認。
+  - 提出は Save Version → Save & Run All (Commit) → Output 確認 → Submit が安全。1日5回まで（UIに `n/5 used`）。
+- **ベースライン LB 基準**: 公式 Mega Lucario デッキ＋ルールベース = **770.4**。ローカル勝率↔LB の校正点として使える（μ0=600 スタートに対する到達点の目安）。
+
+### Risks / Caveats
+- 中身は公式サンプルと同一なので、これ自体に強さの上積みはない。差別化はデッキ/agent 改良が必須。
+- ハードコードデッキは公式 Mega Lucario と同一構成（673×2,674×2,675×2,676×3,677×3,678×4,1102×4,1123×2,1141×4,1142×4,1152×4,1159×1,1182×2,1192×4,1227×4,1252×2, 闘6×13）。
+
+### Experiment Candidates
+- exp002 の提出フローに、この `tarfile` パッケージング手順を流用する（`templates/submit_kernel/` を PTCG 用に更新）。
+
+## 2026-06-17: Validated Rule-Based Agent + Matchup Tests（public, raw: `references/raw/public_notebooks/`）
+
+- Source: 公開ノートブック「Mega Lucario ex V2」。LB Score **796.4**（公式 Mega Lucario 770.4 より改善）。
+- **デッキは公式 Mega Lucario と同一**。改善は **agent ロジック（main.py V2）** のみ＝ロジック改良だけで +26 取れることの実例。
+
+### Key Ideas
+- V2 は手続き型サンプルを **OOP に再設計**（`LucarioPolicy` クラス、~548行）。`_score_option` が OptionType ごとにスコア関数へ分岐。
+- 追加要素: **攻撃プランニング** `_plan_attack`/`_base_attack_after_evolution`（進化後のダメージまで見て最善attackを選ぶ）、エネルギー対象スコア、**デッキアウト察知** `_low_deck`（残り≤8で挙動変更）、カード個別対応（特殊エネ LEGACY_ENERGY=12、Lillie名シナジー LILLIES_PEARL=1172、スタジアム LUMIOSE_CITY=1267、Mega Lucario の攻撃 MEGA_BRAVE=983、Lunatone 特性記憶）。
+- **検証済みローカルマッチアップ（各100戦, 先攻後攻入替）**:
+  - V2 vs 公式V1: **70.7%**（70-29-1）/ avg_steps 137.7
+  - V2 vs official_random: **99%** / avg_steps 56.0
+  - V2 vs public Dragapult: **91%**（91-9）/ avg_steps 130.1
+- 提出パッケージング改良版: `__pycache__`/`.pyc` 除外、必須ファイル `{main.py, deck.csv, cg/api.py, cg/libcg.so}` を提出後に検証。
+
+### Useful for This Competition
+- **外部ベンチマーク値**として有用: 強いルールベース Lucario は Dragapult を 91%, random を 99% で圧倒。我々の gauntlet で「強さの天井」目安になる。avg_steps ~130-140 が拮抗試合の長さ。
+- V2 のポリシー構造（OOP＋OptionType別スコア＋進化後ダメージ評価）は、**自前ルールベース agent の良い設計テンプレート**（公式手続き型より拡張しやすい）。
+- ロジックだけで 770→796 という事実は、デッキ固定でも agent 改良の価値が大きいことを示す。
+
+### Risks / Caveats
+- 公開コード＝全員が使える。これを超えるには探索/学習 or さらなるロジック改良が要る。
+- 埋め込みマッチアップ表は作者の自己申告（こちらのハーネスで再現確認したい）。
+
+### Experiment Candidates
+- exp002: この V2 を含む公開/公式 agent をハーネスに載せ、マッチアップ表を**自前で再現**（91%/99% が出るか健全性確認）。
+- 自前ルールベースは V2 の構造（進化後ダメージ評価・デッキアウト察知）を取り込んで設計する。

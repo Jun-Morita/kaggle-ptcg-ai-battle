@@ -1,0 +1,13 @@
+# exp002: baseline rule-based agent matchup table
+experiment: exp002_baselines
+hypothesis: >
+  公開/公式ルールベース agent をローカルハーネスに載せ、相互の強さ（マッチアップ表）を
+  自前測定する。公開「Mega Lucario V2」の勝率主張も再現検証する。
+seed: 42
+n_games_per_pair: 60
+swap_sides: true
+agents: [dragapult, iono, abomasnow, lucario_v1, lucario_v2, random]
+reuse: workspace/exp001_harness/harness.py
+notes: >
+  policies/ は notebook から抽出した競技/3rd-party コードのため gitignore。
+  extract_policies.py で再生成する。
