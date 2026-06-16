@@ -1,0 +1,12 @@
+# exp003: Search-API lookahead agent
+experiment: exp003_lookahead
+hypothesis: >
+  Search API で各選択肢を先読み・評価し argmax する自前 agent が、
+  ルールベースのバー(プール平均 lucario_v2 0.680)を超えるか。
+seed: 42
+n_games: 30
+deck: lucario_v2
+modes: [one_ply, turn_rollout]
+value_fn: prize_diff*1000 + hp_diff*0.1 + opp_active_pressure*0.2 + board*5 + have_active
+determinize: official-MCTS-style (opponent filled with Snorlax 1072 / energy 1)
+result: NEGATIVE  # one_ply avg 0.211, turn_rollout avg 0.267 (bar 0.680)
