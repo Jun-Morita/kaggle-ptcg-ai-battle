@@ -50,3 +50,8 @@ Thumbs.db
 
 # Extracted competition/3rd-party agent code (regenerate via extract_policies.py)
 workspace/exp002_baselines/policies/
+
+# Built submission bundle (3rd-party policy + competition cg/)
+workspace/exp005_submit/build/
+
+submit/**/*.tar.gz

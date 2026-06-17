@@ -1,0 +1,8 @@
+# exp005: crash-safe submission bundle
+experiment: exp005_submit
+goal: 最初の実提出ベースライン。最強ルールベース(lucario_v2)にクラッシュ安全ラッパーを付与。
+base_policy: lucario_v2 (exp002)
+deck: lucario_v2 (Mega Lucario ex, 公式と同一構成)
+hardening: agent()をtry/exceptで包み、不正/例外時は_legal_fallback。minCount/maxCount厳守。
+reference: 公開 "Strong Start Safe Agent" LB 860（=公式ヒューリスティック+安全性。探索は誤形で未使用）。
+validation_n: 40

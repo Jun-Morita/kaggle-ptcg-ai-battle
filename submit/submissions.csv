@@ -1,1 +1,2 @@
 timestamp,version,source_experiment,fold_version,cv,public_lb,private_lb,file,config_hash,git_sha,references,note
+2026-06-17T12:13:17+00:00,v001,exp005_submit,,pool~0.59-0.68;random1.00;mirror0err,,,submit/v001_exp005_lucario_v2_safe/submission.tar.gz,191f7db76656,ced2d17,exp002_lucario_v2;public_LB860_safety,kaggle ref 53775026 PENDING; lucario_v2 + crash-safety; Simulation track
