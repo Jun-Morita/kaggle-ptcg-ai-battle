@@ -112,3 +112,32 @@ Public notebook から得た知識を要約する。
 ### Experiment Candidates
 - exp002: この V2 を含む公開/公式 agent をハーネスに載せ、マッチアップ表を**自前で再現**（91%/99% が出るか健全性確認）。
 - 自前ルールベースは V2 の構造（進化後ダメージ評価・デッキアウト察知）を取り込んで設計する。
+
+## 2026-06-17: Lucario v2 Strategic Baseline（public, raw: `references/raw/public_notebooks/`）
+
+- Source: 公開「Pokemon TCG Lucario v2 Strategic Baseline」。LB 表記なし＝Strategy 向けの構造化ベースライン＋EDA。
+- デッキ(BASELINE_DECK)は **lucario_v2 と完全同一**。新デッキ・新スコアは無し。価値は技法・戦略フレーミング・EDA。
+
+### Key Ideas
+- **`normalize_selection(ranked, scores, select)`**: optional 文脈（discard/bench/ダメカン/サーチ結果）で
+  **score≤0 の中立手を minCount に強制されない限り取らない**。「ソートして先頭 maxCount を返す」素朴実装が
+  optional 文脈で自滅手を選ぶ問題への対策（要 policy が per-option スコアを返す）。安全性ラッパーの一段上。
+- **メタ飽和の指摘**: 「公開ラダーは Lucario コピーで飽和 → 最安の差別化は contested でないアーキタイプ」。
+- **prize liability（KO時に相手が取るサイド数）比較**（デッキ選定指標）:
+  Mega Lucario ex=**3**（Mega Evolution ex は3渡し、相手2KOで勝ち）/ Dragapult ex=2 だが Fezandipiti/Latias/Meowth ex も各2 で高 liability / Iono Bellibolt ex=2。
+  → Lucario メタは高 liability。**低 liability（非ex/1-prize 主体）デッキは耐久面で有利**な可能性。
+- 行動空間は可変・異種リスト＝固定ヘッド RL が不向き（indices 契約の妥当性を裏付け）。
+- **belief modeling / belief-guided search を Phase-2** に置く＝我々の「determinization の相手モデルがボトルネック」知見(exp003/004/006)と一致。
+
+### Useful for This Competition
+- `normalize_selection` の「中立 optional 手を避ける」を安全性ラッパーに取り込む（取りこぼし減＝安定性）。
+- **デッキ選定に prize liability を評価軸として導入**（exp007）。Lucario(3渡し)は強いが脆い → 低 liability 案を比較。
+- Strategy レポートの裏付け: 行動空間 EDA・belief modeling 必要性は我々の独自性（相手モデルボトルネック）と整合。
+
+### Risks / Caveats
+- 中身は公式/公開 Lucario と同デッキ＝強さの上積みは無い（構造化と EDA が主）。
+- normalize_selection は policy が per-option score を出す前提。lucario_v2 の `choose()` は最終選択のみ返すため流用には改修要。
+
+### Experiment Candidates
+- exp007(デッキ): prize liability を指標に Lucario vs 低liability案を fast harness で A/B。
+- 安全性ラッパー v2: optional 文脈で中立手を避ける（normalize_selection 相当）を組込み、ミラー/対プールで取りこぼし減を確認。

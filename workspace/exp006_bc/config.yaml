@@ -1,0 +1,18 @@
+# exp006: behavior cloning of lucario_v2 (imitation learning)
+experiment: exp006_bc
+hypothesis: >
+  教師 lucario_v2 の意思決定を模倣学習したネットで、探索なし高速に教師(0.680)へ迫り、
+  かつ MCTS warm-start で exp004(cold-start失敗)を救う。
+teacher: lucario_v2
+deck: lucario_v2
+model: exp004 MyModel(d128, h2, ff256, enc1/dec1)
+loss: policy=cross_entropy(expert choice), value=huber(game result)
+runs:
+  run1: {games: 400, epochs: 15, samples: 37804, imitation_acc: 0.767}
+  run2: {games: 800, epochs: 30}
+result_run1:
+  bc_greedy_pool_avg: 0.278      # best learned agent so far
+  bc_mcts_warmstart_pool_avg: 0.233   # search HURTS (placeholder opponent model)
+finding: >
+  BC単体は cold-MCTS の~10倍だが教師に未達(誤差累積)。MCTS warm-start は逆効果＝
+  部分観測下の placeholder 相手モデルが探索を歪める。相手モデル改善が探索活用の鍵。
