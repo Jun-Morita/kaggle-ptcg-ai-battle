@@ -1,0 +1,14 @@
+# exp008: belief-grounded determinization + PIMC search (pillar A)
+experiment: exp008_belief
+hypothesis: >
+  placeholder determinization が探索を有害化する問題を、相手の隠し札を実デッキリストから
+  サンプリング(belief接地)し両者ルールベースで rollout する PIMC で解決し、探索を 0.23→>0.68 に転じる。
+method: PIMC (per candidate: K belief-determinized rollouts, rule-based both sides, argmax winrate)
+apply: MAIN single-pick decisions only; else rule-based (crash-safe)
+params: {k_rollouts: 6, max_candidates: 4, horizon: 40}
+controls: {belief vs placeholder determinization}
+spike: belief opp moves avg 50 vs placeholder 33 (相手が実デッキで現実的に動く)
+result_n10_vs_lucario_v2: {belief: 0.40, placeholder: 0.30}   # belief>placeholder, neither>rulebase
+finding: >
+  相手モデル(determinization)が探索の価値を決めることを対照実験で実証(研究的成功)。
+  ただし現予算 PIMC は素のルールベース(0.68)を超えず・低速(10-13s/手)。
