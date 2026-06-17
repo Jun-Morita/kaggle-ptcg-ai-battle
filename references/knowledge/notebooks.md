@@ -141,3 +141,18 @@ Public notebook から得た知識を要約する。
 ### Experiment Candidates
 - exp007(デッキ): prize liability を指標に Lucario vs 低liability案を fast harness で A/B。
 - 安全性ラッパー v2: optional 文脈で中立手を避ける（normalize_selection 相当）を組込み、ミラー/対プールで取りこぼし減を確認。
+
+## 2026-06-18: Pokemon AI Battle Agent: Mega Lucario（public, LB 906.9）
+
+- Source: 公開「Advanced Heuristic Planning Agent」。LB 906.9 / Bronze。raw: `references/raw/public_notebooks/`。
+- デッキ＝lucario_v2 と完全同一。LucarioPolicy（OO, bench進化/low-deck保護/stadium対策）＝公開V2系。
+- **「40手 forward search」を謳うが実は壊れている**: `search_begin(sbi)`（入力1個のみ）＝正しい署名
+  `search_begin(obs, your_deck, your_prize, opp_deck, opp_prize, opp_hand, opp_active)` と不一致で必ず例外→
+  毎回 LucarioPolicy にフォールバック。戻り値も `res.state/res.error` を誤想定。**探索は実質無効**。
+- 実態 = LucarioPolicy + クラッシュ安全（LB-860 と同系）。**我々の v001=915.2 が上回る**。新技術なし。
+
+### 競争情報（重要）
+- **公開の「advanced」notebook（LB-860, LB-906.9）はいずれも Search API を正しく呼べておらず**、黙って
+  ルールベースに退化している。**Search API を実際に動かし相手モデル(belief接地)まで解いたのは我々だけ**
+  （exp003/008, v002）。Strategy レポートの独自性を強く裏付ける。
+- 教訓: 公開の高スコアは「強い探索」ではなく「強いルールベース+安定性」が源泉。ラダー上位＝安定性ゲーム。

@@ -78,15 +78,26 @@ uv run python run_gauntlet.py 20      # random vs random
 - `agents.py` … ベースラインエージェント
 - 結果は `results/` に JSON で保存（`.gitignore` 対象）
 
-## 進め方（ロードマップ）
+## 進捗（2026-06-17 時点）
 
-1. exp001: ローカル対戦ハーネス【完了】
-2. exp002: 公式ルールベース 4 エージェント＋4 デッキを移植し、gauntlet でベースライン勝率表を作成
-3. exp003: Search API で 1 手読み（攻撃の実ダメージ / 勝敗評価）を入れた軽量エージェント
-4. exp004+: 公式 RL/MCTS サンプルを動かし、determinization・相手モデルを改善（本命）
+ローカル評価は固定相手プール（公式4種＋公開V2＋random）への平均勝率。**バー = ルールベース lucario_v2 0.680**。
+
+| 実験 | 内容 | 結果（対プール平均） |
+|---|---|---|
+| exp001 | ローカル対戦ハーネス | 完了（~10ms/game, 先後入替, 例外=反則負け） |
+| exp002 | ルールベース5種＋random 総当たり | 強さ序列確定。**lucario_v2 0.680** が最強 |
+| exp003 | Search API 1手読み（素朴） | 0.21–0.27（バー未達） |
+| exp004 | AlphaZero 自己対戦(GPU) | ~0.03（デモ規模では非競争的） |
+| exp005 | クラッシュ安全提出（lucario_v2+安全性） | **v001 を実提出（LB集計待ち）** |
+| exp006 | 模倣学習(BC) | 0.389（データでスケール、教師未達） |
+| exp008 | **belief 探索(PIMC)** ★ | **belief 0.417 vs placeholder 0.083**（5倍）。Dragapult に 0.667 で勝ち越し |
+
+**中心的発見**: 部分観測下で determinization が相手をプレースホルダで埋めると**探索は有害**になる。
+相手を実デッキで接地（belief）すると探索が有益化する——「相手モデルの質が探索の価値を決める」を対照実験で実証。
+詳細な提出戦略は [`competition/submission_plan.md`](competition/submission_plan.md)。
 
 各実験は 1 ディレクトリ 1 仮説で `workspace/expNNN_name/` に分け、`SESSION_NOTES.md` に仮説・変更・結果・出典を残します。
-その日の判断と次アクションは `daily_reports/YYYYMMDD.md` に集約します。
+その日の判断と次アクションは `daily_reports/YYYYMMDD.md` に集約します。重い生成物（`.pth`、提出 bundle、抽出した競技/3rd-party コード）は Git 管理外。
 
 ## 提出
 
