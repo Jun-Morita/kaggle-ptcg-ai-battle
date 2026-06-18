@@ -61,3 +61,15 @@ Kaggle discussion から得た知識を要約する。
   (ii) 専用アンチコントロール（強い非ex attacker＋デッキアウト/妨害対策）。
   (iii) 自分も Crustle control を組む（メタ同型）。
 - 評価プールに **Crustle control を追加**（現プールは ex 同士でメタ未反映）。Crustle の勝ち筋（deckout? 非ex/Chi-Yu 攻撃?）を要分析。
+
+### 2026-06-18: トップ戦略の分析＝実ポケカ「Safeguard 壁コントロール」
+- Crustle 戦リプレイ精読(16ターン96手): 我々 Mega Lucario が**39回攻撃→全0ダメージ**、サイド0枚。
+  Crustle が120×複数回＋回復で消耗戦に持ち込み**サイド3枚取って勝利**。典型的な attrition control。
+- **実ポケカ同型**: 「相手の ex(/GX) のダメージを無効にする特性」を軸にした壁コントロール（現実の Mimikyu/Sylveon Safeguard 系）。
+  本プールでは Crustle(345) "Mysterious Rock Inn"。回復(Jumbo Ice Cream/Cook/Waitress)＋ドロー(Lillie)で完封。
+- **メタ三すくみ（実測 n=16）**:
+  - Crustle control は ex デッキを食う: vs Lucario 0.75 / vs Dragapult 1.00。
+  - 非ex attacker(v003 anti-crustle) は Crustle を食う: v003 0.62 vs mimic。
+  - → ex attacker → (負ける) Crustle 壁 → (負ける) 非ex attacker → (ex に強い…) の循環。
+- **2枚看板戦略**: A=Crustle control 模倣（ex 環境を制圧, v004）, B=anti-Crustle カウンター（v003, 提出済）。
+  ラダー構成次第で最適が変わる→両方提出し LB で比較。Strategy レポートはこの三すくみ分析が独自性の核。

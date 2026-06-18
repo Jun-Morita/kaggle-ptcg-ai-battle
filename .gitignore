@@ -57,3 +57,8 @@ workspace/exp005_submit/build/
 submit/**/*.tar.gz
 
 workspace/exp008_belief/build/
+
+workspace/exp007_anti_crustle/build/
+workspace/exp007_anti_crustle/policy_anticrustle.py
+workspace/exp007_anti_crustle/crustle_deck.json
+workspace/exp007_anti_crustle/build_v004/
