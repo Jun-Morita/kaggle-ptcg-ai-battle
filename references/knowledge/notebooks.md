@@ -156,3 +156,12 @@ Public notebook から得た知識を要約する。
   ルールベースに退化している。**Search API を実際に動かし相手モデル(belief接地)まで解いたのは我々だけ**
   （exp003/008, v002）。Strategy レポートの独自性を強く裏付ける。
 - 教訓: 公開の高スコアは「強い探索」ではなく「強いルールベース+安定性」が源泉。ラダー上位＝安定性ゲーム。
+
+## 2026-06-18: V7「Crustle+Lucario LB 960+」(909.9) & 「scores 915+」(842.5)（public）
+- 両者とも **デッキは lucario_v2 と完全同一**（純 Mega Lucario, ex×4, energy13, 同一トレーナー）。
+- V7 のコード: **Crustle/anti-ex/Safeguard ロジックは皆無**（grep 全0ヒット）。USE_SEARCH=False、search_begin(sbi) は壊れた呼び出し（LB-860/906.9 と同一テンプレ, 660行）。
+- **タイトル「Crustle+Lucario」「960+」は誇大**（実スコア 909.9）。中身は crash-safe Mega Lucario のまま。
+### 競争情報・施策への活用
+- **公開フィールド全体が "同一 Mega Lucario + 安全性"**（LB-860/906.9/V7-909.9/915notebook-842.5）。我々 v001=915.2 が既に全て上回る。
+- **公開勢は誰も Crustle メタに対応していない**＝全員 anti-ex 壁に弱い。**我々だけ**が anti-Crustle(v003)・Crustle模倣(v004)・動く探索(belief PIMC)・メタ分析を保有。
+- 示唆: 公開が Lucario 一色 → **v004(Crustle模倣)が多数派(ex)を制圧**、v003 がトップの Crustle を狩る。2枚看板は妥当。新技術の取り込みは無し（既に先行）。
