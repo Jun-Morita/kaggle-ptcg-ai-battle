@@ -78,23 +78,39 @@ uv run python run_gauntlet.py 20      # random vs random
 - `agents.py` … ベースラインエージェント
 - 結果は `results/` に JSON で保存（`.gitignore` 対象）
 
-## 進捗（2026-06-17 時点）
+## 進捗（2026-06-18 時点）
 
-ローカル評価は固定相手プール（公式4種＋公開V2＋random）への平均勝率。**バー = ルールベース lucario_v2 0.680**。
+ローカル評価は固定相手プールへの平均勝率。**現状の主力 = v003 anti-Crustle（LB 1088.3, 公開最高909超え）**。
 
-| 実験 | 内容 | 結果（対プール平均） |
+### 実験
+| 実験 | 内容 | 結果 |
 |---|---|---|
 | exp001 | ローカル対戦ハーネス | 完了（~10ms/game, 先後入替, 例外=反則負け） |
-| exp002 | ルールベース5種＋random 総当たり | 強さ序列確定。**lucario_v2 0.680** が最強 |
-| exp003 | Search API 1手読み（素朴） | 0.21–0.27（バー未達） |
+| exp002 | ルールベース5種＋random 総当たり | 強さ序列確定（lucario_v2 0.680 がプール最強） |
+| exp003 | Search API 1手読み（素朴） | 0.21–0.27（探索は placeholder 相手で有害） |
 | exp004 | AlphaZero 自己対戦(GPU) | ~0.03（デモ規模では非競争的） |
-| exp005 | クラッシュ安全提出（lucario_v2+安全性） | **v001 を実提出（LB集計待ち）** |
+| exp005 | クラッシュ安全提出 | **v001**（LB 841.8） |
 | exp006 | 模倣学習(BC) | 0.389（データでスケール、教師未達） |
-| exp008 | **belief 探索(PIMC)** ★ | **belief 0.417 vs placeholder 0.083**（5倍）。Dragapult に 0.667 で勝ち越し |
+| exp008 | belief 探索(PIMC) | belief 0.417 vs placeholder 0.083（5倍）。探索の価値は相手モデル次第 |
+| exp007 | **メタ対策**（リプレイ解析） | **v003 anti-Crustle 提出** |
+| exp009 | 専用 Crustle 制御方策 | v005（制御は事故率・ミラーが課題） |
 
-**中心的発見**: 部分観測下で determinization が相手をプレースホルダで埋めると**探索は有害**になる。
-相手を実デッキで接地（belief）すると探索が有益化する——「相手モデルの質が探索の価値を決める」を対照実験で実証。
-詳細な提出戦略は [`competition/submission_plan.md`](competition/submission_plan.md)。
+### 提出（LB, 2026-06-18）
+| 版 | 中身 | LB |
+|---|---|---|
+| **v003** | **anti-Crustle カウンター** | **1088.3** 🏆 |
+| v001 | Lucario + 安全性 | 841.8 |
+| v002 | belief PIMC | 820.1 |
+| v004 | Crustle 模倣(汎用) | 742.9 |
+| v005 | Crustle 制御(専用) | 600.0（収束中） |
+
+### 中心的発見
+- **メタ = Crustle anti-ex 壁コントロール**（実ポケカ Safeguard control）。全-ex デッキ(Lucario)は構造的に negate される。
+  リプレイ解析で特定し、**1点修正の anti-Crustle 方策(v003)で counter → LB 1088.3**。
+- **相手モデル(determinization)が探索の価値を決める**（exp008, 対照実験で実証）。
+- 公開勢は全員 Mega Lucario + 安全性で Crustle 未対応・探索も誤用 → **メタ対策と動く探索で我々が先行**。
+- 詳細な提出戦略は [`competition/submission_plan.md`](competition/submission_plan.md)。
+- ⚠️ ラダーは「最新2提出のみ最終評価」。最良(v003)を最新枠に維持すること。
 
 各実験は 1 ディレクトリ 1 仮説で `workspace/expNNN_name/` に分け、`SESSION_NOTES.md` に仮説・変更・結果・出典を残します。
 その日の判断と次アクションは `daily_reports/YYYYMMDD.md` に集約します。重い生成物（`.pth`、提出 bundle、抽出した競技/3rd-party コード）は Git 管理外。

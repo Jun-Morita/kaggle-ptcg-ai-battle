@@ -62,3 +62,6 @@ workspace/exp007_anti_crustle/build/
 workspace/exp007_anti_crustle/policy_anticrustle.py
 workspace/exp007_anti_crustle/crustle_deck.json
 workspace/exp007_anti_crustle/build_v004/
+workspace/exp009_crustle_policy/build/
+workspace/exp009_crustle_policy/crustle_deck.json
+workspace/exp009_crustle_policy/deck.csv
