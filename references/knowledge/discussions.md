@@ -73,3 +73,14 @@ Kaggle discussion から得た知識を要約する。
   - → ex attacker → (負ける) Crustle 壁 → (負ける) 非ex attacker → (ex に強い…) の循環。
 - **2枚看板戦略**: A=Crustle control 模倣（ex 環境を制圧, v004）, B=anti-Crustle カウンター（v003, 提出済）。
   ラダー構成次第で最適が変わる→両方提出し LB で比較。Strategy レポートはこの三すくみ分析が独自性の核。
+
+### 2026-06-18(夕): 高レート帯メタの進化（v003 ~1100 の対戦20件解析）
+- リーダーボード TOP: Praxel 1388 / Kadoraba 1267 / 上位帯 1180-1270。我々 v003=1123/1099（最新2枠確保済）。
+- v003 戦績(20件): **Crustle control 5W-4L（唯一の苦手, 敗北は全てこれ）/ Mega Lucario 6-0 / Alakazam 3-0 / 多ex 1-0 / 炎非ex 1-0**。
+- **Crustle が非ex 炎アタッカーを搭載して進化**: Ethan's Cyndaquil(352,Ember30), Chi-Yu(31/719,60), Centiskorch(934,130)。
+  → 「ex無効の壁＋自前の非ex打点」二刀流。pure wall が anti-ex(v003)に食われる弱点を、非exアタッカーで補強。
+- v003 が Crustle に互角どまりの主因: Crustle+Hero's Cape=250HP は Hariyama 210 で一撃不可、回復(Jumbo80/Cook70)、相手も殴り返す。
+### カウンター/模倣の余地
+- カウンター強化: Boss's Orders で未育成 Crustle/Dwebble を引きずり出して先に処理 / tool 除去(Hero's Cape剥がし) / 2パン用の継戦力＋自己回復 / デッキアウト促進。**pure 非ex デッキ**（ex を積まない＝腐り札ゼロ）も候補。
+- 模倣強化: 我々の v005 制御(835収束中)は pure wall。TOP同様 **Crustle＋炎非exアタッカー**を積み、壁と打点を両用する制御方策にすれば上位射程。事故率(マリガン/序盤展開)とミラーが課題。
+- 大方針: メタは anti-ex 支配＝**全-ex デッキは死に筋**。勝ち筋は非ex 中心に寄せる。
