@@ -78,9 +78,10 @@ uv run python run_gauntlet.py 20      # random vs random
 - `agents.py` … ベースラインエージェント
 - 結果は `results/` に JSON で保存（`.gitignore` 対象）
 
-## 進捗（2026-06-18 時点）
+## 進捗（2026-06-20 時点）
 
-ローカル評価は固定相手プールへの平均勝率。**現状の主力 = v003 anti-Crustle（LB 1088.3, 公開最高909超え）**。
+ローカル評価は固定相手プールへの平均勝率。**メタは三すくみで一周し、頂点 = 非ex アタッカー**と特定。
+**現状の eligible = {v006 非ex apex, v004 Crustle 壁}**（トップ #4 charmq の非exデッキを複製した v006 が主力）。
 
 ### 実験
 | 実験 | 内容 | 結果 |
@@ -92,25 +93,37 @@ uv run python run_gauntlet.py 20      # random vs random
 | exp005 | クラッシュ安全提出 | **v001**（LB 841.8） |
 | exp006 | 模倣学習(BC) | 0.389（データでスケール、教師未達） |
 | exp008 | belief 探索(PIMC) | belief 0.417 vs placeholder 0.083（5倍）。探索の価値は相手モデル次第 |
-| exp007 | **メタ対策**（リプレイ解析） | **v003 anti-Crustle 提出** |
+| exp007 | **メタ対策**（リプレイ解析） | **v003 anti-Crustle**（旧主力, 一時 LB 1123） |
 | exp009 | 専用 Crustle 制御方策 | v005（制御は事故率・ミラーが課題） |
+| exp010 | **RL 再挑戦**（Phase2 メタ討伐 / Phase3 ミラー特化） | **3重検証の誠実なネガティブ**（value 品質がボトルネック, 探索増で悪化）。打ち切り |
+| exp011 | **メタ監視**（週次リプレイ解析・上位辿り） | メタの一周を特定／三すくみ＆apex=非ex を実証 |
+| exp012 | **非ex apex 複製**（charmq #4 のデッキ） | **v006**（ex 0.667・Crustle 0.833・v003 0.600 を食う） |
 
-### 提出（LB, 2026-06-18）
-| 版 | 中身 | LB |
+### 提出（eligible = 最新2提出, 2026-06-20）
+| 版 | 中身 | 状態 |
 |---|---|---|
-| **v003** | **anti-Crustle カウンター** | **1088.3** 🏆 |
-| v001 | Lucario + 安全性 | 841.8 |
-| v002 | belief PIMC | 820.1 |
-| v004 | Crustle 模倣(汎用) | 742.9 |
-| v005 | Crustle 制御(専用) | 600.0（収束中） |
+| **v006** | **非ex アタッカー apex**（charmq #4 複製） | PENDING（収束待ち, ローカルで ex+Crustle 両取り） |
+| v004 | Crustle anti-ex 壁 | 864.9（実勝率0.59=収束途中。v006 の dragapult 弱点をカバー） |
+| v003 | anti-Crustle（旧主力） | 旧 1100.8（eligible から押し出し） |
 
 ### 中心的発見
-- **メタ = Crustle anti-ex 壁コントロール**（実ポケカ Safeguard control）。全-ex デッキ(Lucario)は構造的に negate される。
-  リプレイ解析で特定し、**1点修正の anti-Crustle 方策(v003)で counter → LB 1088.3**。
+- **メタは三すくみで一周する**: ex ビート → Crustle anti-ex 壁 → **非ex アタッカー** → ex ビート。
+  06-18 は Crustle 一色 → 06-20 は Lucario-ex 復権。**頂点は非ex**（単サイドで ex にレース勝ち＋Crustle の ex限定 Safeguard を貫通）。
+- **リプレイ駆動のメタ分析が最重要レバー**: 自分の対戦＋上位プレイヤーの試合を解析し、トップ構築を複製して提出。
 - **相手モデル(determinization)が探索の価値を決める**（exp008, 対照実験で実証）。
-- 公開勢は全員 Mega Lucario + 安全性で Crustle 未対応・探索も誤用 → **メタ対策と動く探索で我々が先行**。
-- 詳細な提出戦略は [`competition/submission_plan.md`](competition/submission_plan.md)。
-- ⚠️ ラダーは「最新2提出のみ最終評価」。最良(v003)を最新枠に維持すること。
+- **学習系は3重検証の誠実なネガティブ**（exp010）: warm-start belief-MCTS は強い rule-based を超えず、
+  探索を増やすほど悪化＝value ネット品質がボトルネック。価値は「学習」でなく「推論時の探索＋belief」。
+- **汎用方策が異種デッキを操縦できる**: Crustle(v004)・非ex(v006) を専用方策なしで運用可能。
+- 詳細な提出戦略は [`competition/submission_plan.md`](competition/submission_plan.md)、レポート草稿は [`competition/report_draft.md`](competition/report_draft.md)。
+- ⚠️ ラダーは「最新2提出のみ最終評価」。最良ペアを最新枠に維持すること。
+
+### 週次メタ監視 / デッキ複製
+```bash
+cd workspace/exp011_meta_watch
+uv run python analyze.py <our_submission_id>     # 自分の対戦のメタ分布
+uv run python top_meta.py <top_player_sub_id>    # 上位プレイヤーの構築と戦績
+uv run python extract_deck.py <sub_id> [out.json] # 任意選手の正確な60枚を複製（/extract-deck スキル）
+```
 
 各実験は 1 ディレクトリ 1 仮説で `workspace/expNNN_name/` に分け、`SESSION_NOTES.md` に仮説・変更・結果・出典を残します。
 その日の判断と次アクションは `daily_reports/YYYYMMDD.md` に集約します。重い生成物（`.pth`、提出 bundle、抽出した競技/3rd-party コード）は Git 管理外。
