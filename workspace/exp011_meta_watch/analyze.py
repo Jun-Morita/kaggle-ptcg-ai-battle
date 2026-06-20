@@ -75,21 +75,20 @@ def opp_deck_from_replay(rep, our_sub_id):
     return decks, rewards, info
 
 
-def main():
-    if len(sys.argv) < 2:
-        print("usage: analyze.py <submission_id> [tag]")
-        sys.exit(1)
-    sub_id = int(sys.argv[1])
-    tag = sys.argv[2] if len(sys.argv) > 2 else time.strftime("%m%d")
+def analyze_submission(sub_id, tag, api=None, byid=None, verbose=True):
+    """Download a submission's ladder replays, return {n_games, by_arch, rows}.
+    Reused by meta_watch.py. Writes results/meta_<tag>.json."""
     raw_dir = os.path.join(ROOT, "references", "raw", "replays", tag)
     os.makedirs(raw_dir, exist_ok=True)
-
-    from kaggle.api.kaggle_api_extended import KaggleApi
-    api = KaggleApi(); api.authenticate()
-    byid = card_map()
+    if api is None:
+        from kaggle.api.kaggle_api_extended import KaggleApi
+        api = KaggleApi(); api.authenticate()
+    if byid is None:
+        byid = card_map()
 
     eps = api.competition_list_episodes(sub_id)
-    print(f"submission {sub_id}: {len(eps)} episodes")
+    if verbose:
+        print(f"submission {sub_id}: {len(eps)} episodes")
 
     rows = []  # (epid, opp_team, opp_arch, result, ex_count)
     for e in eps:
@@ -130,20 +129,33 @@ def main():
         by_arch[r["arch"]][i] += 1
         by_opp[r["opp"]][i] += 1
 
-    print(f"\n=== {len(rows)} games by opponent archetype (our W-L-D) ===")
-    for a, (w, l, d) in sorted(by_arch.items(), key=lambda x: -sum(x[1])):
-        n = w + l + d
-        print(f"  {a:20s} {w}-{l}-{d}  (wr={w/max(n,1):.2f}, n={n})")
-    print(f"\n=== by opponent team ===")
-    for o, (w, l, d) in sorted(by_opp.items(), key=lambda x: -sum(x[1])):
-        print(f"  {o[:28]:28s} {w}-{l}-{d}")
+    if verbose:
+        print(f"\n=== {len(rows)} games by opponent archetype (our W-L-D) ===")
+        for a, (w, l, d) in sorted(by_arch.items(), key=lambda x: -sum(x[1])):
+            n = w + l + d
+            print(f"  {a:20s} {w}-{l}-{d}  (wr={w/max(n,1):.2f}, n={n})")
+        print(f"\n=== by opponent team ===")
+        for o, (w, l, d) in sorted(by_opp.items(), key=lambda x: -sum(x[1])):
+            print(f"  {o[:28]:28s} {w}-{l}-{d}")
 
     out = {"submission_id": sub_id, "tag": tag, "n_games": len(rows),
-           "by_arch": {a: v for a, v in by_arch.items()},
+           "by_arch": {a: list(v) for a, v in by_arch.items()},
            "rows": rows}
     op = os.path.join(HERE, "results", f"meta_{tag}.json")
+    os.makedirs(os.path.dirname(op), exist_ok=True)
     json.dump(out, open(op, "w"), indent=2, ensure_ascii=False)
-    print(f"\nwrote {op}")
+    if verbose:
+        print(f"\nwrote {op}")
+    return out
+
+
+def main():
+    if len(sys.argv) < 2:
+        print("usage: analyze.py <submission_id> [tag]")
+        sys.exit(1)
+    sub_id = int(sys.argv[1])
+    tag = sys.argv[2] if len(sys.argv) > 2 else time.strftime("%m%d")
+    analyze_submission(sub_id, tag)
 
 
 if __name__ == "__main__":

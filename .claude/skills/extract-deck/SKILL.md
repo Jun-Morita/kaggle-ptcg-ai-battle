@@ -1,15 +1,14 @@
 ---
 name: extract-deck
-description: Replicate a Pokémon TCG player's exact 60-card decklist from their Kaggle ladder replays. Use when the user wants to copy/clone/mimic a top-ranker's or opponent's deck, build a counter to a specific player, or turn a submission_id into a ready-to-use deck.csv. Triggers on requests like "copy charmq's deck", "リプレイから60枚を複製", "extract the top player's decklist", "clone sub <id>".
+description: Reconstruct a player's exact 60-card PTCG decklist from their Kaggle ladder replays (any submission_id → deck JSON). Use to copy/clone/mimic a top-ranker's or opponent's deck, or seed a counter. Triggers — "copy charmq's deck", "リプレイから60枚を複製", "clone sub <id>", "extract the top player's decklist".
 ---
 
 # Extract a deck from replays
 
-Given a Kaggle **submission_id**, this skill downloads that submission's ladder
-replays and reconstructs the owning player's exact 60-card decklist (their MAIN
-deck = the most frequent 60-card list across their games), ready to drop into a
-`deck.csv` / build script. Works for any submission_id — ours or a rival's that
-we reached by traversing episodes.
+Given a Kaggle **submission_id**, download that submission's ladder replays and
+reconstruct the owner's MAIN deck (= the most frequent exact 60-card list across
+their games) as a JSON ready for a build. Works for any submission_id — ours or a
+rival's reached by traversing episodes.
 
 ## Steps
 
@@ -35,17 +34,14 @@ we reached by traversing episodes.
      60-card-id JSON list for a build script.
 
 3. **Report** the archetype label, ex-card count, and the Pokémon/Trainer/Energy
-   breakdown. Sanity-check it sums to 60 (the script asserts this).
+   breakdown (the script asserts it sums to 60).
 
-4. **(Optional) build a submission** from it: copy `workspace/exp012_nonex/build_v006.py`
-   (generic-policy + crash-safety + deck.csv + cg/ → submission.tar.gz), point it
-   at the saved deck JSON, smoke-test the built artifact vs the meta with the
-   exp001 harness, then submit only after user approval (per CLAUDE.md).
+4. **(Optional) turn it into a submission** with the `/build-submit` skill (deck JSON
+   → tar.gz → smoke-test → submit after approval).
 
 ## Notes
-- Needs Kaggle API auth (already configured) and the cabt engine (`load_engine`
-  from `workspace/exp001_harness`); run via `uv run`.
-- The generic `lucario_v2` policy has piloted foreign decks well twice (Crustle
-  v004, non-ex v006) — try it first; build a dedicated policy only if it fails.
-- A copied deck is only as good as its pilot; always validate with the harness
-  before trusting it, and check the archetype matches expectations.
+- Needs Kaggle API auth + the cabt engine; run via `uv run`.
+- The generic `lucario_v2` policy has piloted foreign decks well (Crustle v004, non-ex
+  v006) — try it first; add a dedicated policy patch only if the mirror/a matchup needs it.
+- A copied deck is only as good as its pilot — validate with `/build-submit`'s smoke test
+  before trusting it.
