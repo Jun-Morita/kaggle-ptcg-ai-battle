@@ -80,8 +80,8 @@ uv run python run_gauntlet.py 20      # random vs random
 
 ## 進捗（2026-06-20 時点）
 
-ローカル評価は固定相手プールへの平均勝率。**メタは三すくみで一周し、頂点 = 非ex アタッカー**と特定。
-**現状の eligible = {v006 非ex apex, v004 Crustle 壁}**（トップ #4 charmq の非exデッキを複製した v006 が主力）。
+ローカル評価は固定相手プールへの平均勝率。**メタは三すくみで一周し、いま非ex アタッカーに収束中**。
+**現状の eligible = {v007 専用非ex方策, v006 非ex apex}**（トップ #4 charmq の非exデッキを複製＋ミラー強化）。
 
 ### 実験
 | 実験 | 内容 | 結果 |
@@ -96,24 +96,26 @@ uv run python run_gauntlet.py 20      # random vs random
 | exp007 | **メタ対策**（リプレイ解析） | **v003 anti-Crustle**（旧主力, 一時 LB 1123） |
 | exp009 | 専用 Crustle 制御方策 | v005（制御は事故率・ミラーが課題） |
 | exp010 | **RL 再挑戦**（Phase2 メタ討伐 / Phase3 ミラー特化） | **3重検証の誠実なネガティブ**（value 品質がボトルネック, 探索増で悪化）。打ち切り |
-| exp011 | **メタ監視**（週次リプレイ解析・上位辿り） | メタの一周を特定／三すくみ＆apex=非ex を実証 |
-| exp012 | **非ex apex 複製**（charmq #4 のデッキ） | **v006**（ex 0.667・Crustle 0.833・v003 0.600 を食う） |
+| exp011 | **メタ監視**（週次リプレイ解析・上位辿り） | メタの一周を特定／三すくみ＆apex=非ex を実証／非exへの収束 |
+| exp012 | **非ex apex 複製＋専用方策** | **v006**（ex 0.667/Crustle 0.833）→ **v007**（mirror 0.775/ex 0.725） |
 
 ### 提出（eligible = 最新2提出, 2026-06-20）
 | 版 | 中身 | 状態 |
 |---|---|---|
-| **v006** | **非ex アタッカー apex**（charmq #4 複製） | PENDING（収束待ち, ローカルで ex+Crustle 両取り） |
-| v004 | Crustle anti-ex 壁 | 864.9（実勝率0.59=収束途中。v006 の dragapult 弱点をカバー） |
-| v003 | anti-Crustle（旧主力） | 旧 1100.8（eligible から押し出し） |
+| **v007** | **専用非ex方策**（ミラー強化） | PENDING（収束待ち, mirror 0.775 / ex 0.725） |
+| **v006** | **非ex apex**（charmq #4 複製, 汎用方策） | **1109.4**（歴代最高水準, Crustle 0.83 をカバー） |
+| v004 | Crustle anti-ex 壁 | 853（eligible 外。Crustle メタ落ちで役割縮小） |
 
 ### 中心的発見
-- **メタは三すくみで一周する**: ex ビート → Crustle anti-ex 壁 → **非ex アタッカー** → ex ビート。
-  06-18 は Crustle 一色 → 06-20 は Lucario-ex 復権。**頂点は非ex**（単サイドで ex にレース勝ち＋Crustle の ex限定 Safeguard を貫通）。
-- **リプレイ駆動のメタ分析が最重要レバー**: 自分の対戦＋上位プレイヤーの試合を解析し、トップ構築を複製して提出。
+- **メタは三すくみで一周し、収束する**: ex ビート → Crustle anti-ex 壁 → **非ex アタッカー** → …。
+  06-18 Crustle 一色 → 06-20 Lucario-ex 復権 → 上位は**非exに収束**（頂点。単サイドで ex にレース勝ち＋Crustle の ex限定 Safeguard を貫通）。
+- **リプレイ駆動のメタ分析が最重要レバー**: 自分の対戦＋上位プレイヤーの試合を解析し、トップ構築を複製(v006)＋ミラー強化(v007)。
+  回転に追従して提出（v003→v004→v006→v007）。
 - **相手モデル(determinization)が探索の価値を決める**（exp008, 対照実験で実証）。
 - **学習系は3重検証の誠実なネガティブ**（exp010）: warm-start belief-MCTS は強い rule-based を超えず、
   探索を増やすほど悪化＝value ネット品質がボトルネック。価値は「学習」でなく「推論時の探索＋belief」。
-- **汎用方策が異種デッキを操縦できる**: Crustle(v004)・非ex(v006) を専用方策なしで運用可能。
+- **汎用方策が異種デッキを操縦でき、専用パッチでミラーを取れる**: Crustle(v004)・非ex(v006) を汎用で運用、
+  v007 は非ex攻撃モデル(Extra Helpings/Choice Band/Boss's Orders)を教える1パッチでミラー 0.60→0.775。
 - 詳細な提出戦略は [`competition/submission_plan.md`](competition/submission_plan.md)、レポート草稿は [`competition/report_draft.md`](competition/report_draft.md)。
 - ⚠️ ラダーは「最新2提出のみ最終評価」。最良ペアを最新枠に維持すること。
 
