@@ -33,3 +33,24 @@ Night Stretcher×3・Postwick×4(スタジアム) / Mist Energy×4・Telepath Ps
 - dragapult/スプレッド対策（HP高めの非ex、または手数で押し切る）。
 - 非exミラー（charmq 系同士）の操縦改善＝専用方策の余地。
 - 上位帯の field 再解析（非exが飽和したら別の counter が必要）。
+
+## 専用非ex方策（mirror 強化, nonex_policy.py / v007）2026-06-20
+**診断**: 汎用 lucario_v2 は非exデッキで `_base_attack` が全 None → **plan を作らず**、Boss's Orders
+(plan.target≥1 で発動)・リトリート/switch(plan.attacker≥1)・対象選択・エネ配分・KO認識が**全て死んでいた**。
+**パッチ（v003流, rewrite せず的を絞る）**: `_base_attack` に非ex攻撃を付与（Extra Helpings +30＝Snorlaxベンチ,
+Hop's Choice Band +30/コスト-1）＋ `_plan_attack` を弱点タイプ正しく上書き（Trevenant/Phantump=Psychic, 他=Colorless）。
+下流（Boss's Orders/リトリート/対象/エネ）は plan に配線済みなので一斉に作動。
+
+**結果（test_smart.py, n=40, 先後入替）**:
+| マッチアップ | smart | generic(v006) |
+|---|---|---|
+| **mirror (smart vs generic, 同一デッキ)** | **0.775**(31-9) | 0.50(対称) |
+| vs lucario_v2 (ex) | **0.725** | 0.667 |
+| vs Crustle | 0.625 ↓ | 0.833 |
+| vs dragapult | 0.100 | 0.100 |
+
+- **ミラーで 0.775 と圧勝**＝同一デッキでの操縦差（狙い通り）。ex も改善。
+- Crustle に退行（壁相手に Boss's Orders 等を使い過ぎる副作用と推測）。dragapult 弱点は不変。
+- ビルド `build_v007.py`（PATCH_SRC を main.py に焼込, deck=charmq）。実artifactスモーク: 対generic 0.625, 0エラー。
+- メタは非exに収束中（Crustle 減）→ ミラー強化は未来志向で正解。提出案 eligible {v007 smart, v006 generic}
+  （v007=ミラー+ex, v006=Crustle カバー, 両非ex）。
