@@ -32,7 +32,37 @@
 4. 改善案: (a) 経験リプレイで過去世代を混ぜる, (b) ベストモデルでの early-stop/選抜(PBT風),
    (c) search数↑＋games↑（GPU空き時間に長時間）, (d) 報酬を「Crustle特化」へ絞る。
 
+## Phase 3: ミラー特化 RL（再設計, rl_phase3_mirror.py）
+2026-06-20 メタ解析(exp011)で field が Lucario-ex 57% に回転し、**v003 がミラーに負けている(0.31)**
+と判明 → RL の的を「Lucario で Crustle を倒す(sparse・困難)」から **「Lucario ミラーを勝つ」** へ再設定。
+
+**なぜミラーが理想的 RL 課題か**:
+- 勝てる（対称＝技量勝負, sparse な Hariyama 切替不要）
+- 価値最大（field の過半 57%）
+- **belief が完全**（相手デッキ=自デッキ=LUCARIO と既知）→ exp008「belief で探索が活きる」の最良ケース
+- v003 最大の弱点（ミラー負け）を直接埋める
+
+**Phase 2 崩壊への対策**:
+1. 相手 = 固定の stock lucario_v2（field プロキシ）→ moving target を排し value ラベルを接地
+2. 経験リプレイ（直近 K 世代をまとめて学習）
+3. checkpoint gating / 崩壊復帰（best eval を保持、margin 超の退行は best へ巻き戻し）
+
+**成功基準**: net(belief-MCTS) が stock lucario_v2 にミラーで **>0.55**（v003 ref ~0.47）。
+達成なら v003 を超えるミラー操縦＝提出候補。設定: gen12 / search24 / games28 / eval16 / replay3。
+出力: `results/rl3_best.pth`（最良）, `rl3_latest.pth`, `rl_phase3_history.json`。
+
+**Phase 3 結果（正直なネガティブ, gating で崩壊は防止）**:
+- ミラー eval(vs stock): gen1 で 0.312 が最良、以降伸びず（0.0-0.31 で振動）。self-play は常時負け越し(~5-8/28)。
+- 内訳: BC greedy 0.17 → BC+belief-MCTS(search24) 0.31。**伸ばしたのは探索であって RL 学習ではない**。
+- **探索量スケーリング eval（決定的）**: search 24→48→96 で 0.312→0.188→**0.125** と**悪化**（0.05-0.18s/手）。
+  良い value なら探索は効くはず → **value ネットが不良**で深い探索が誤推定を増幅。
+- **結論**: 3本の証拠（Phase2 崩壊 / Phase3 0.31 天井 / 探索増で悪化）で、warm-start belief-MCTS は
+  強い rule-based(stock lucario_v2) をミラーで超えない。ボトルネック＝value 品質（速度・探索量でない）。
+- 原理的次手（未実施, 後半の計算資源向け）: **stock vs stock の大量対戦で value を較正**してから MCTS に載せる。
+  現状は ROI が悪く打ち切り。ラダー主力は rule-based(v004 Crustle / v003)。
+
 ## 結論 / 次
-- Phase 1 net (`results/bc_v003_multi.pth`) = warm-start。Phase 2 best = `rl_best_gen1.pth`。
-- 現実解: ラダーの主力は依然 **v003(LB~1123, rule-based)**。RL は後半の学習系競争に備えた長期投資で、
-  現時点では未達。レポートには「素朴な RL は belief を入れても rule-based を超えない」を誠実に記載。
+- Phase 1 net (`results/bc_v003_multi.pth`) = warm-start。Phase 2 best = `rl_best_gen1.pth`（負け確定）。
+- Phase 3 = ミラー特化で再挑戦（背景実行中, ID b4erl9yws）。
+- 現実解: ラダー主力は依然 **rule-based(v003 / v004 Crustle カウンター)**。RL は >0.55 を出せれば
+  初めて提出候補。レポートには Phase 2 の誠実なネガティブ＋Phase 3 の再設計を記載。

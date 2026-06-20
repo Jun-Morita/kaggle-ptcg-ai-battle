@@ -44,3 +44,32 @@
 - eligible = **{v004 Crustle カウンター, v003 過去最良}** = 三すくみヘッジ
   （ex を v004 で食い、Crustle 復活は v003 で受ける）。
 - 次回週次: 新 sub の収束後に再度 analyze.py でメタ再確認。大変化なければ静観。
+
+## 2026-06-20 トップランカー解析（top_meta.py で上位プレイヤーの試合を辿る）
+上位2名の自デッキ＋対戦相手アーキタイプを実データ解析。**完全な三すくみが頂点で回っている。**
+
+### charmq（LB #4, 1259）= 非ex アタッカー（apex）
+- デッキ: Hop's Phantump×4→**Hop's Trevenant**×2(HP140), Hop's Snorlax×2(HP150),
+  Dunsparce×4→**Dudunsparce**×3(ドロー機関), Hop's Choice Band×4(打点UP道具),
+  Boss's Orders×2(呼出), 特殊エネ(Telepath/Mist/Legacy), Postwick×4(スタジアム)。**全て非ex=単サイド**。
+- 戦績: vs lucario_ex **0.69**(11-5) / vs **crustle_control 0.70**(7-3) / vs mixed_ex 0.71。
+  → **ex ビートと anti-ex 壁の両方に勝つ**。
+
+### shu（LB #13, 1166）= Lucario-ex（洗練版）
+- デッキ: Mega Lucario ex×4 + Hariyama/Makuhita/Solrock/Lunatone/Riolu(非ex tech) +
+  Dusk Ball×4/Premium Power Pro×4/Fighting Gong×4/Carmine×4/Lillie's Determination×4。
+  我々の LUCARIO_DECK より trainer が充実した競技リスト。
+- 戦績: vs **crustle_control 0.80**(8-2) / lucario_ex ミラー 0.58 / **vs non_ex_attackers 0.43**(3-4)。
+  → Crustle を食い、ex ミラーは我々v003(0.31-0.47)より上手いが、**非exに負ける**。
+
+### 三すくみ（確定）
+非ex アタッカー → 勝つ → {ex ビート, anti-ex 壁} ／ ex ビート → 勝つ → 壁 ／ 壁 → 勝つ → ex ビート。
+**頂点 = 非ex**（サイド1枚＋Safeguard貫通で両壁/ビートに勝てる）。ただし上位 field もまだ ex 主体で
+非ex は未飽和（charmq は数少ない非ex使いとして上位に）。
+
+### 我々への含意
+- **v004 Crustle / v003 ex は両方とも apex(非ex)に弱い**（Crustle は貫通され、ex はサイド負け）。
+- 短期: 自分の rating 帯(~975)は 57% ex・非ex 9% なので v004 Crustle で登れる。
+- 頂点到達には **非ex アタッカーデッキ（charmq の実リスト複製）** が必要 = 次実験(exp012)候補。
+  操縦方策が課題（Crustle mimic と同様）。まず汎用方策で試し、ダメなら専用方策。
+- shu のリストは ex ミラー操縦が上手い → v003 の ex-mirror 改善余地もあるが、非ex の方が天井が高い。
