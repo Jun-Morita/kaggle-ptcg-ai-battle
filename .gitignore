@@ -21,7 +21,9 @@ kaggle.json
 # Local AI agent state
 .agents/
 .codex/
-.claude/
+# ignore .claude contents but version-control project skills (settings.local.json etc. stay ignored)
+.claude/*
+!.claude/skills/
 
 # Kaggle data and outputs
 input/
