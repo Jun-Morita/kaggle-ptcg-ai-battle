@@ -82,7 +82,9 @@ uv run python run_gauntlet.py 20      # random vs random
 
 ローカル評価は固定相手プールへの平均勝率。**メタは三すくみで一周し、上位は単サイド非ex に収束**。
 **現状の eligible = {v008 deck-dispatch, v007 専用非ex}**（LB ~1080, competitive 圏）。
-**方策はヒューリスティックの上限に到達**（v008/RL/意思決定diff の3方向で一致）。
+**学習・探索の両系統を実証で潰し、v008(ヒューリスティック)が achievable ceiling と確定**
+（学習: exp008/010/014, 探索: exp003/004/008/015）。残るレバー＝**Strategy レポート($240k)＋デッキ革新**。
+**Strategy 本文 [`competition/report_writeup.md`](competition/report_writeup.md)（英語1,674語）執筆済み**。
 
 ### 実験
 | 実験 | 内容 | 結果 |
@@ -97,6 +99,8 @@ uv run python run_gauntlet.py 20      # random vs random
 | exp011 | **メタ監視**（週次リプレイ解析・上位辿り） | メタの一周＆非exへの収束を実証。`/meta-watch`,`/extract-deck` 化 |
 | exp012 | **非ex apex 複製＋専用方策** | **v006**(ex0.67/Crustle0.83) → **v007**(mirror0.775/ex0.725) |
 | exp013 | **deck-dispatch 方策＋意思決定 diff** | **v008**(ex0.80/Crustle0.767, v007上位互換)。diff で乖離抽出も模倣(v009)は改善せず＝**ヒューリスティック上限** |
+| exp014 | **オフライン RL value 較正**（実上位319試合, 試合単位 holdout） | **決定的ネガティブ(4本目)**: 中盤 AUC 0.64/0.59(<0.70)・終盤0.80。学習 value は中盤を当てられず＝deep RL は経験的に上限 |
+| exp015 | **終盤の戦術的探索レイヤー**（自ターン正確探索, 学習なし） | ネガティブ: 3変種ミラー≤0.47＝**正確探索すらヒューリスティックを超えない**。探索系統も上限 |
 
 ### 提出（eligible = 最新2提出, 2026-06-21）
 | 版 | 中身 | 状態 |
@@ -113,9 +117,12 @@ uv run python run_gauntlet.py 20      # random vs random
   汎用方策＋的を絞ったパッチ（攻撃モデル/サーチ優先度）で v003→v008 と改善。
 - **方策はヒューリスティック上限に到達**（3方向で一致）: ①RL 3重ネガティブ ②v008 後のミラー微調整が無効 ③意思決定 diff で
   上位の選択を模倣しても勝率不変（ミラーは対称~0.5、乖離選択の多くは等価に good）。**価値は学習でなく推論時の探索＋相手モデル**。
-- **相手モデル(determinization)が探索の価値を決める**（exp008, 対照実験）。
-- 上限超えの唯一の筋＝**深層強化学習**（ただし素朴 self-play は不可。stock-vs-stock で value 較正→MCTS が未試行ルート）。
-- レポート: 草稿 [`competition/report_draft.md`](competition/report_draft.md) / 数値台帳 [`competition/report_evidence.md`](competition/report_evidence.md) / 戦略リファレンス [`references/knowledge/ptcg_strategy.md`](references/knowledge/ptcg_strategy.md)。
+- **相手モデル(determinization)が探索の価値を決める**（exp008, 対照実験 belief 0.417 vs placeholder 0.083＝5倍）。
+- **学習も探索も実証で上限**: ①exp014＝実上位319試合でも value 較正は**中盤を当てられない**(AUC<0.70, 終盤のみ0.80)＝
+  exp010「探索増で悪化」を機構的に説明 ②exp015＝**正確な near-terminal 探索すら**ヒューリスティックを超えない(ミラー≤0.47)。
+  → 中位資源では「メタを読む rule-based＋良い操縦」が achievable ceiling。
+- レポート: **本文 [`competition/report_writeup.md`](competition/report_writeup.md)（英語・提出物）** / 草稿 [`competition/report_draft.md`](competition/report_draft.md) /
+  数値台帳 [`competition/report_evidence.md`](competition/report_evidence.md) / 戦略リファレンス [`references/knowledge/ptcg_strategy.md`](references/knowledge/ptcg_strategy.md)。
 - ⚠️ ラダーは「最新2提出のみ最終評価」。最良ペアを最新枠に維持すること。
 
 ### 週次運用（スキル化済み）
