@@ -32,3 +32,17 @@ Team Rocket tutor エンジン＋Cramorant が未操縦）。
 - deck-dispatch アーキタクチャは成功。**副産物の search-priority が我々の主力 charmq を強化** → v008。
 - Debauchery デッキ自体の制覇は partial（プレイアブル化のみ）。本格模倣は TR エンジン操縦の更なる作り込みが必要。
 - 提出案: v008 を出して eligible **{v008, v007}**（負債 v006 を排除, v008 主力）。dragapult 弱点は据置(希少)。
+
+## 意思決定 diff アナライザ（policy_diff.py）2026-06-21
+上位選手の実局面に我々の方策を流し込み、彼の実選択と比較。**status==ACTIVE で手番側のみ**に絞る（INACTIVE の空アクション汚染を除去）。option を area/index で card 名に decode。
+### charmq(我々同型デッキ) vs v008 方策 diff（25試合, 1274 decisions）
+- 全体一致 **0.253**。context別: MAIN 0.28 / TO_HAND 0.17 / TO_BENCH 0.08 / SWITCH 0.29 / SETUP_ACTIVE 1.00。
+- 乖離(decode済):
+  - **TO_HAND**: 彼=Dunsparce/Dudunsparce(**ドロー機関**)を最優先 / 我々=Trevenant・Boss's Orders（攻撃役）。
+  - **TO_BENCH**: 彼=Snorlax/Dunsparce を1枚厳選 / 我々=Phantump を2枚乱発（**過剰展開=prize liability**）。
+  - **MAIN**: 彼=END(手札温存) / 我々=PLAY(吐き出す)（**過剰プレイ疑い**）。
+### v009: 最有力 patch「サーチで機関を最優先」を実装(`router_policy_v9.py`)→ 検証
+- **v009 vs v008 ミラー = 0.500(50-50, n=100)＝改善なし**。Crustle 0.533(<v008 0.767)とむしろ微減。
+- **結論(重要)**: diff は乖離を可視化するが、**真似ても勝率は上がらない**。①ミラーは対称~0.5 ②乖離選択の多くは等価に good。
+  一致率の低さ≠弱さ。**v008 がヒューリスティック上限**であることを diff が再確認。v009 は提出しない。
+- diff ツール自体は再利用可能な資産（任意の上位選手×デッキで乖離を抽出）。レポート素材(誠実な負＋方法論)。
