@@ -1,0 +1,6 @@
+tactical(charmq) vs v008(charmq) [MIRROR]
+   winrate(agent0)=0.400  max_move_s=(5.83,0.52)  err0=0 avg_moves=324
+tactical(charmq) vs lucario_v2 (ex)
+   winrate(agent0)=0.625  max_move_s=(0.52,0.02)  err0=0 avg_moves=135
+v008(charmq) vs lucario_v2 (ex) [ref]
+   winrate(agent0)=0.625  max_move_s=(0.04,0.02)  err0=0 avg_moves=154

@@ -114,7 +114,38 @@
 - **探索量スケーリング（決定的）**: ミラー勝率 search 24→48→96 = 0.31→0.19→**0.13**（速度0.05-0.18s/手）。
   良い value なら探索は単調に効く → **value ネット不良**で深探索が誤推定を増幅。
 - 核心: BC greedy 0.17 → +belief-MCTS(search24) 0.31 ＝ **価値は学習でなく推論時の探索＋belief**。
-- 原理的次手（未実施, 長期）: stock vs stock の大量対戦で value 較正 → MCTS。
+- 原理的次手（未実施, 長期）: stock vs stock の大量対戦で value 較正 → MCTS。 → **exp014 で実行・棄却（下記）**。
+
+## I2. オフライン value 較正の決定的ネガティブ（§7, exp014）
+- データ: トップランカー8 subs（charmq の対戦相手）の **319試合**, 実勝敗ラベル `rewards:[-1,1]`,
+  **試合単位 holdout 20%**（leakage なし）。25,563 記録（choice 19,619）, value バランス win13,424/loss12,139。
+  `dataset_builder.py` が1リプレイから4種教師（BC action / 実勝敗 value / デッキ / 相手カード頻度=determinization 事前分布）を抽出。
+- トップ戦略（実戦記録）: charmq 非ex apex = vs lucario_ex **0.69** / crustle_control **0.70** / ex-mix 0.67-0.75（~0.70）。
+  刈っているフィールドは依然 ex 主体（Mega Lucario ex 支配 + Iono Bellibolt ex + Abomasnow ex + Alakazam）。上位同士は ~0.5（対称）。
+- go/no-go（中盤 進行0.4-0.6 の勝敗 AUC ≥ 0.70）:
+  | 特徴量 | train AUC | test AUC | 中盤AUC |
+  |---|---|---|---|
+  | strategy-lens スカラー17 | 0.912 | 0.688 | **0.637** |
+  | ＋手札中身+自他盤面 カードレベル embedding | 0.999 | 0.684 | **0.585** |
+  | baseline (prize_diff 単独) | — | 0.688 | — |
+  - 進行段階別(rich): 序盤0.66 / 中盤0.58 / **終盤0.80**。
+- 結論: **2特徴量とも中盤 AUC<0.70 で一致**。カードレベルは train 0.999＝丸暗記で汎化せず（6デッキ319試合）。
+  prize 差が唯一の汎化信号。終盤可・中盤不能 ＝ **exp010「探索増で悪化」を機構的に説明**（中盤の無情報 value を MCTS が増幅）。
+  → deep-RL/MCTS は経験的に上限。出典: `workspace/exp014_rl_offline/{SESSION_NOTES.md, results/value_calib*.json}`。
+
+## I3. 正確 near-terminal 探索も超えない（§7, exp015）
+- 仮説: exp014「終盤 AUC 0.80」→ 学習せず**エンジンの正確な前方探索を自ターン限定**で使い、v008 の取りこぼし KO/リーサルを拾う。
+  自ターンは相手が動かず手札も可視＝ほぼ完全情報（exp008 の placeholder 問題が無関係）。
+- `tactical_search.py`（v008 router を base に1手先オーバーライド, 保守的, クラッシュ安全）+ `eval_tactical.py`（先後入替）。
+- 結果（ミラー＝同一 charmq デッキで純粋に探索の寄与）:
+  | 変種 | ミラー vs v008 | vs ex | v008 vs ex(ref) |
+  |---|---|---|---|
+  | プライズ最大化 (n40) | 0.400 | 0.625 | 0.625 |
+  | リーサル限定・1サンプル (n100) | 0.410 | 0.750 | 0.780 |
+  | リーサル・K=5 頑健 (n60) | 0.467 | 0.667 | 0.783 |
+- 結論: 3変種とも **≤0.47＝v008 を超えない**。原因 ①自ターンも自分のドローで非決定的(偽陽性リーサル)
+  ②貪欲な near-terminal 最適化が多ターン狙撃プランを破壊 ③v008 が既にリーサルを十分拾う(`sc=50000`)。
+  → **学習(exp014)・探索(exp015)の両系統を実証で潰した**。出典: `workspace/exp015_tactical/SESSION_NOTES.md`。
 
 ## J. 図表→データ出典 対応
 | 図 | データ出典 |
@@ -127,3 +158,5 @@
 | LB 推移 | submit/SUBMISSIONS.md, submissions.csv |
 | ミラー smart-vs-generic 0.775 | exp012 test_smart.py |
 | RL 3重ネガティブ | exp010 results/rl_phase{2,3}_history.json, SESSION_NOTES |
+| **exp014 value較正 段階別AUC** | exp014 results/value_calib.json, value_calib_rich.json |
+| **トップ戦略(charmq apex 0.70)** | exp011 results/top_charmq.json, exp014 dataset analysis |
