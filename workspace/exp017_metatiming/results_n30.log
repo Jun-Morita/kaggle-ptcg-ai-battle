@@ -1,0 +1,26 @@
+field weights (normalized over 1.01):
+  non_ex(charmq)     0.337
+  lucario_ex         0.277
+  Alakazam           0.198
+  crustle(v004)      0.069
+  abomasnow          0.069
+  iono               0.050
+
+=== Dragapult(spread) ===
+  vs non_ex(charmq)     wr=0.867  (w0=26 w1=4) err=0/0
+  vs lucario_ex         wr=0.567  (w0=17 w1=13) err=0/0
+  vs Alakazam           wr=0.633  (w0=19 w1=11) err=0/0
+  vs crustle(v004)      wr=0.000  (w0=0 w1=30) err=0/0
+  vs abomasnow          wr=0.533  (w0=16 w1=14) err=0/0
+  vs iono               wr=0.467  (w0=14 w1=16) err=0/0
+  --> WEIGHTED expected field win-rate: 0.634
+
+=== v008(charmq non-ex) ===
+  vs non_ex(charmq)     wr=0.467  (w0=14 w1=16) err=0/0
+  vs lucario_ex         wr=0.633  (w0=19 w1=11) err=0/0
+  vs Alakazam           wr=0.700  (w0=21 w1=9) err=0/0
+  vs crustle(v004)      wr=0.800  (w0=24 w1=6) err=0/0
+  vs abomasnow          wr=0.467  (w0=14 w1=16) err=0/0
+  vs iono               wr=0.633  (w0=19 w1=11) err=0/0
+  --> WEIGHTED expected field win-rate: 0.590
+
