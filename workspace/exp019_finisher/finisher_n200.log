@@ -1,0 +1,2 @@
+finisher(v009+lethal) vs v009  winrate=0.530 (w=106 l=92 d=2) err=(0,0) max_move_s=(1.90,0.04)
+finisher STATS: {'searched': 3851, 'known': 2103, 'fired': 23, 'any_opt_checked': 1798, 'base_wins': 305}  (searched=near-lethal decisions, known=prize-set deduced, fired=verified-lethal override)
