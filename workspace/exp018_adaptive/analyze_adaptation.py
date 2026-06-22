@@ -9,10 +9,13 @@ by OPPONENT archetype and measure, per matchup:
 If their behavior shifts by opponent archetype, that's the opponent-adaptive mechanism;
 the matchups where we match them least are where we'd gain by adapting.
 
-Usage: uv run python analyze_adaptation.py [sub_id] [deck.json] [cache_tag]
-  default: charmq 53858964, charmq_deck.json, diff_53858964
+Usage: uv run python analyze_adaptation.py [sub_id] [deck.json] [cache_tag] [policy.py]
+  default: charmq 53858964, charmq_deck.json, diff_53858964, exp013_router/router_policy.py (v008)
+  pass a policy .py exposing make_agent(deck) (e.g. exp018_adaptive/discipline_policy.py = v009)
+  to find where the CURRENT policy still diverges from the top player = next tuning targets.
 """
 from __future__ import annotations
+import importlib.util
 import json
 import os
 import sys
@@ -54,9 +57,17 @@ def main():
     sub_id = int(sys.argv[1]) if len(sys.argv) > 1 else 53858964
     deck_path = sys.argv[2] if len(sys.argv) > 2 else os.path.join(ROOT, "workspace", "exp012_nonex", "charmq_deck.json")
     tag = sys.argv[3] if len(sys.argv) > 3 else f"diff_{sub_id}"
+    policy_path = sys.argv[4] if len(sys.argv) > 4 else None
     raw = os.path.join(ROOT, "references", "raw", "replays", tag)
     deck = json.load(open(deck_path))
-    agent = R.make_agent(deck)  # our policy piloting their deck
+    if policy_path:  # any module exposing make_agent(deck) (router=v008, discipline=v009, ...)
+        spec = importlib.util.spec_from_file_location("scout_policy", policy_path)
+        pm = importlib.util.module_from_spec(spec); spec.loader.exec_module(pm)
+        agent = pm.make_agent(deck)
+        print(f"policy: {os.path.basename(policy_path)}")
+    else:
+        agent = R.make_agent(deck)  # default = v008 router
+        print("policy: router_policy (v008)")
 
     # per opponent-archetype accumulators
     wl = defaultdict(lambda: [0, 0])          # arch -> [wins, games]

@@ -78,13 +78,13 @@ uv run python run_gauntlet.py 20      # random vs random
 - `agents.py` … ベースラインエージェント
 - 結果は `results/` に JSON で保存（`.gitignore` 対象）
 
-## 進捗（2026-06-21 時点）
+## 進捗（2026-06-22 時点）
 
-ローカル評価は固定相手プールへの平均勝率。**メタは三すくみで一周し、上位は単サイド非ex に収束**。
-**現状の eligible = {v008 deck-dispatch, v007 専用非ex}**（LB ~1080, competitive 圏）。
-**学習・探索の両系統を実証で潰し、v008(ヒューリスティック)が achievable ceiling と確定**
-（学習: exp008/010/014, 探索: exp003/004/008/015）。残るレバー＝**Strategy レポート($240k)＋デッキ革新**。
-**Strategy 本文 [`competition/report_writeup.md`](competition/report_writeup.md)（英語1,674語）執筆済み**。
+ローカル評価は固定相手プールへの平均勝率。**メタは三すくみで一周し、フィールドは単サイドに収束**（非ex34%＋Alakazam20%=54%, ex 26%, Crustle 7%）。
+**現状の eligible = {v009 規律, v008 deck-dispatch}**（v009 publicScore 932.1, μ600 収束途中）。
+**トップの edge は『相手別切替』でなく一貫した prize-liability 規律**と判明 → 規律パッチで **v008 のミラー上限を初突破（v009）**。
+学習(exp008/010/014)・探索(exp003/004/008/015)は経験的に上限だが、**公開 Gold(1250) の prize tracking で exp015 は再評価余地**。
+残るレバー＝**Strategy レポート($240k)＋デッキ/方策チューニング**。**Strategy 本文 [`competition/report_writeup.md`](competition/report_writeup.md)（英語1,674語）執筆済み**。
 
 ### 実験
 | 実験 | 内容 | 結果 |
@@ -100,14 +100,17 @@ uv run python run_gauntlet.py 20      # random vs random
 | exp012 | **非ex apex 複製＋専用方策** | **v006**(ex0.67/Crustle0.83) → **v007**(mirror0.775/ex0.725) |
 | exp013 | **deck-dispatch 方策＋意思決定 diff** | **v008**(ex0.80/Crustle0.767, v007上位互換)。diff で乖離抽出も模倣(v009)は改善せず＝**ヒューリスティック上限** |
 | exp014 | **オフライン RL value 較正**（実上位319試合, 試合単位 holdout） | **決定的ネガティブ(4本目)**: 中盤 AUC 0.64/0.59(<0.70)・終盤0.80。学習 value は中盤を当てられず＝deep RL は経験的に上限 |
-| exp015 | **終盤の戦術的探索レイヤー**（自ターン正確探索, 学習なし） | ネガティブ: 3変種ミラー≤0.47＝**正確探索すらヒューリスティックを超えない**。探索系統も上限 |
+| exp015 | **終盤の戦術的探索レイヤー**（自ターン正確探索, 学習なし） | ネガティブ: 3変種ミラー≤0.47＝正確探索も超えず。ただし**prize tracking で再評価余地**（exp019候補） |
+| exp016 | **公開ノート3点分析**（5位Alakazam等） | **v008 vs Alakazam 0.90**（脅威でない）／公式 episodes 手がかり／Alakazam を評価プールに追加 |
+| exp017 | **Dragapult メタ・タイミング評価** | 単サイド収束で spread を検討も、**実物スモークで不提出判定**（ex0.19/Crustle0.0）。教訓: ローカル混載 eval は汚染 |
+| exp018 | **トップ適応分析＋規律パッチ** | トップ edge = **相手別切替でなく bench 規律** → **v009**（非exミラー vs v008 **0.55(n=200)**, 上位互換）。提出 |
 
-### 提出（eligible = 最新2提出, 2026-06-21）
+### 提出（eligible = 最新2提出, 2026-06-22）
 | 版 | 中身 | 状態 |
 |---|---|---|
-| **v008** | **deck-dispatch 方策**（charmq非ex, サーチ安定化） | PENDING（vs ex0.80/Crustle0.767/mirror0.56） |
-| **v007** | 専用非ex方策（ミラー強化） | 1079（収束水準） |
-| v006 | 非ex apex（汎用方策） | eligible 外（ミラー0.31 で負債） |
+| **v009** | **prize-liability 規律パッチ**（charmq非ex, ベンチ/エネ/壁ゲート） | COMPLETE 932.1（μ600 収束途中）。非exミラー vs v008 0.55 |
+| **v008** | deck-dispatch 方策（charmq非ex, サーチ安定化） | COMPLETE 959.5 |
+| v007 | 専用非ex方策（ミラー強化） | eligible 外（1045.7） |
 
 ### 中心的発見
 - **メタは三すくみで一周し、収束する**: ex ビート → Crustle 壁 → **単サイド非ex** → …。06-18 Crustle 一色 → 06-20 ex 復権 →
@@ -127,10 +130,11 @@ uv run python run_gauntlet.py 20      # random vs random
 
 ### 週次運用（スキル化済み）
 ```bash
-/meta-watch                # 最新提出のメタ分布＋回転検知＋LB（exp011 meta_watch.py）
+/meta-watch                # 何が流行か: メタ分布＋回転検知＋LB（exp011 meta_watch.py）
+/scout-top                 # どう打つか＋我々の差: 相手別挙動＋決定diff→チューニング標的（exp018 analyze_adaptation.py）
 /extract-deck <sub_id>     # 任意選手の正確な60枚を複製（exp011 extract_deck.py）
 /build-submit              # デッキ+方策→ビルド→実物スモーク→承認後提出（scripts/build_submission.py）
-# 上位スカウト: workspace/exp011_meta_watch/top_meta.py / 意思決定diff: exp013_router/policy_diff.py
+# 検証は n≥200＋ペア比較＋実物スモーク（小サンプル/混載 eval はノイズ・汚染）: exp018 eval_mirror.py / eval_compare.py
 ```
 
 各実験は 1 ディレクトリ 1 仮説で `workspace/expNNN_name/` に分け、`SESSION_NOTES.md` に仮説・変更・結果・出典を残します。
