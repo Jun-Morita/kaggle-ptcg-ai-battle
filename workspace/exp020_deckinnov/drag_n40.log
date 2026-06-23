@@ -1,0 +1,8 @@
+strong Dragapult vs field (n=40/matchup):
+  vs v009 non-ex (OUR deck)   wr=0.775  (w0=31 w1=9) err=(0,0)
+  vs lucario_ex               wr=0.400  (w0=16 w1=24) err=(0,0)
+  vs Alakazam                 wr=0.500  (w0=20 w1=20) err=(0,0)
+  vs crustle(v004)            wr=0.000  (w0=0 w1=40) err=(0,0)
+  --> weighted (over 0.87 of field): 0.474
+
+(threat read: 'vs v009 non-ex' is how hard Dragapult counters our deck)
