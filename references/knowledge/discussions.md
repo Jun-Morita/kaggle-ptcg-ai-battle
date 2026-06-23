@@ -84,3 +84,26 @@ Kaggle discussion から得た知識を要約する。
 - カウンター強化: Boss's Orders で未育成 Crustle/Dwebble を引きずり出して先に処理 / tool 除去(Hero's Cape剥がし) / 2パン用の継戦力＋自己回復 / デッキアウト促進。**pure 非ex デッキ**（ex を積まない＝腐り札ゼロ）も候補。
 - 模倣強化: 我々の v005 制御(835収束中)は pure wall。TOP同様 **Crustle＋炎非exアタッカー**を積み、壁と打点を両用する制御方策にすれば上位射程。事故率(マリガン/序盤展開)とミラーが課題。
 - 大方針: メタは anti-ex 支配＝**全-ex デッキは死に筋**。勝ち筋は非ex 中心に寄せる。
+
+## 2026-06-24: 公式 disc 708586 — シミュレータ vs 公式ルールの差分（運営公式）
+
+- Source: https://www.kaggle.com/competitions/pokemon-tcg-ai-battle/discussion/708586 （運営 shimishige / Addison Howard / 上位 gagacrow 102位ら）
+- raw: `references/raw/discussions/708586_sim_vs_official_rules.md`（gitignore）。INDEX の「要取得」を回収。
+- **大原則: シミュレータの挙動が正（公式ルールと違っても sim が canonical）**。
+
+### 我々に効く実装ノウハウ（actionable）
+- ★**セットアップのベンチは任意**: `select.context == SETUP_BENCH_POKEMON` かつ `minCount==0` のとき
+  **`[]`（または部分集合）を返してよい**。「end turn」option が無いのは仕様＝全 basic を並べる強制ではない。
+  → **我々の pilot は SETUP_BENCH を未スコア化（`_score_card_choice` に分岐なし→全 option score 0→`ranked[:maxCount]`＝
+  毎回 basic を全並べ）。v009 規律パッチは MAIN の play のみで、セットアップ並べを覆っていない**＝サイド責任の観点で要検証レバー。
+- **ABILITY(opt type 10) = 明示的に選ぶ起動特性 / SKILL(15) = 受動・常時効果**。Clefairy 系の常在効果は自動発動＝毎ターン option で再起動不要。
+- **ベンチに下げると効果が「クリーン」化**: Mega Brave 等「次ターン攻撃不可」制限は、退却→ベンチ→再 active で**リセットして再使用可**（運営確認済）。攻撃制限持ちの戦術レバー。
+- Mega Lopunny "Gale Thrust" のボーナスは「ベンチ→active へ移動」が条件。**active で進化しただけでは不発**（"this Pokémon"=進化後を指す, 60 dmg が正）。
+- Telepathic Energy: どのタイプに付けても任意ポケモンをサーチ可（2枚とも手札へ）。
+- 一部攻撃は宣言だけして効果不発で終了するケースを、sim では**最初から選択不可**にする（空ベンチで「ベンチに出す」攻撃など）。結果は同等。
+- Mega Zygarde ex "Nullifying Zero" は対象順を選べず左→右で自動コイン。同時 KO のサイド取得順も sim 独自（両者全取り=引き分け）。
+
+### Experiment Candidates
+- **setup-bench 規律**: SETUP_BENCH_POKEMON で benching を制限（開けておく/必須ライン以外を並べない）→ サイド責任↓ を n≥200 ペア比較で実測。
+  thesis（[[meta-and-leaderboard]] の prize-liability 規律）と整合だが、序盤展開速度↓のトレードオフあり＝**勝ち確定でなく要測定**。
+- 攻撃制限リセット（退却 reset）を pilot が活用できるか（現状 Mega Brave 周りのみ）。
