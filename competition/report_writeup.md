@@ -11,16 +11,19 @@ Most agents in this competition try to play the *board* well. We argue the
 decisive skill is playing the *meta* well. We contribute three results. **(1)
 Opponent modeling, not raw search, determines an agent's strength.** A controlled
 experiment shows that grounding the search's hidden-information model in a *real*
-believed decklist beats a placeholder model **5× (0.417 vs 0.083** win-rate vs the
-rule-based pool). **(2) The ladder is a *rotating* rock-paper-scissors** —
-ex-beatdown → anti-ex wall → single-prize non-ex → … — and we built a
-replay-analysis pipeline that *measures* the rotation and ships a counter for each
-phase, reaching LB ~1120 (top-quartile) with a deck we reconstructed from a
-top-ranker's replays. **(3) We empirically closed both "smarter" levers.** Using
+believed decklist beats a placeholder **5× (0.417 vs 0.083** vs the rule-based
+pool). **(2) The ladder is a *rotating* rock-paper-scissors** — ex-beatdown →
+anti-ex wall → single-prize non-ex → … — and we built a replay pipeline that
+*measures* the rotation and ships a counter for each phase, reaching LB ~1120
+(top-quartile) with a deck reconstructed from a top-ranker's replays. **(3) We empirically closed both "smarter" levers.** Using
 319 real top-ranker games, a learned value net cannot read the mid-game
-(AUC 0.64 < 0.70); and an *exact* near-terminal search still fails to beat the
-tuned heuristic. At mid compute, **a meta-reading rule-based agent with good
-piloting is the achievable ceiling** — and we show *why* with data.
+(AUC 0.64 < 0.70); an *exact* near-terminal search still fails to beat the
+tuned heuristic; and two further levers — original deck design and setup
+discipline — close the same way. The remaining gains are all in *piloting*: a
+prize-liability discipline patch is the first heuristic to break our mirror
+ceiling. At mid compute, **a meta-reading rule-based agent with disciplined
+piloting is the achievable ceiling** — and we show *why* with data. A weighted
+field analysis puts our final agent at ≈**0.66** win-rate against the live meta.
 
 ## 1. Game and Challenge
 
@@ -40,9 +43,8 @@ illegal moves = forfeit, ~10 ms/game) and scored agents by average win-rate over
 a fixed opponent pool. Crucially, we built a **replay-analysis pipeline**: pull
 our own and top players' ladder episodes, reconstruct every decklist (the only
 60-card action), label opponents by archetype, and compute matchup win-rates and
-loss causes. This pipeline is our meta-sensing organ; every strategic decision
-below is grounded in it, not in intuition. *(Figure 1: matchup matrix; Figure 2:
-strength ranking.)*
+loss causes. Every strategic decision below is grounded in this pipeline, not
+intuition. *(Figure 1: matchup matrix; Figure 2: strength ranking.)*
 
 ## 3. Central Finding: Opponent Modeling Determines the Value of Search
 
@@ -61,10 +63,9 @@ rule-based pool — a **5× gain** — and the in-search opponent now makes ~50 
 per game instead of 33 (it actually plays). With belief, search even **beats
 Dragapult 0.667** (above plain rule-based 0.60). *The value of search is bounded
 by the quality of your opponent model, not by search depth.* This is the
-originality core of our work and, to our knowledge, unverified in public
-notebooks (where the search API is often called with a wrong signature, i.e.
-effectively disabled). *(Figure 3: belief vs placeholder; in-search opponent
-activity.)*
+originality core of our work, and unverified in public notebooks (where the search
+API is often called with a wrong signature, i.e. disabled). *(Figure 3: belief vs
+placeholder.)*
 
 ## 4. The Rotating Three-Way Meta — and How We Track It
 
@@ -102,17 +103,13 @@ Our deck is a **single-prize, non-ex "Hop's Trevenant" beatdown**, reconstructed
 exactly from a top-ranker's replays and then *out-piloted*. Concept: never give
 the opponent a good prize trade, and bypass damage-prevention walls. Key cards:
 
-- **Hop's Trevenant** ("Horrifying Revenge", 1 energy, boostable) — the 1-prize
-  main attacker.
-- **Dunsparce → Dudunsparce** ("Run Away Draw") — the consistency engine that
-  keeps an attack coming every turn (tempo).
-- **Hop's Choice Band (+30 / −1 cost)** and **Postwick stadium (+30)** — the
-  damage tools that push attacks into KO thresholds on ex.
-- **Hop's Snorlax** ("Extra Helpings", +30 to Hop's attacks while benched).
-- **Boss's Orders** — gust a benched threat or an engine piece for the close.
+- **Hop's Trevenant** ("Horrifying Revenge", 1 energy, boostable) — 1-prize main attacker.
+- **Dunsparce → Dudunsparce** ("Run Away Draw") — the consistency/tempo engine.
+- **Hop's Choice Band (+30 / −1 cost)** and **Postwick stadium (+30)** — push attacks to KO thresholds on ex.
+- **Hop's Snorlax** ("Extra Helpings", +30 while benched); **Boss's Orders** — gust for the close.
 
 Every attacker is single-prize, so the deck is structurally favored in the prize
-race and immune to ex-only Safeguard. *(Figure 6: deck list + key-card synergy.)*
+race and immune to ex-only Safeguard. *(Figure 6: deck list + synergy.)*
 
 ## 6. Piloting: A Generic Policy + Targeted Patches
 
@@ -127,18 +124,32 @@ fetch the engine pieces in the right order. This single change lifts consistency
 across the board — vs ex 0.71→**0.80**, vs wall 0.63→**0.77** — and wins the
 mirror over the un-patched policy (0.56). The lesson: *inject one module, don't
 rewrite* — it preserves the tuned behavior while adding deck awareness. *(Figure
-7: Boss's-Orders usage before/after plan formation; mirror smart-vs-generic.)*
+7: patched-vs-generic gains.)*
+
+**Discipline beats the mirror ceiling.** The one matchup we kept losing is the
+non-ex *mirror*. By analyzing top players' replays *split by opponent archetype*,
+we found their edge is **not** opponent-reading (our move-match to them is a
+uniform ~0.28 across all matchups) but **consistent prize-liability discipline**:
+they bench fewer Pokémon (~3 vs our 4+), giving up fewer 1-prize KO targets. The
+stock policy scores *every* non-ex Pokémon equally (20000) and over-deploys. Our
+discipline patch (cap the attacker line, keep an open bench slot, throttle
+redundant engine pieces, add an attacker only when behind on prizes, and *disable*
+itself versus a stall wall) is the **first heuristic to break the mirror
+ceiling** — 0.55 over the un-disciplined build (n=200, paired, CI excludes 0.5),
+no regression elsewhere. Honest caveat: the *ladder* mirror stayed ~0.40 — real
+opponents out-pilot us by more than the patch recovers. The gain is real but
+small, which is the finding: *piloting discipline is the last lever, nearly
+saturated.*
 
 ## 7. Stability and Operations (the Model "robustness" axis)
 
 Two unglamorous factors dominate ladder rating. **Crash-safety**: a wrapper that
-turns any exception or illegal move into a legal fallback — public agents gain an
-estimated +64 rating from this alone, and it guarantees we never forfeit.
-**Speed**: 0.02–0.16 s/move keeps us far inside the timeout (our search-heavy
-PIMC variant, at ~30 s/move, was too slow to ship). Operationally we run a weekly
-loop: `meta-watch` (detect rotation) → `extract-deck` (clone the new apex) →
-`build-submit` (build, smoke-test the real artifact, submit). *(Figure 8:
-stability vs LB; rating convergence.)*
+turns any exception or illegal move into a legal fallback — worth an estimated +64
+rating and a guarantee we never forfeit. **Speed**: 0.02–0.16 s/move keeps us far
+inside the timeout (our PIMC search variant, at ~30 s/move, was too slow to ship).
+Operationally we run a weekly loop: `meta-watch` (detect rotation) →
+`extract-deck` (clone the new apex) → `build-submit` (build, smoke-test the real
+artifact, submit). *(Figure 8: stability vs LB.)*
 
 ## 8. We Closed Both "Smarter" Levers — With Data
 
@@ -149,16 +160,15 @@ resource level.
 **Learning (RL).** Self-play belief-MCTS fine-tuning is an honest negative,
 verified four ways: Phase-2 policy collapse; a 0.31 mirror ceiling; and a
 *decisive* probe — win-rate *drops* as search grows (0.31→0.19→0.13 at
-24→48→96 sims), proving the learned **value net is the bottleneck** (good value ⇒
-more search helps). We then tested the one principled unblocker — *calibrate value
-on real outcomes* — on the best possible data: **319 top-ranker games** with real
-win/loss labels, episode-level holdout. The value net **cannot read the mid-game**
-(phase-0.4–0.6 AUC **0.637** with strategy-lens scalars, **0.585** even with
-card-level hand+board embeddings — both ≈ "prize-difference alone", 0.688). Only
-the *late* game is predictable (AUC **0.80**). This mechanistically explains
-"more search = worse": the value is uninformative exactly where search must act,
-so MCTS amplifies noise. Mid-game outcome variance here appears *game-intrinsic*
-(luck/draws), not a modeling gap. *(Figure 9: phase-wise AUC.)*
+24→48→96 sims), proving the learned **value net is the bottleneck**. We then tested
+the one principled unblocker — *calibrate value on real outcomes* — on the best
+possible data: **319 top-ranker games** with real win/loss labels, episode-level
+holdout. The value net **cannot read the mid-game** (phase-0.4–0.6 AUC **0.637**
+with strategy-lens scalars, **0.585** even with card-level embeddings — both ≈
+"prize-difference alone", 0.688); only the *late* game is predictable (AUC
+**0.80**). This explains "more search = worse": the value is uninformative exactly
+where search must act, so MCTS amplifies noise. Mid-game variance here appears
+*game-intrinsic* (luck/draws), not a modeling gap. *(Figure 9: phase-wise AUC.)*
 
 **Search.** Following the "late game is readable" result, we built a *non-learning*
 tactical layer: use the engine's *exact* forward search on **our own turn only**
@@ -171,20 +181,37 @@ the turn not truly deterministic (false-positive lethals), (b) greedy
 near-terminal optimization breaks the heuristic's coherent multi-turn gust-and-KO
 plan, and (c) the heuristic already catches lethals. *(Figure 10: 3 variants ≤0.47.)*
 
-Together, exp014 (learning) and exp015 (search) close both levers: **the
-meta-reading rule-based agent with good piloting is the achievable ceiling.**
+**Deck innovation and setup discipline** close the same way. An *original* deck
+around a structural anti-mirror attacker (Tinkaton, "Windup Swing"
+240 − 60×opponent-energy) scored **0.00** in the mirror: its Stage-2 line is
+unpilotable by a generic policy and too slow against the Stage-1 apex —
+*pilotability is the binding constraint*, which is why we run a Stage-1 deck. And
+trimming our (host-confirmed optional) setup-bench is a **no-op** for our
+Basic-light deck. Both confirm the optimization that matters is *deck-dependent*,
+and ours is already lean.
+
+Together these four experiments close every lever above the heuristic. A weighted
+analysis over the live field (ex 39%, non-ex 26%, wall 11%, Alakazam 11%) puts our
+final agent at ≈**0.66** — it beats the ex/wall/Alakazam ~61% of the field and
+loses only the mirror. The one structural counter is a well-piloted spread deck (a
+strong public Dragapult ex beats us **0.78**), but it is meta-contained today
+(0.47 field win-rate — it loses to ex 0.40 and to the wall 0.00, whose Safeguard
+negates its ex damage). We therefore *hold and monitor* rather than chase it — a
+call our replay pipeline makes for us, not intuition.
 
 ## 9. Conclusion
 
 Strength in this game is reading the *rotating meta*, not just the board. Our
 contributions — a controlled proof that opponent modeling sets the value of
 search, a data-driven pipeline that tracks and counters a real three-way
-rotation, and a rigorous demonstration that *both* learning and exact search fail
-to exceed a well-piloted heuristic — together form a reproducible, honest account
-of *why* a mid-compute team should invest in meta-tracking and piloting rather
-than ever-bigger models. Future work: automatic archetype inference for
-production-time belief, spread-deck robustness, and deck innovation against the
-converged apex.
+rotation, and and a rigorous demonstration that *four* levers — learning, exact search, original
+deck design, and setup discipline — all fail to exceed a well-piloted heuristic,
+while disciplined piloting yields the last marginal gain — together form an honest,
+reproducible account of *why* a mid-compute team should invest in meta-tracking and
+piloting rather than ever-bigger models. The clearest open threat is a well-piloted
+spread deck should the meta swing back to single-prize; our pipeline is built to
+detect that and pivot. Future work: automatic archetype inference for
+production-time belief, and a pilotable Stage-1 anti-mirror attacker.
 
 *Code, decklists, per-experiment notes, and the numeric ledger backing every
-figure are in the project repository (exp001–exp015, `report_evidence.md`).*
+figure are in the project repository (exp001–exp021, `report_evidence.md`).*

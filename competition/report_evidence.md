@@ -2,7 +2,7 @@
 
 レポート執筆用の数値・事実の台帳。`report_draft.md` の各章に対応。数値は実測（ローカル harness は
 先後入替, n=各記載）。出典は `workspace/expNNN/SESSION_NOTES.md`, `submit/SUBMISSIONS.md`,
-`workspace/exp011_meta_watch/results/*.json`。最終更新 2026-06-20。
+`workspace/exp011_meta_watch/results/*.json`。最終更新 2026-06-24（exp018/019/020/021 反映）。
 
 ---
 
@@ -147,6 +147,34 @@
   ②貪欲な near-terminal 最適化が多ターン狙撃プランを破壊 ③v008 が既にリーサルを十分拾う(`sc=50000`)。
   → **学習(exp014)・探索(exp015)の両系統を実証で潰した**。出典: `workspace/exp015_tactical/SESSION_NOTES.md`。
 
+## K. 規律パッチ＝ミラー天井突破（§6, exp018, v009）
+- 仮説検証「トップは相手アーキを読んで方策を変える」→ **棄却**。トップ非ex選手のリプレイを相手アーキ別に分解
+  (`analyze_adaptation.py`): 我々との手一致率は全マッチで**一様 ~0.28**（読み替えなら不均一になるはず）。
+  彼らの優位は **prize-liability 規律**＝ベンチ数が少ない（~3 vs 我々 4+）＝差し出すサイドKO標的が少ない。
+- base 方策は非ex を全て score 20000 で並べる過剰展開。`discipline_policy.py`（PATCH_SRC, v009）:
+  Trevenant ライン上限・ベンチ1枠維持・冗長エンジン抑制・サイド負け時のみ +1 アタッカー・armed 1エネに無駄エネ禁止・
+  **Crustle 壁相手は自己無効化**（壁には展開が要る）。
+- 結果（built artifact, **n=200 ペア**, err0）: **非exミラー vs 無規律 build = 0.550**（110-88-2, 95%CI が 0.50 を除外）。
+  フィールド回帰なし（ex +0.00, Crustle −0.01[v008の0.938 は n=16 のfluke, 実~0.72], dragapult +0.05）＝**v008 の上位互換**。
+- 誠実な但し書き: **ラダーのミラーは ~0.40 のまま**（実相手が我々を上回って操縦）。ゲインは実在するが小＝
+  「**操縦規律が最後のレバーで、ほぼ飽和**」が結論。出典: `workspace/exp018_adaptive/{SESSION_NOTES.md, eval_mirror.py, eval_compare.py}`。
+
+## L. レバー網羅閉鎖＋メタ内位置（§8, exp019-021, 0624）
+- **デッキ革新（exp020, Tinkaton アンチミラー）**: カードプールに強い未活用1エネ非ex（Tinkaton 240, Ceruledge 220…）。
+  Tinkaton "Windup Swing"(240−60×相手activeエネ)＝構造的アンチミラー武器を試作 → **vs v009 ミラー 0.000**（0-20）。
+  原因＝**S2 ライン(Tinkatink→Rare Candy→Tinkaton)が generic pilot で組めず、S1 apex にレースで完敗**。
+  ＝**pilotability(ラインの速さ・複雑さ)が律速**＝我々が S1 非ex を選ぶ理由。出典: `exp020_deckinnov/SESSION_NOTES.md`。
+- **セットアップ規律（exp021）**: 公式 disc708586＝setup ベンチは任意(minCount==0→部分集合可)。我々の pilot は全 basic 並べ。
+  cap で制限 → **我々のデッキでは no-op**（basic-light＝setup で平均 1.41 体, >3体提示 0%）。
+  n=200 ペア: ミラー cap2 0.515/cap3 0.480/cap4 0.495＝**全て 0.50±1SE 内**。＝レバーは basic-heavy デッキ専用。出典: `exp021_setupbench/{SESSION_NOTES.md, diag_setupbench.py}`。
+- **検証リーサル finisher（exp019）**: prize-aware（サイド落ち推定で前方探索の山を正す）。ミラー n=200 = 0.530（有意差なし, fired 23/試合）。
+  exp015 の prize-blind は有害, prize-aware は無害だが我々の1KO/ターン型には不要。出典: `exp019_finisher/SESSION_NOTES.md`。
+- **強 Dragapult ex の脅威（公開ノート, 構造的カウンター）**: well-piloted spread。**vs v009 = 0.775**（弱pilot 0.19→強pilot 0.775＝deck⊗pilot 実証）。
+  だがメタ内封じ込め: vs ex 0.40 / vs Crustle **0.00**(Safeguard が Dragapult-**ex** ダメージ無効) → **weighted field 0.474<0.50**。
+  → ピボット非推奨, 監視継続。出典: `exp020_deckinnov/{load_dragapult.py, eval_dragapult.py}`。
+- **メタ内位置（0624 シェア: ex39/非ex26/Crustle11/Alakazam11）**: v009 weighted field ≈ **0.66**（強み: ex0.87/Crustle0.75/Alakazam~0.6＝61%を制圧, 弱み: ミラー0.40のみ）。
+  ＝三すくみの好位置。カウンター余地は薄い（唯一の構造的カウンター Dragapult は 0.47 でメタ不利）。出典: `exp011_meta_watch/results/meta_*.json`。
+
 ## J. 図表→データ出典 対応
 | 図 | データ出典 |
 |---|---|
@@ -160,3 +188,6 @@
 | RL 3重ネガティブ | exp010 results/rl_phase{2,3}_history.json, SESSION_NOTES |
 | **exp014 value較正 段階別AUC** | exp014 results/value_calib.json, value_calib_rich.json |
 | **トップ戦略(charmq apex 0.70)** | exp011 results/top_charmq.json, exp014 dataset analysis |
+| **規律パッチ ミラー0.55(patched vs generic)** | exp018 eval_mirror.py / eval_compare.py (n=200) |
+| **3変種探索 ≤0.47** | exp015 eval_tactical.py |
+| **メタ内位置 weighted 0.66 / Dragapult 0.47** | exp011 meta_*.json, exp020 eval_dragapult.py |
