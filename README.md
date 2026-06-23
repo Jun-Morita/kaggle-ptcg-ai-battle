@@ -78,13 +78,15 @@ uv run python run_gauntlet.py 20      # random vs random
 - `agents.py` … ベースラインエージェント
 - 結果は `results/` に JSON で保存（`.gitignore` 対象）
 
-## 進捗（2026-06-22 時点）
+## 進捗（2026-06-24 時点）
 
-ローカル評価は固定相手プールへの平均勝率。**メタは三すくみで一周し、フィールドは単サイドに収束**（非ex34%＋Alakazam20%=54%, ex 26%, Crustle 7%）。
-**現状の eligible = {v009 規律, v008 deck-dispatch}**（v009 publicScore 932.1, μ600 収束途中）。
-**トップの edge は『相手別切替』でなく一貫した prize-liability 規律**と判明 → 規律パッチで **v008 のミラー上限を初突破（v009）**。
-学習(exp008/010/014)・探索(exp003/004/008/015)は経験的に上限だが、**公開 Gold(1250) の prize tracking で exp015 は再評価余地**。
-残るレバー＝**Strategy レポート($240k)＋デッキ/方策チューニング**。**Strategy 本文 [`competition/report_writeup.md`](competition/report_writeup.md)（英語1,674語）執筆済み**。
+ローカル評価は固定相手プールへの平均勝率。**メタは三すくみで一周し、現フィールドは ex 復権**（ex 39% / 非ex 26% / Crustle 11% / Alakazam 11% / Dragapult 3%）。
+**現状の eligible = {v006-re, v007-re}**（μ600 から再収束中）。
+**⚠️ 最重要発見（06-24）**: v006–v009 は**同一の非exデッキ**で操縦だけ違うのに、**ライブ score が操縦の高度化とともに単調低下**
+（v006 1086 > v007 1045 > v008 946 > v009 938）＝**ローカル gauntlet 過学習(CV/LB乖離)**。eligible は最新2のため最良 v006/v007 が枠外に押し出されていた → **再提出で奪還**。
+**今後どの提出も「現 eligible ペアのライブ score を超えるか」で判断する**（ローカル勝ちは転移しない）。v008/v009 は誠実な負として退役。
+学習(exp008/010/014)・探索(exp003/004/008/015/019)・デッキ革新(exp020)・setup規律(exp021)＝**全レバー実証で上限**。
+残るレバー＝**Strategy レポート($240k)**。**Strategy 本文 [`competition/report_writeup.md`](competition/report_writeup.md)（英語1,952語, exp001–021反映）執筆済み**。
 
 ### 実験
 | 実験 | 内容 | 結果 |
@@ -103,14 +105,19 @@ uv run python run_gauntlet.py 20      # random vs random
 | exp015 | **終盤の戦術的探索レイヤー**（自ターン正確探索, 学習なし） | ネガティブ: 3変種ミラー≤0.47＝正確探索も超えず。ただし**prize tracking で再評価余地**（exp019候補） |
 | exp016 | **公開ノート3点分析**（5位Alakazam等） | **v008 vs Alakazam 0.90**（脅威でない）／公式 episodes 手がかり／Alakazam を評価プールに追加 |
 | exp017 | **Dragapult メタ・タイミング評価** | 単サイド収束で spread を検討も、**実物スモークで不提出判定**（ex0.19/Crustle0.0）。教訓: ローカル混載 eval は汚染 |
-| exp018 | **トップ適応分析＋規律パッチ** | トップ edge = **相手別切替でなく bench 規律** → **v009**（非exミラー vs v008 **0.55(n=200)**, 上位互換）。提出 |
+| exp018 | **トップ適応分析＋規律パッチ** | トップ edge = **相手別切替でなく bench 規律** → **v009**（非exミラー vs v008 **0.55(n=200)**, ローカル上位互換）。提出 |
+| exp019 | **prize-aware 検証リーサル finisher** | ネガティブ: ミラー0.53（有意差なし）。prize tracking で exp015 の偽リーサルは除去できるが、1KO/ターン型には不要 |
+| exp020 | **デッキ革新(Tinkaton)＋強Dragapult脅威** | Tinkaton アンチミラー失敗(S2 不操縦, ミラー0.00)＝pilotability 律速。強Dragapult は v009 を0.78で狩るがメタ封じ込め0.47 |
+| exp021 | **setup-bench 規律**（disc708586） | ネガティブ: 我々の basic-light デッキでは no-op（base 平均1.41体, cap 不発, ミラー0.50±）。レバーは basic-heavy 専用 |
 
-### 提出（eligible = 最新2提出, 2026-06-22）
+### 提出（eligible = 最新2提出, 2026-06-24）
+> **⚠️ CV/LB 乖離**: v006–v009 同一デッキで操縦高度化＝ライブ score 単調低下（1086→1045→946→938）。ローカル勝ちは転移しない。最良ペアを最新2枠に死守。
+
 | 版 | 中身 | 状態 |
 |---|---|---|
-| **v009** | **prize-liability 規律パッチ**（charmq非ex, ベンチ/エネ/壁ゲート） | COMPLETE 932.1（μ600 収束途中）。非exミラー vs v008 0.55 |
-| **v008** | deck-dispatch 方策（charmq非ex, サーチ安定化） | COMPLETE 959.5 |
-| v007 | 専用非ex方策（ミラー強化） | eligible 外（1045.7） |
+| **v006-re** | charmq 非ex apex ＋ **generic 方策**（自己最良） | 再提出(PENDING, μ600再収束)。退役前 **1086.7** |
+| **v007-re** | charmq 非ex ＋ 専用非ex方策 | 再提出(PENDING, μ600再収束)。退役前 **1045.7** |
+| v009 / v008 | 規律 / deck-dispatch（操縦高度化） | **退役**（誠実な負: 938.3 / 946.5＝ローカル上位互換だがライブ退行） |
 
 ### 中心的発見
 - **メタは三すくみで一周し、収束する**: ex ビート → Crustle 壁 → **単サイド非ex** → …。06-18 Crustle 一色 → 06-20 ex 復権 →
@@ -126,7 +133,9 @@ uv run python run_gauntlet.py 20      # random vs random
   → 中位資源では「メタを読む rule-based＋良い操縦」が achievable ceiling。
 - レポート: **本文 [`competition/report_writeup.md`](competition/report_writeup.md)（英語・提出物）** / 草稿 [`competition/report_draft.md`](competition/report_draft.md) /
   数値台帳 [`competition/report_evidence.md`](competition/report_evidence.md) / 戦略リファレンス [`references/knowledge/ptcg_strategy.md`](references/knowledge/ptcg_strategy.md)。
-- ⚠️ ラダーは「最新2提出のみ最終評価」。最良ペアを最新枠に維持すること。
+- ⚠️ **CV/LB 乖離（06-24 監査）**: 同一デッキで操縦を高度化するほどライブ score が単調低下（v006 1086→v009 938）＝ローカル gauntlet 過学習。
+  **ローカル勝ちはラダーに転移しない**（v007/v008/v009 全て local 勝・live 負）。今後の提出は**現 eligible ペアのライブ score 超過**で判断。
+- ⚠️ ラダーは「最新2提出(時刻順)のみ最終評価」。改良版の提出は最良エージェントを**無言で退役**させ得る。最良ペアを最新枠に死守すること。
 
 ### 週次運用（スキル化済み）
 ```bash
