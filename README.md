@@ -85,8 +85,9 @@ uv run python run_gauntlet.py 20      # random vs random
 **⚠️ 最重要発見（06-24）**: v006–v009 は**同一の非exデッキ**で操縦だけ違うのに、**ライブ score が操縦の高度化とともに単調低下**
 （v006 1086 > v007 1045 > v008 946 > v009 938）＝**ローカル gauntlet 過学習(CV/LB乖離)**。eligible は最新2のため最良 v006/v007 が枠外に押し出されていた → **再提出で奪還**。
 **今後どの提出も「現 eligible ペアのライブ score を超えるか」で判断する**（ローカル勝ちは転移しない）。v008/v009 は誠実な負として退役。
-学習(exp008/010/014)・探索(exp003/004/008/015/019)・デッキ革新(exp020)・setup規律(exp021)＝**全レバー実証で上限**。
-残るレバー＝**Strategy レポート($240k)**。**Strategy 本文 [`competition/report_writeup.md`](competition/report_writeup.md)（英語1,952語, exp001–021反映）執筆済み**。
+学習(exp008/010/014)・探索(exp003/004/008/015/019)・デッキ革新(exp020)・setup規律(exp021)・**操縦模倣(exp022: BC/k-NN/リッチ特徴/SIL)**＝**全レバー実証で上限**。
+**★中核発見: 操縦が #1 レバーだが情報的に上限**（#3 は同一デッキで+200LB、6系統すべて generic 未満、expert の手が観測から~50%超予測不能）。
+残るレバー＝**Strategy レポート($240k)**。**Strategy 本文 [`competition/report_writeup.md`](competition/report_writeup.md)（英語1,998語, exp001–022反映）執筆済み**。
 
 ### 実験
 | 実験 | 内容 | 結果 |
@@ -109,6 +110,7 @@ uv run python run_gauntlet.py 20      # random vs random
 | exp019 | **prize-aware 検証リーサル finisher** | ネガティブ: ミラー0.53（有意差なし）。prize tracking で exp015 の偽リーサルは除去できるが、1KO/ターン型には不要 |
 | exp020 | **デッキ革新(Tinkaton)＋強Dragapult脅威** | Tinkaton アンチミラー失敗(S2 不操縦, ミラー0.00)＝pilotability 律速。強Dragapult は v009 を0.78で狩るがメタ封じ込め0.47 |
 | exp021 | **setup-bench 規律**（disc708586） | ネガティブ: 我々の basic-light デッキでは no-op（base 平均1.41体, cap 不発, ミラー0.50±）。レバーは basic-heavy 専用 |
+| exp022 | **操縦研究**（トップ模倣／Mega Starmie／RL再挑戦） | **★操縦が #1 レバーだが情報的に上限**: #3 は同一デッキで+200LB／#2 Mega-ex floor 0.825。**6系統(heuristic/BC/k-NN/リッチ特徴/SIL/self-play MCTS)すべて generic 未満**＝expert の手が観測から~50%超予測不能 |
 
 ### 提出（eligible = 最新2提出, 2026-06-24）
 > **⚠️ CV/LB 乖離**: v006–v009 同一デッキで操縦高度化＝ライブ score 単調低下（1086→1045→946→938）。ローカル勝ちは転移しない。最良ペアを最新2枠に死守。

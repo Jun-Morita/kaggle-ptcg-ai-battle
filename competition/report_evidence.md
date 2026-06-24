@@ -175,6 +175,25 @@
 - **メタ内位置（0624 シェア: ex39/非ex26/Crustle11/Alakazam11）**: v009 weighted field ≈ **0.66**（強み: ex0.87/Crustle0.75/Alakazam~0.6＝61%を制圧, 弱み: ミラー0.40のみ）。
   ＝三すくみの好位置。カウンター余地は薄い（唯一の構造的カウンター Dragapult は 0.47 でメタ不利）。出典: `exp011_meta_watch/results/meta_*.json`。
 
+## M. 操縦が #1 レバーだが情報的に上限（§6,§8, exp022, 0624）
+- **スカウト**: episode 辿りで上位 sub_id 取得。**#3 Mogja J(LB1284)＝我々と完全同一の非exデッキ**（60/60一致）なのに +200 LB＝差は100%操縦（ミラー 0.68 vs 我々0.40）。
+  **#2 tomatomato(LB1290)＝Mega Starmie ex+Mega Froslass ex**（Stage-1 Mega）。
+- **Mega Starmie デッキの floor**（generic 操縦, n=40, 0err）: **vs 我々非ex 0.825** / ex 0.475 / Crustle 0.10 / dragapult 0.50。
+  ＝card 知識ゼロでも非exを狩る構造的カウンター（Tinkaton 0.00 と違い floor が強い）。
+- **操縦の knack 抽出**（`decode_replay.py`, tomatomato の Crustle/ex 4勝デコード）: 即 Mega 進化／**Jetting Blow(1エネ120+50)が毎ターンの主力**／
+  エネは active 1体に集中(0→1→2→3)／Retreat で充電済みを active 維持／Nebula Beam(3エネ210)は burst のみ。
+- **6系統すべて generic floor 未満**（操縦を捕捉できない）:
+  | 手法 | 結果 |
+  |---|---|
+  | 静的ヒューリスティック(4変種) | 全て generic 未満（attack-model/エネ集中/Jetting主力…）|
+  | BC(MLP, 2752判断) | action-match **0.49**(random0.22) だが agent は v006 0.45/ex0.33/Crustle0.08＝**誤差累積**で floor 未満 |
+  | 辞書 k-NN | action-match **0.42**（86%が near-identical 局面なのに再現0.42＝特徴衝突）|
+  | リッチ特徴 BC(56次元) | val **0.45 頭打ち**, train 0.50→0.66＝**過学習のみ**（exp014 再現）|
+  | SIL(value-free 自己模倣) | warm-start BC→低下, collect_wr~0.20 |
+  | self-play MCTS(公式ノート) | exp004/008/010/014 ＋ **placeholder相手(Snorlax)** ＝既知欠陥 |
+- **機構**: expert の手が **観測状態から ~50% 超予測不能**（2752 判断＝データ不足＋複数 good 手＝情報的上限）。表現を変えても過学習＝**アルゴリズムでなく情報が律速**。
+  「複数 expert を集めて RL」は別 deck⊗pilot の希釈＋巨大データ＋大モデル要＝資源外。出典: `workspace/exp022_megastarmie/{SESSION_NOTES.md, decode_replay.py, bc_*.py, knn_bc.py, sil_iterate.py}`。
+
 ## J. 図表→データ出典 対応
 | 図 | データ出典 |
 |---|---|
@@ -191,3 +210,5 @@
 | **規律パッチ ミラー0.55(patched vs generic)** | exp018 eval_mirror.py / eval_compare.py (n=200) |
 | **3変種探索 ≤0.47** | exp015 eval_tactical.py |
 | **メタ内位置 weighted 0.66 / Dragapult 0.47** | exp011 meta_*.json, exp020 eval_dragapult.py |
+| **6手法 vs generic floor（操縦上限）** | exp022 {bc_agent,knn_bc,bc_rich,sil_iterate}.py |
+| **#3 同一デッキ +200LB / #2 Mega-ex floor 0.825** | exp022 top_meta scout, eval (decode_replay.py) |

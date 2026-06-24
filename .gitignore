@@ -67,3 +67,8 @@ workspace/exp007_anti_crustle/build_v004/
 workspace/exp009_crustle_policy/build/
 workspace/exp009_crustle_policy/crustle_deck.json
 workspace/exp009_crustle_policy/deck.csv
+
+# exp022 built bundles + learned models/data (regenerable, large)
+workspace/exp022_megastarmie/build_*/
+workspace/exp022_megastarmie/results/*.npz
+workspace/exp022_megastarmie/results/*.pt

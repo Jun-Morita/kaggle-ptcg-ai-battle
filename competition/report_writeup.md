@@ -15,15 +15,15 @@ believed decklist beats a placeholder **5× (0.417 vs 0.083** vs the rule-based
 pool). **(2) The ladder is a *rotating* rock-paper-scissors** — ex-beatdown →
 anti-ex wall → single-prize non-ex → … — and we built a replay pipeline that
 *measures* the rotation and ships a counter for each phase, reaching LB ~1120
-(top-quartile) with a deck reconstructed from a top-ranker's replays. **(3) We empirically closed both "smarter" levers.** Using
-319 real top-ranker games, a learned value net cannot read the mid-game
-(AUC 0.64 < 0.70); an *exact* near-terminal search still fails to beat the
-tuned heuristic; and two further levers — original deck design and setup
-discipline — close the same way. The remaining gains are all in *piloting*: a
-prize-liability discipline patch is the first heuristic to break our mirror
-ceiling. At mid compute, **a meta-reading rule-based agent with disciplined
-piloting is the achievable ceiling** — and we show *why* with data. A weighted
-field analysis puts our final agent at ≈**0.66** win-rate against the live meta.
+(top-quartile) with a deck reconstructed from a top-ranker's replays. **(3) Piloting is the #1 lever — and information-bounded for us.** A top player
+out-scores us by 200 rating with our *exact* deck, so the gap is piloting, not deck.
+Yet we close *every* lever above a tuned heuristic: a learned value net can't read
+the mid-game (AUC 0.64 < 0.70), exact near-terminal search fails, and **six** ways to
+imitate a top pilot (behavior cloning, k-NN retrieval, self-imitation, self-play
+MCTS…) all fall *below* a generic policy — because the expert's move is only ~50%
+predictable from the observable state at our data scale. At mid compute, **a
+meta-reading rule-based agent with a strong deck is the achievable ceiling** (≈**0.66**
+win-rate vs the live field) — and we show *why* with data.
 
 ## 1. Game and Challenge
 
@@ -126,20 +126,14 @@ mirror over the un-patched policy (0.56). The lesson: *inject one module, don't
 rewrite* — it preserves the tuned behavior while adding deck awareness. *(Figure
 7: patched-vs-generic gains.)*
 
-**Discipline beats the mirror ceiling.** The one matchup we kept losing is the
-non-ex *mirror*. By analyzing top players' replays *split by opponent archetype*,
-we found their edge is **not** opponent-reading (our move-match to them is a
-uniform ~0.28 across all matchups) but **consistent prize-liability discipline**:
-they bench fewer Pokémon (~3 vs our 4+), giving up fewer 1-prize KO targets. The
-stock policy scores *every* non-ex Pokémon equally (20000) and over-deploys. Our
-discipline patch (cap the attacker line, keep an open bench slot, throttle
-redundant engine pieces, add an attacker only when behind on prizes, and *disable*
-itself versus a stall wall) is the **first heuristic to break the mirror
-ceiling** — 0.55 over the un-disciplined build (n=200, paired, CI excludes 0.5),
-no regression elsewhere. Honest caveat: the *ladder* mirror stayed ~0.40 — real
-opponents out-pilot us by more than the patch recovers. The gain is real but
-small, which is the finding: *piloting discipline is the last lever, nearly
-saturated.*
+**Discipline is the one heuristic that moves the mirror.** Splitting top players'
+replays by opponent archetype showed their edge is **not** opponent-reading (our
+move-match is a uniform ~0.28 everywhere) but **prize-liability discipline**: they
+bench fewer Pokémon (~3 vs our 4+), giving up fewer 1-prize KO targets. Our patch
+(cap the attacker line, keep a bench slot, add an attacker only when behind on
+prizes) is the first heuristic to beat our own mirror — 0.55 paired (n=200, CI
+excludes 0.5). But the *ladder* mirror stayed ~0.40: real opponents out-pilot us by
+more than the patch recovers — a first hint that piloting is the binding ceiling (§8).
 
 ## 7. Stability and Operations (the Model "robustness" axis)
 
@@ -153,65 +147,71 @@ artifact, submit). *(Figure 8: stability vs LB.)*
 
 ## 8. We Closed Both "Smarter" Levers — With Data
 
-A credible strategy report must say what *didn't* work. We rigorously tested the
-two obvious paths beyond a heuristic and show both are empirically bounded at our
-resource level.
+A credible strategy report must say what *didn't* work — and every path beyond a
+tuned heuristic is empirically bounded at our resource level.
 
-**Learning (RL).** Self-play belief-MCTS fine-tuning is an honest negative,
-verified four ways: Phase-2 policy collapse; a 0.31 mirror ceiling; and a
-*decisive* probe — win-rate *drops* as search grows (0.31→0.19→0.13 at
-24→48→96 sims), proving the learned **value net is the bottleneck**. We then tested
-the one principled unblocker — *calibrate value on real outcomes* — on the best
-possible data: **319 top-ranker games** with real win/loss labels, episode-level
-holdout. The value net **cannot read the mid-game** (phase-0.4–0.6 AUC **0.637**
-with strategy-lens scalars, **0.585** even with card-level embeddings — both ≈
-"prize-difference alone", 0.688); only the *late* game is predictable (AUC
-**0.80**). This explains "more search = worse": the value is uninformative exactly
-where search must act, so MCTS amplifies noise. Mid-game variance here appears
-*game-intrinsic* (luck/draws), not a modeling gap. *(Figure 9: phase-wise AUC.)*
+**Learning (RL).** Self-play belief-MCTS is an honest negative: win-rate *drops* as
+search grows (0.31→0.19→0.13 at 24→48→96 sims), so the learned **value net is the
+bottleneck**. We then tested the principled unblocker — calibrate value on real
+outcomes — on **319 top-ranker games** (real labels, episode-level holdout). The value
+net **cannot read the mid-game** (phase-0.4–0.6 AUC **0.637** with scalars, **0.585**
+even with card embeddings — both ≈ prize-difference alone, 0.688); only the *late* game
+is predictable (AUC **0.80**). This explains "more search = worse": value is
+uninformative exactly where search acts, so MCTS amplifies noise — and the variance
+appears *game-intrinsic*. *(Figure 9: phase-wise AUC.)*
 
-**Search.** Following the "late game is readable" result, we built a *non-learning*
-tactical layer: use the engine's *exact* forward search on **our own turn only**
-— which is near-perfect-information (the opponent doesn't act, our hand is
-visible, so the placeholder problem of §3 vanishes) — to catch lethal KOs the
-heuristic's damage estimate misses. Three variants (prize-maximize, lethal-only,
-K-sample-robust lethal) **all fail to beat the tuned policy in the mirror
-(≤0.47)**. Even exact near-terminal search loses, because (a) our own draws make
-the turn not truly deterministic (false-positive lethals), (b) greedy
-near-terminal optimization breaks the heuristic's coherent multi-turn gust-and-KO
-plan, and (c) the heuristic already catches lethals. *(Figure 10: 3 variants ≤0.47.)*
+**Search.** A *non-learning* tactical layer — the engine's *exact* forward search on
+**our own turn only** (near-perfect-info, so §3's placeholder problem vanishes) to
+catch lethals — also fails: three variants all score ≤0.47 in the mirror, because our
+own draws make the turn non-deterministic (false-positive lethals), greedy
+near-terminal play breaks the heuristic's multi-turn plan, and the heuristic already
+catches real lethals. *(Figure 10: 3 variants ≤0.47.)*
 
 **Deck innovation and setup discipline** close the same way. An *original* deck
 around a structural anti-mirror attacker (Tinkaton, "Windup Swing"
 240 − 60×opponent-energy) scored **0.00** in the mirror: its Stage-2 line is
-unpilotable by a generic policy and too slow against the Stage-1 apex —
-*pilotability is the binding constraint*, which is why we run a Stage-1 deck. And
-trimming our (host-confirmed optional) setup-bench is a **no-op** for our
-Basic-light deck. Both confirm the optimization that matters is *deck-dependent*,
-and ours is already lean.
+unpilotable by a generic policy — *pilotability is the binding constraint*, which is
+why we run a Stage-1 deck. And trimming our (host-confirmed optional) setup-bench is
+a **no-op** for our Basic-light deck.
 
-Together these four experiments close every lever above the heuristic. A weighted
+**Piloting — the #1 lever — resists every method we have.** Scouting the top exposed
+where the gap lives: the #3 player runs our *exact* deck yet sits +200 LB above us
+(mirror 0.68 vs our 0.40), and the #2 player's Mega-Starmie deck beats our non-ex
+**0.825** even under our generic policy. So the gap is *piloting*, not deck. We tried
+to capture one top pilot's play six ways — replay-extracted heuristics; behavior
+cloning (0.49 action-match, but the cloned agent error-accumulates *below* the
+generic floor); dictionary / k-NN retrieval (0.42 — states identical in our features
+had *different* expert moves 58% of the time); richer features (pure overfit, no
+validation gain); value-free self-imitation; and self-play MCTS (whose official
+sample fills the opponent with placeholders, the §3 flaw). **All underperform the
+generic policy.** The expert's move is ~50%-unpredictable from the observable state
+at our data scale — imitation here is *information-bounded, not effort-bounded*.
+*(Figure 11: six methods vs the generic floor.)*
+
+Together these experiments close every lever above the heuristic — learning, search,
+deck design, setup discipline, and direct imitation of a top pilot. A weighted
 analysis over the live field (ex 39%, non-ex 26%, wall 11%, Alakazam 11%) puts our
-final agent at ≈**0.66** — it beats the ex/wall/Alakazam ~61% of the field and
-loses only the mirror. The one structural counter is a well-piloted spread deck (a
-strong public Dragapult ex beats us **0.78**), but it is meta-contained today
-(0.47 field win-rate — it loses to ex 0.40 and to the wall 0.00, whose Safeguard
-negates its ex damage). We therefore *hold and monitor* rather than chase it — a
-call our replay pipeline makes for us, not intuition.
+final agent at ≈**0.66**. The one structural counter is a well-piloted spread deck (a
+public Dragapult ex beats us **0.78**) but it is meta-contained today (0.47 field —
+it loses to ex 0.40 and to the wall 0.00). We *hold and monitor* rather than chase
+it — a call our replay pipeline makes, not intuition.
 
 ## 9. Conclusion
 
 Strength in this game is reading the *rotating meta*, not just the board. Our
-contributions — a controlled proof that opponent modeling sets the value of
-search, a data-driven pipeline that tracks and counters a real three-way
-rotation, and and a rigorous demonstration that *four* levers — learning, exact search, original
-deck design, and setup discipline — all fail to exceed a well-piloted heuristic,
-while disciplined piloting yields the last marginal gain — together form an honest,
+contributions — a controlled proof that opponent modeling sets the value of search,
+a data-driven pipeline that tracks and counters a real three-way rotation, and a
+rigorous demonstration that *every* lever above a well-piloted heuristic
+(learning, exact search, deck design, setup discipline, and six attempts at imitating
+a top pilot) is empirically bounded at our resource level — together form an honest,
 reproducible account of *why* a mid-compute team should invest in meta-tracking and
-piloting rather than ever-bigger models. The clearest open threat is a well-piloted
-spread deck should the meta swing back to single-prize; our pipeline is built to
-detect that and pivot. Future work: automatic archetype inference for
-production-time belief, and a pilotable Stage-1 anti-mirror attacker.
+piloting rather than ever-bigger models. The deepest finding is that **piloting is the
+sport's #1 lever yet information-bounded for us**: a top player out-scores us by 200
+rating with our *exact* deck, but their move is only ~50% predictable from the
+observable state at our data scale, so imitation and self-play both fall below a
+generic policy. Future work: automatic archetype inference for production-time belief,
+and — the one path that might crack piloting — a far larger multi-expert imitation
+corpus with the official transformer, beyond our compute.
 
 *Code, decklists, per-experiment notes, and the numeric ledger backing every
-figure are in the project repository (exp001–exp021, `report_evidence.md`).*
+figure are in the project repository (exp001–exp022, `report_evidence.md`).*
