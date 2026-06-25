@@ -178,15 +178,19 @@ a **no-op** for our Basic-light deck.
 where the gap lives: the #3 player runs our *exact* deck yet sits +200 LB above us
 (mirror 0.68 vs our 0.40), and the #2 player's Mega-Starmie deck beats our non-ex
 **0.825** even under our generic policy. So the gap is *piloting*, not deck. We tried
-to capture one top pilot's play six ways — replay-extracted heuristics; behavior
-cloning (0.49 action-match, but the cloned agent error-accumulates *below* the
-generic floor); dictionary / k-NN retrieval (0.42 — states identical in our features
-had *different* expert moves 58% of the time); richer features (pure overfit, no
-validation gain); value-free self-imitation; and self-play MCTS (whose official
-sample fills the opponent with placeholders, the §3 flaw). **All underperform the
-generic policy.** The expert's move is ~50%-unpredictable from the observable state
-at our data scale — imitation here is *information-bounded, not effort-bounded*.
-*(Figure 11: six methods vs the generic floor.)*
+to capture one top pilot's play six ways — replay heuristics; behavior cloning (0.49
+action-match but error-accumulates *below* the floor); k-NN retrieval (0.42 — states
+identical in our features had *different* expert moves 58% of the time); richer
+features (pure overfit); value-free self-imitation; and self-play MCTS (whose official
+sample fills the opponent with placeholders, the §3 flaw) — **all underperform the
+generic policy.** A model-free check then *seals* it: on real ladder games, **when a
+card is a legal play we take it at the top pilot's own rate** (Night Stretcher 19% vs
+23%, Poké Pad 22% vs 26%); the entire usage gap is *exposure* — the expert sees those
+options 5–6× more often, an artifact of longer, better-developed games. Our *decision
+quality already matches the top*; the residual is game-length throughput, a consequence
+of board outcomes rather than a patchable choice. Imitation here is
+*information-bounded, not effort-bounded*. *(Figure 11: six methods vs the floor;
+take-when-legal parity.)*
 
 Together these experiments close every lever above the heuristic — learning, search,
 deck design, setup discipline, and direct imitation of a top pilot. A weighted

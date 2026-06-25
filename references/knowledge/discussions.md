@@ -107,3 +107,45 @@ Kaggle discussion から得た知識を要約する。
 - **setup-bench 規律**: SETUP_BENCH_POKEMON で benching を制限（開けておく/必須ライン以外を並べない）→ サイド責任↓ を n≥200 ペア比較で実測。
   thesis（[[meta-and-leaderboard]] の prize-liability 規律）と整合だが、序盤展開速度↓のトレードオフあり＝**勝ち確定でなく要測定**。
 - 攻撃制限リセット（退却 reset）を pilot が活用できるか（現状 Mega Brave 周りのみ）。
+
+## 2026-06-25: disc 711737 — engine ソース/リバースエンジニアリングの裁定要求（運営未裁定）
+
+- Source: https://www.kaggle.com/competitions/pokemon-tcg-ai-battle/discussion/711737 （c-number 192位 → 運営 shige）
+- raw: `references/raw/discussions/Request for an explicit ruling on game engine source...md`（gitignore）。
+- 要求: engine ソース公開の有無／`.so`/`.dll` のリバースエンジニアリング・再実装の可否／チーム横断の公開共同エンジンの可否を**明示裁定**してほしい。
+
+### Key Ideas / 事実
+- **engine は binary（`.so`）＋wrapper のみ。ソース未公開。** ローカル検査可能エンジンは RL・木探索の高速化に不可欠。
+- **運営回答（shige, 3日前）=「検討中、近く明示的に回答」。⇒ 現時点で可否は未裁定（グレー）。**
+- **提出側エンジンは公式固定**: tarousan_imo が ctypes 13関数を LLM 再実装→ローカル可だが Kaggle 提出で **500 エラー**＝自作エンジンは**ローカル学習/探索専用**。
+- greySnow: Claude Code 2日でカードテキスト＋公式エンジンを oracle にエンジン自作「実装・反復はできるが**真エンジンとの差分は残る**」。別案=binary 内部 cracking で **pickling 段（時間の大半）をバイパス→木探索 *10 高速化**（本人未検証）。
+
+### Useful for This Competition（我々＝ルールベース pilot＋公式エンジン）
+- **直接の打撃小**: 我々は自作エンジン不要（RL/探索は honest negative [[rl-status]]）。エンジン非公開は **RL/探索勢にこそ効くハンデ**。
+- **追い風（レポート材料）**: 提出は公式エンジン固定＝**純ヒューリスティック＋公式エンジンは完全再現可能**＝Strategy 評価軸「安定性/再現性/頑健性」でプラス。リバースエンジン依存解は再現性リスク。
+
+### Risks / Caveats
+- リバースエンジニアリングは**未裁定**＝IP/失格リスク。**今は投資しない／公式裁定を待つ**。
+- 中長期脅威: 上位 RL 勢が高速ローカルエンジンで、我々が特定した壁＝**engine throughput / マルチターン sequencing**（[[meta-and-leaderboard]] 2026-06-25 take-when-legal）を攻略し天井を上抜く可能性。ただし greySnow が「差分残る」と認める＝過大評価禁物。
+
+### Experiment Candidates
+- なし（コード変更不要）。**公式裁定をウォッチ**し、「再実装/共同エンジン許可」が出たらメタ天井上昇を前提に方針再評価。
+
+## 2026-06-25: disc 711741 — 1 agent で複数デッキは可か（運営未裁定）
+
+- Source: https://www.kaggle.com/competitions/pokemon-tcg-ai-battle/discussion/711741
+- 問い: cabt は deck.csv を直接読まず**エージェントが毎ゲーム recipe を渡す**＝機構上 agent は毎試合デッキを変えられる。1提出で multi-deck は許される? OP 予想=「No（per-game 戦略より meta-game に偏る）」。**運営未裁定。**
+
+### Key Ideas（自分のラダーリプレイで確認済）
+- **機構上 multi-deck は可能**: 我々のコード `if obs.select is None: return list(deck)`＝step1 で60枚リストを返す＝別デッキを返せる。
+- **★決定的: デッキ選択は完全ブラインド** — 60枚を返す瞬間の obs は両者 `active=[]/bench=[]/deckCount=60/hand=0`＝**盤面空・相手情報ゼロ**。⇒ **相手を見てからの counter-pick は不可**。可能なのは試合をまたぐ**ブラインド混合戦略**のみ。
+
+### Useful for This Competition
+- 概念的には我々の三すくみ問題（非ex は mid-field 頂点だが gold 帯でカウンターされる）への混合戦略ヘッジになりうる。**だが実益薄**:
+  (1) 未裁定リスク, (2) **deck⊗pilot 結合**＝各デッキに有能 pilot 必須だが我々は Mega/Alakazam/Dragapult を競技ピロット不能（exp022）→混合は弱デッキを抱えレート希釈, (3) **eligible=最新2提出が既に準拠した2デッキ・ポートフォリオ**＝agent内 multi-deck 不要。
+
+### Risks / Caveats
+- 未裁定＝**multi-deck 提出は作らない**。許可されても我々は2枚目を操縦できず優先度上がらず。律速は piloting（[[meta-and-leaderboard]] take-when-legal）でデッキ切替でない。
+
+### Experiment Candidates
+- なし。公式裁定ウォッチ。レポートに「ブラインド選択機構＋準拠した最新2枠ヘッジを採用、未裁定 multi-deck は採らない」を1段落。

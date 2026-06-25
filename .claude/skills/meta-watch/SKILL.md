@@ -39,6 +39,26 @@ One command for the operational loop: *check the meta → if it rotated, counter
    `kaggle competitions leaderboard pokemon-tcg-ai-battle --show`). To copy a top
    deck, use the `/extract-deck` skill; to build+submit a counter, use `/build-submit`.
 
+4b. **(Optional) scout a top PILOT's decisions** (piloting is the #1 lever; same deck,
+   +200 LB). After caching a pilot's replays (step 4 / `top_meta.py`), find where their
+   play differs from ours:
+   ```
+   cd workspace/exp022_megastarmie
+   uv run python pilot_gap_scan.py <replay_dir> <name_substring> [extra_card_ids...]
+   # e.g. pilot_gap_scan.py top_mogja_j_0624 Mogja      (our non-ex deck pilot)
+   #      pilot_gap_scan.py 0625_54022035 Morita        (our own agent, for comparison)
+   ```
+   It prints per-decision (length-normalized) action rates split W/L, plus a
+   **take-when-legal** table. **Interpretation rule (learned exp022):** compare the top
+   pilot to *our own* scan.
+   - **Big exposure gap + matching take-when-legal rate** = a *draw/throughput/game-length*
+     gap, NOT a patchable decision — single-card rules won't help (don't build one).
+   - **Normal exposure but we take it far less when legal** = a real *gated decision leak*
+     — the gust template (Boss's Orders, gated by `plan.target>=1`). Worth a single fix.
+   - The single-card-leak class is currently **exhausted** for our non-ex deck (take-when-
+     legal matches Mogja); see [[meta-and-leaderboard]]. Re-scan only after the deck/meta
+     shifts.
+
 5. **Report** the meta table, rotation verdict, and a recommendation (hold vs build a
    counter). Don't submit anything here — that's `/build-submit`, after user approval.
 

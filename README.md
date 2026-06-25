@@ -86,7 +86,7 @@ uv run python run_gauntlet.py 20      # random vs random
 （v006 1086 > v007 1045 > v008 946 > v009 938）＝**ローカル gauntlet 過学習(CV/LB乖離)**。eligible は最新2のため最良 v006/v007 が枠外に押し出されていた → **再提出で奪還**。
 **今後どの提出も「現 eligible ペアのライブ score を超えるか」で判断する**（ローカル勝ちは転移しない）。v008/v009 は誠実な負として退役。
 学習(exp008/010/014)・探索(exp003/004/008/015/019)・デッキ革新(exp020)・setup規律(exp021)・**操縦模倣(exp022: BC/k-NN/リッチ特徴/SIL)**＝**全レバー実証で上限**。
-**★中核発見: 操縦が #1 レバーだが情報的に上限**（#3 は同一デッキで+200LB、6系統すべて generic 未満、expert の手が観測から~50%超予測不能）。
+**★中核発見: 操縦が #1 レバー**（#3 は同一デッキで+200LB）。全方策の模倣/学習は情報的に上限（6系統 generic 未満）だが、**達人の対局精読で「高レバレッジ局面の漏れ」を特定→局所修正する路線は有効**（Boss's Orders gust でミラー vs v006 0.685=Mogja に一致, v010）。
 残るレバー＝**Strategy レポート($240k)**。**Strategy 本文 [`competition/report_writeup.md`](competition/report_writeup.md)（英語1,998語, exp001–022反映）執筆済み**。
 
 ### 実験
@@ -110,16 +110,16 @@ uv run python run_gauntlet.py 20      # random vs random
 | exp019 | **prize-aware 検証リーサル finisher** | ネガティブ: ミラー0.53（有意差なし）。prize tracking で exp015 の偽リーサルは除去できるが、1KO/ターン型には不要 |
 | exp020 | **デッキ革新(Tinkaton)＋強Dragapult脅威** | Tinkaton アンチミラー失敗(S2 不操縦, ミラー0.00)＝pilotability 律速。強Dragapult は v009 を0.78で狩るがメタ封じ込め0.47 |
 | exp021 | **setup-bench 規律**（disc708586） | ネガティブ: 我々の basic-light デッキでは no-op（base 平均1.41体, cap 不発, ミラー0.50±）。レバーは basic-heavy 専用 |
-| exp022 | **操縦研究**（トップ模倣／Mega Starmie／RL再挑戦） | **★操縦が #1 レバーだが情報的に上限**: #3 は同一デッキで+200LB／#2 Mega-ex floor 0.825。**6系統(heuristic/BC/k-NN/リッチ特徴/SIL/self-play MCTS)すべて generic 未満**＝expert の手が観測から~50%超予測不能 |
+| exp022 | **操縦研究**（トップ模倣／Mega Starmie／RL再挑戦／**局所改善**） | **★操縦が #1 レバー**: #3 は同一デッキで+200LB。全方策模倣は情報的上限（6系統 generic 未満）だが、**高レバレッジ局面の局所改善は有効**＝Mogja 精読で「Boss's Orders gust」漏れ発見→修正で**ミラー vs v006 0.685(==Mogja)**＝v010 提出 |
 
 ### 提出（eligible = 最新2提出, 2026-06-24）
-> **⚠️ CV/LB 乖離**: v006–v009 同一デッキで操縦高度化＝ライブ score 単調低下（1086→1045→946→938）。ローカル勝ちは転移しない。最良ペアを最新2枠に死守。
+> **⚠️ CV/LB 乖離**: 同一デッキで操縦“高度化”しても以前はライブ score 低下（1086→…→938）。ローカル勝ちは転移しない。**v010 はその転移を試す検証提出**。
 
 | 版 | 中身 | 状態 |
 |---|---|---|
-| **v006-re** | charmq 非ex apex ＋ **generic 方策**（自己最良） | 再提出(PENDING, μ600再収束)。退役前 **1086.7** |
-| **v007-re** | charmq 非ex ＋ 専用非ex方策 | 再提出(PENDING, μ600再収束)。退役前 **1045.7** |
-| v009 / v008 | 規律 / deck-dispatch（操縦高度化） | **退役**（誠実な負: 938.3 / 946.5＝ローカル上位互換だがライブ退行） |
+| **v010 gust** | 非ex ＋ **データ駆動ミラー修正**（Boss's Orders で gust+KO、Mogja #3 精読由来）。ミラー vs v006 **0.685**(==Mogja 0.68) | 提出(PENDING, μ600)。**操作改善のラダー転移を検証中** |
+| **v006** | charmq 非ex ＋ generic（自己最良） | 再提出(PENDING, μ600)。退役前 **1086.7**。安全側 |
+| v007/v009/v008 | 専用/規律/dispatch | 退役 |
 
 ### 中心的発見
 - **メタは三すくみで一周し、収束する**: ex ビート → Crustle 壁 → **単サイド非ex** → …。06-18 Crustle 一色 → 06-20 ex 復権 →

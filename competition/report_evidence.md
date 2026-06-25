@@ -194,6 +194,20 @@
 - **機構**: expert の手が **観測状態から ~50% 超予測不能**（2752 判断＝データ不足＋複数 good 手＝情報的上限）。表現を変えても過学習＝**アルゴリズムでなく情報が律速**。
   「複数 expert を集めて RL」は別 deck⊗pilot の希釈＋巨大データ＋大モデル要＝資源外。出典: `workspace/exp022_megastarmie/{SESSION_NOTES.md, decode_replay.py, bc_*.py, knn_bc.py, sil_iterate.py}`。
 
+### M2. 単一カード patch クラスの枯渇＝take-when-legal で決着（0625, `pilot_gap_scan.py`）
+- **gust 修正（唯一の転移した操縦改善, v010）**: Mogja はミラーで Boss's Orders を ~1.6/game 使って bench を gust+KO するが、我々の plan は active に +300 bias→`plan.target` が常に 0→Boss は `plan.target>=1 else -1` で **0/game**。prize-taking KO に +500 を与え bench KO を選ばせる＝Boss が出る。結果ミラー vs v006 **0.685（==Mogja 0.68）**。＝**制限ゲートを持つ二値漏れは patch 可能**。
+- **「次の gust」を体系探索→無し**。トップ pilot の MAIN 決定を全リプレイから decode し、行動別 **per-decision rate(対局長正規化, W/L 別)** ＋ **take-when-legal**(合法手として提示された回数 vs 採用回数)を集計。
+- **★決定的: 合法時の採用率が +200LB の Mogja とほぼ一致**（我々 v006 ラダー16W vs Mogja 40W）:
+  | カード | 我々 take-when-legal | Mogja | 我々 exposure | Mogja exposure |
+  |---|---|---|---|---|
+  | Night Stretcher | **19%** | 23% | 149 | **973** |
+  | Poké Pad | 22% | 26% | 177 | **847** |
+  | Boss's Orders | 18% | 13% | 832 | 703 |
+  - 使用量の差は全て **exposure**（Mogja は Night Stretcher を 6.5倍 合法手として見る）＝**draw エンジン密度/対局長(throughput)の差であり、patch 可能な決定漏れではない**。我々の**決定品質は合法手条件下でトップと一致**。
+- **供給側監査（我々の policy ゲート）も漏れ無し**: 非ex patch の条件付き `-1` ゲートは exp018 規律のみ（line/bench cap）で誤発火せず。唯一の候補=エネ上限2で Trevenant の3エネ Corner(90) が充電不可だが、Corner は Mogja でも勝3%/負4%＝無視可。**gust が唯一の真のゲート漏れだった**。
+- **sequencing 漏れも否定**: スコア階層 ABILITY30000>play-pkmn20000>play-trainer10000>evolve9000>attach7000>retreat2000>**attack1000**＝**攻撃(=ターン終了)前に draw/search を必ず使い切る**。早期攻撃による掘り不足は起きない。
+- **結論**: demand側(トップ behavior)・supply側(自policy ゲート)・sequencing・lethal(exp019 neutral)・learning/search(6系統)＝**全方位で非ex pilot は天井**。残差は throughput=対局長(盤面結果の従属変数, 非patchable)。出典: `workspace/exp022_megastarmie/pilot_gap_scan.py`, `references/raw/replays/{0625_54022035,top_mogja_j_0624}`, skill `meta-watch` step4b。
+
 ## J. 図表→データ出典 対応
 | 図 | データ出典 |
 |---|---|
@@ -211,4 +225,6 @@
 | **3変種探索 ≤0.47** | exp015 eval_tactical.py |
 | **メタ内位置 weighted 0.66 / Dragapult 0.47** | exp011 meta_*.json, exp020 eval_dragapult.py |
 | **6手法 vs generic floor（操縦上限）** | exp022 {bc_agent,knn_bc,bc_rich,sil_iterate}.py |
+| **take-when-legal parity（合法時採用率＝トップと一致）** | exp022 pilot_gap_scan.py（0625_54022035 / top_mogja_j_0624） |
+| **gust 修正 ミラー0.685（==Mogja 0.68）** | exp022 gust_policy.py / our_mirror_stats.py |
 | **#3 同一デッキ +200LB / #2 Mega-ex floor 0.825** | exp022 top_meta scout, eval (decode_replay.py) |

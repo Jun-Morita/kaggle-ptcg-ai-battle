@@ -53,3 +53,17 @@
 - 元アイデア「why-alakazam-is-a-good-baseline」: heiseimikiko
 - 公式 Mega Lucario ex サンプル: kiyotah / Beginner Guide: ichigoe
 - 公式 top episodes EDA: 公式 episodes データセット前提
+
+## 2026-06-25: 「Pokémon TCG Deck Transformer Training」(public, GPU) — 評価済み・不採用
+- raw: `references/raw/public_notebooks/pok-mon-tcg-deck-transformer-training.ipynb`（gitignore）。26セル/88k字。
+- 中身＝**デッキ構築支援ツール**（操縦には無関係）:
+  1. `PrefixNextCardModel`: デッキ(bag-of-cards mean-pool, ID emb + 属性feature hybrid)→次/隠し1枚を予測（デッキ補完・leave-one-out・ACE SPEC 候補比較）。
+  2. `MatchupWinRateModel`: my/opp 両デッキを同 DeckEncoder で符号化→`[my,opp,my*opp,my-opp]`→MLP→勝率(BCE)。**＝デッキリストのみから勝率予測**。
+  3. 候補を rule/win/gen score で rerank。日次 dataset `pokemon-tcg-ai-battle-episodes-YYYY-MM-DD` から60枚抽出（`steps[1][p].action` len60）。
+- **不採用の理由（我々の確立事実に紐づく）**:
+  1. デッキ不足でない＝トップの decklist を完全複製済み（charmq非ex＝#2 Mogja と一致）。補完提案に価値なし。
+  2. **win-rate model はデッキのみで勝率予測＝操縦を無視**。だが「勝敗を決めるのは操縦」を5-6回実証（[[meta-and-leaderboard]] deck⊗pilot / Mogja 同一デッキ +200LB / take-when-legal）。最重要因子を構造的に取りこぼす。
+  3. マッチアップは meta-watch の**実ラダー W-L** の方が高精度（μ600/メタ回転も捕捉）。学習代理は劣化。
+  4. 我々の律速＝**pilotability**（exp020 Tinkaton）。共起/fit 最適化はそこに効かない。GPU+学習コストに見合わず。
+  5. 転用部品（battle JSON→60枚抽出）は decode_replay.py/meta_watch で保有済。新情報は日次バルク dataset だが既知。
+- コンプラ: 公開ノート＝学習参照OK（実行不要）。**結論: よく出来たデッキ/勝率ツールだが我々には不採用**。
