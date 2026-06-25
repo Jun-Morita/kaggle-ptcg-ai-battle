@@ -1,0 +1,16 @@
+# exp023 constant sweep, n=60/matchup, subprocess-isolated. baseline(0,0,0)=v010
+
+config                        mirror     ex   crus   drag  field  errs
+BASELINE(0,0,0)=v010           0.567  0.733  0.650  0.167  0.604     0
+
+REVENGE_BONUS=50               0.583  0.700  0.800  0.150  0.612     0
+REVENGE_BONUS=100              0.450  0.833  0.733  0.150  0.623     0
+REVENGE_BONUS=130              0.583  0.667  0.717  0.150  0.586     0
+
+PRIZE_W=300                    0.550  0.733  0.700  0.217  0.612     0
+PRIZE_W=600                    0.483  0.617  0.767  0.167  0.542     0
+PRIZE_W=1000                   0.450  0.767  0.633  0.133  0.578     0
+
+BACKUP_CHARGE=1                0.383  0.683  0.633  0.217  0.531     0
+
+saved sweep_results.json

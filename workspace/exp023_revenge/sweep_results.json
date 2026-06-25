@@ -1,0 +1,338 @@
+{
+ "baseline": {
+  "config": {
+   "REVENGE_BONUS": 0,
+   "PRIZE_W": 0,
+   "BACKUP_CHARGE": 0
+  },
+  "n": 60,
+  "matchups": {
+   "mirror_v010": {
+    "wr": 0.567,
+    "w": 34,
+    "l": 26,
+    "d": 0,
+    "err_self": 0,
+    "err_opp": 0
+   },
+   "ex": {
+    "wr": 0.733,
+    "w": 44,
+    "l": 16,
+    "d": 0,
+    "err_self": 0,
+    "err_opp": 0
+   },
+   "crustle": {
+    "wr": 0.65,
+    "w": 39,
+    "l": 20,
+    "d": 1,
+    "err_self": 0,
+    "err_opp": 0
+   },
+   "dragapult": {
+    "wr": 0.167,
+    "w": 10,
+    "l": 50,
+    "d": 0,
+    "err_self": 0,
+    "err_opp": 0
+   }
+  }
+ },
+ "REVENGE_BONUS=50": {
+  "config": {
+   "REVENGE_BONUS": 50,
+   "PRIZE_W": 0,
+   "BACKUP_CHARGE": 0
+  },
+  "n": 60,
+  "matchups": {
+   "mirror_v010": {
+    "wr": 0.583,
+    "w": 35,
+    "l": 25,
+    "d": 0,
+    "err_self": 0,
+    "err_opp": 0
+   },
+   "ex": {
+    "wr": 0.7,
+    "w": 42,
+    "l": 18,
+    "d": 0,
+    "err_self": 0,
+    "err_opp": 0
+   },
+   "crustle": {
+    "wr": 0.8,
+    "w": 48,
+    "l": 12,
+    "d": 0,
+    "err_self": 0,
+    "err_opp": 0
+   },
+   "dragapult": {
+    "wr": 0.15,
+    "w": 9,
+    "l": 51,
+    "d": 0,
+    "err_self": 0,
+    "err_opp": 0
+   }
+  }
+ },
+ "REVENGE_BONUS=100": {
+  "config": {
+   "REVENGE_BONUS": 100,
+   "PRIZE_W": 0,
+   "BACKUP_CHARGE": 0
+  },
+  "n": 60,
+  "matchups": {
+   "mirror_v010": {
+    "wr": 0.45,
+    "w": 27,
+    "l": 30,
+    "d": 3,
+    "err_self": 0,
+    "err_opp": 0
+   },
+   "ex": {
+    "wr": 0.833,
+    "w": 50,
+    "l": 10,
+    "d": 0,
+    "err_self": 0,
+    "err_opp": 0
+   },
+   "crustle": {
+    "wr": 0.733,
+    "w": 44,
+    "l": 16,
+    "d": 0,
+    "err_self": 0,
+    "err_opp": 0
+   },
+   "dragapult": {
+    "wr": 0.15,
+    "w": 9,
+    "l": 51,
+    "d": 0,
+    "err_self": 0,
+    "err_opp": 0
+   }
+  }
+ },
+ "REVENGE_BONUS=130": {
+  "config": {
+   "REVENGE_BONUS": 130,
+   "PRIZE_W": 0,
+   "BACKUP_CHARGE": 0
+  },
+  "n": 60,
+  "matchups": {
+   "mirror_v010": {
+    "wr": 0.583,
+    "w": 35,
+    "l": 23,
+    "d": 2,
+    "err_self": 0,
+    "err_opp": 0
+   },
+   "ex": {
+    "wr": 0.667,
+    "w": 40,
+    "l": 20,
+    "d": 0,
+    "err_self": 0,
+    "err_opp": 0
+   },
+   "crustle": {
+    "wr": 0.717,
+    "w": 43,
+    "l": 17,
+    "d": 0,
+    "err_self": 0,
+    "err_opp": 0
+   },
+   "dragapult": {
+    "wr": 0.15,
+    "w": 9,
+    "l": 51,
+    "d": 0,
+    "err_self": 0,
+    "err_opp": 0
+   }
+  }
+ },
+ "PRIZE_W=300": {
+  "config": {
+   "REVENGE_BONUS": 0,
+   "PRIZE_W": 300,
+   "BACKUP_CHARGE": 0
+  },
+  "n": 60,
+  "matchups": {
+   "mirror_v010": {
+    "wr": 0.55,
+    "w": 33,
+    "l": 25,
+    "d": 2,
+    "err_self": 0,
+    "err_opp": 0
+   },
+   "ex": {
+    "wr": 0.733,
+    "w": 44,
+    "l": 16,
+    "d": 0,
+    "err_self": 0,
+    "err_opp": 0
+   },
+   "crustle": {
+    "wr": 0.7,
+    "w": 42,
+    "l": 18,
+    "d": 0,
+    "err_self": 0,
+    "err_opp": 0
+   },
+   "dragapult": {
+    "wr": 0.217,
+    "w": 13,
+    "l": 47,
+    "d": 0,
+    "err_self": 0,
+    "err_opp": 0
+   }
+  }
+ },
+ "PRIZE_W=600": {
+  "config": {
+   "REVENGE_BONUS": 0,
+   "PRIZE_W": 600,
+   "BACKUP_CHARGE": 0
+  },
+  "n": 60,
+  "matchups": {
+   "mirror_v010": {
+    "wr": 0.483,
+    "w": 29,
+    "l": 30,
+    "d": 1,
+    "err_self": 0,
+    "err_opp": 0
+   },
+   "ex": {
+    "wr": 0.617,
+    "w": 37,
+    "l": 23,
+    "d": 0,
+    "err_self": 0,
+    "err_opp": 0
+   },
+   "crustle": {
+    "wr": 0.767,
+    "w": 46,
+    "l": 13,
+    "d": 1,
+    "err_self": 0,
+    "err_opp": 0
+   },
+   "dragapult": {
+    "wr": 0.167,
+    "w": 10,
+    "l": 50,
+    "d": 0,
+    "err_self": 0,
+    "err_opp": 0
+   }
+  }
+ },
+ "PRIZE_W=1000": {
+  "config": {
+   "REVENGE_BONUS": 0,
+   "PRIZE_W": 1000,
+   "BACKUP_CHARGE": 0
+  },
+  "n": 60,
+  "matchups": {
+   "mirror_v010": {
+    "wr": 0.45,
+    "w": 27,
+    "l": 33,
+    "d": 0,
+    "err_self": 0,
+    "err_opp": 0
+   },
+   "ex": {
+    "wr": 0.767,
+    "w": 46,
+    "l": 14,
+    "d": 0,
+    "err_self": 0,
+    "err_opp": 0
+   },
+   "crustle": {
+    "wr": 0.633,
+    "w": 38,
+    "l": 22,
+    "d": 0,
+    "err_self": 0,
+    "err_opp": 0
+   },
+   "dragapult": {
+    "wr": 0.133,
+    "w": 8,
+    "l": 52,
+    "d": 0,
+    "err_self": 0,
+    "err_opp": 0
+   }
+  }
+ },
+ "BACKUP_CHARGE=1": {
+  "config": {
+   "REVENGE_BONUS": 0,
+   "PRIZE_W": 0,
+   "BACKUP_CHARGE": 1
+  },
+  "n": 60,
+  "matchups": {
+   "mirror_v010": {
+    "wr": 0.383,
+    "w": 23,
+    "l": 37,
+    "d": 0,
+    "err_self": 0,
+    "err_opp": 0
+   },
+   "ex": {
+    "wr": 0.683,
+    "w": 41,
+    "l": 18,
+    "d": 1,
+    "err_self": 0,
+    "err_opp": 0
+   },
+   "crustle": {
+    "wr": 0.633,
+    "w": 38,
+    "l": 21,
+    "d": 1,
+    "err_self": 0,
+    "err_opp": 0
+   },
+   "dragapult": {
+    "wr": 0.217,
+    "w": 13,
+    "l": 47,
+    "d": 0,
+    "err_self": 0,
+    "err_opp": 0
+   }
+  }
+ }
+}
