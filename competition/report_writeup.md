@@ -187,8 +187,9 @@ generic policy.** A model-free check then *seals* it: on real ladder games, **wh
 card is a legal play we take it at the top pilot's own rate** (Night Stretcher 19% vs
 23%, Poké Pad 22% vs 26%); the entire usage gap is *exposure* — the expert sees those
 options 5–6× more often, an artifact of longer, better-developed games. Our *decision
-quality already matches the top*; the residual is game-length throughput, a consequence
-of board outcomes rather than a patchable choice. Imitation here is
+quality already matches the top*; the residual is game-length throughput — which traces
+to a tutor engine the #1 deck runs that we cannot pilot either (copying it scores 0.46 vs
+our own 0.61), so the gap closes neither by piloting nor by adopting their deck. Imitation here is
 *information-bounded, not effort-bounded*. *(Figure 11: six methods vs the floor;
 take-when-legal parity.)*
 

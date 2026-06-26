@@ -208,6 +208,13 @@
 - **sequencing 漏れも否定**: スコア階層 ABILITY30000>play-pkmn20000>play-trainer10000>evolve9000>attach7000>retreat2000>**attack1000**＝**攻撃(=ターン終了)前に draw/search を必ず使い切る**。早期攻撃による掘り不足は起きない。
 - **結論**: demand側(トップ behavior)・supply側(自policy ゲート)・sequencing・lethal(exp019 neutral)・learning/search(6系統)＝**全方位で非ex pilot は天井**。残差は throughput=対局長(盤面結果の従属変数, 非patchable)。出典: `workspace/exp022_megastarmie/pilot_gap_scan.py`, `references/raw/replays/{0625_54022035,top_mogja_j_0624}`, skill `meta-watch` step4b。
 
+### M3. throughput の正体＝操縦不能な tutor エンジン（exp024, deck⊗pilot 6回目, 0625）
+- 新 LB #1 **Yushin Ito(1387)＝我々と同じ非ex Hop's Trevenant** だが、ドローエンジンが **tutor 型**（Team Rocket's Transceiver→Petrel→任意Trainer / Hilda=進化+エネ / Telepath Psychic=基本2体 / Xerosic 妨害 / Mist=効果防御）＝我々の **draw 型(Dunsparce→Dudunsparce)** と別物。M2 の exposure/throughput 差の正体＝**このエンジン差（デッキレベル）**。
+- **TR デッキを我々の best 方策(v011 revenge)で操縦**（league vs mirror v010/ex/Crustle/dragapult, n=80）: mirror 0.325 / ex 0.537 / Crustle 0.787 / dragapult 0.138 ＝ **field ~0.46 ＜ charmq v011 0.609**（全方位で劣る, 0 err）。
+- setup 速度は問題でない（`diag.py`: TR 初撃 turn 3.6 ＜ charmq 3.8）＝ギャップは**中盤エンジン活用**＝情報境界。
+- `_score_to_hand` phase-aware fetch prototype（早期=draw/chain/setup 優先）は **退行**（ex 0.537→0.400）＝tutor の fetch 優先度を弄ると tools/妨害が引けず悪化＝**tutor エンジンは操縦不能**を確証。
+- **含意**: 頂点の throughput 優位は **操縦できない tutor エンジン**＝throughput ギャップは pilot 修正でも deck 採用でも閉じられない（真の情報境界）。**deck⊗pilot 6回目**。我々の pilotable 最適は **charmq + v011**。出典: `workspace/exp024_trengine/{SESSION_NOTES.md, decode_tutor.py, floor.py, diag.py, tr_policy.py}`, `yushin_deck.json`。
+
 ## J. 図表→データ出典 対応
 | 図 | データ出典 |
 |---|---|

@@ -78,16 +78,20 @@ uv run python run_gauntlet.py 20      # random vs random
 - `agents.py` … ベースラインエージェント
 - 結果は `results/` に JSON で保存（`.gitignore` 対象）
 
-## 進捗（2026-06-24 時点）
+## 進捗（2026-06-25 時点）
 
 ローカル評価は固定相手プールへの平均勝率。**メタは三すくみで一周し、現フィールドは ex 復権**（ex 39% / 非ex 26% / Crustle 11% / Alakazam 11% / Dragapult 3%）。
-**現状の eligible = {v006-re, v007-re}**（μ600 から再収束中）。
-**⚠️ 最重要発見（06-24）**: v006–v009 は**同一の非exデッキ**で操縦だけ違うのに、**ライブ score が操縦の高度化とともに単調低下**
-（v006 1086 > v007 1045 > v008 946 > v009 938）＝**ローカル gauntlet 過学習(CV/LB乖離)**。eligible は最新2のため最良 v006/v007 が枠外に押し出されていた → **再提出で奪還**。
-**今後どの提出も「現 eligible ペアのライブ score を超えるか」で判断する**（ローカル勝ちは転移しない）。v008/v009 は誠実な負として退役。
-学習(exp008/010/014)・探索(exp003/004/008/015/019)・デッキ革新(exp020)・setup規律(exp021)・**操縦模倣(exp022: BC/k-NN/リッチ特徴/SIL)**＝**全レバー実証で上限**。
-**★中核発見: 操縦が #1 レバー**（#3 は同一デッキで+200LB）。全方策の模倣/学習は情報的に上限（6系統 generic 未満）だが、**達人の対局精読で「高レバレッジ局面の漏れ」を特定→局所修正する路線は有効**（Boss's Orders gust でミラー vs v006 0.685=Mogja に一致, v010）。
-残るレバー＝**Strategy レポート($240k)**。**Strategy 本文 [`competition/report_writeup.md`](competition/report_writeup.md)（英語1,998語, exp001–022反映）執筆済み**。
+**現状の eligible = {v011 revenge, v006}**（μ600 から再収束中。v011 提出で v010 が押し出し、v011 ⊃ v010）。
+**⚠️ 最重要教訓（06-24）**: v006–v009 は**同一の非exデッキ**で操縦だけ違うのに、**ライブ score が操縦の高度化とともに単調低下**
+（v006 1086 > v007 1045 > v008 946 > v009 938）＝**ローカル gauntlet 過学習(CV/LB乖離)**。**今後どの提出も「現 eligible ペアのライブ score を超えるか」で判断する**（ローカル勝ちは転移しない）。
+**★中核発見: 操縦が #1 レバー**（#3 Mogja は同一デッキで+200LB）。全方策の模倣/学習は情報的に上限（6系統 generic 未満）。
+**転移するのは「達人精読で実機構の漏れを発見→局所修正」する gust クラスのみ**:
+- **v010 gust**（Boss's Orders で gust+KO の漏れ → ミラー vs v006 0.685＝Mogja に一致）
+- **v011 revenge**（Hop's Trevenant「Horrifying Revenge」の **+100 機構**を pilot が flat30 で見落とし → window 検出で +50 → ミラー 0.45→0.505 / Crustle 0.73→0.78, exp023）。
+**操縦の枯渇も実証（06-25）**: `pilot_gap_scan` の **take-when-legal** で「合法手単位では我々の打ち手はトップと一致、差は exposure/throughput」＝**単一カード patch クラスは枯渇**。残差は対局長（盤面結果の従属変数）。
+**さらに exp024 で「throughput の正体＝操縦不能な tutor エンジン」と判明**: 新 #1 Yushin Ito は同じ非exだが TR tutor エンジン搭載。我々の方策で TR デッキを操縦すると field 0.46 < charmq 0.61（deck⊗pilot 6回目）＝**throughput ギャップは pilot 修正でも deck 採用でも閉じられない（真の情報境界）**。
+残るレバー＝**Strategy レポート($240k)**。**本文 [`competition/report_writeup.md`](competition/report_writeup.md)（英語≤2000語, take-when-legal 証拠を §8 に統合）執筆済み**。
+公式 disc 711737（engine リバースエンジニアリング）・711741（multi-deck）は**運営未裁定**＝我々の純ヒューリスティック＋公式エンジン＋最新2枠ヘッジの**再現性優位**を補強。
 
 ### 実験
 | 実験 | 内容 | 結果 |
@@ -111,15 +115,17 @@ uv run python run_gauntlet.py 20      # random vs random
 | exp020 | **デッキ革新(Tinkaton)＋強Dragapult脅威** | Tinkaton アンチミラー失敗(S2 不操縦, ミラー0.00)＝pilotability 律速。強Dragapult は v009 を0.78で狩るがメタ封じ込め0.47 |
 | exp021 | **setup-bench 規律**（disc708586） | ネガティブ: 我々の basic-light デッキでは no-op（base 平均1.41体, cap 不発, ミラー0.50±）。レバーは basic-heavy 専用 |
 | exp022 | **操縦研究**（トップ模倣／Mega Starmie／RL再挑戦／**局所改善**） | **★操縦が #1 レバー**: #3 は同一デッキで+200LB。全方策模倣は情報的上限（6系統 generic 未満）だが、**高レバレッジ局面の局所改善は有効**＝Mogja 精読で「Boss's Orders gust」漏れ発見→修正で**ミラー vs v006 0.685(==Mogja)**＝v010 提出 |
+| exp023 | **実戦略由来の操縦高度化**（revenge-window 機構）＋ **pilot_gap_scan**（take-when-legal） | **take-when-legal で単一カード patch 枯渇を実証**（合法手採用率はトップと一致, 差は exposure）。だが**攻撃評価軸は未監査**＝Trevenant「Horrifying Revenge」の +100 機構を pilot が見落とし → window 検出で +50（subprocess隔離スイープ, n=200 ロバストゲート, RB=50 最良）→ **ミラー 0.45→0.505 / Crustle 0.73→0.78** = **v011 提出** |
+| exp024 | **新 #1 の TR-エンジン操縦 feasibility**（Yushin Ito 1387 = 同じ非exだが tutor エンジン） | **ネガティブ（deck⊗pilot 6回目）**: TR デッキを我々の best 方策で操縦＝**field ~0.46（ex 0.54/mirror 0.33）＜ charmq v011 0.61**。setup 速度は正常（初撃 turn3.6）＝中盤エンジン活用＝情報境界。`_score_to_hand` 拡張は退行（ex 0.54→0.40）。**頂点の throughput 優位は操縦不能な tutor エンジン**＝take-when-legal をデッキレベルでも裏付け。TR 乗り換えは負け |
 
-### 提出（eligible = 最新2提出, 2026-06-24）
-> **⚠️ CV/LB 乖離**: 同一デッキで操縦“高度化”しても以前はライブ score 低下（1086→…→938）。ローカル勝ちは転移しない。**v010 はその転移を試す検証提出**。
+### 提出（eligible = 最新2提出, 2026-06-25）
+> **⚠️ CV/LB 乖離**: 同一デッキで操縦“高度化”しても以前はライブ score 低下（1086→…→938）。ローカル勝ちは転移しない。**v010/v011 は gust クラス（実機構修正）の転移を試す検証提出**。
 
 | 版 | 中身 | 状態 |
 |---|---|---|
-| **v010 gust** | 非ex ＋ **データ駆動ミラー修正**（Boss's Orders で gust+KO、Mogja #3 精読由来）。ミラー vs v006 **0.685**(==Mogja 0.68) | 提出(PENDING, μ600)。**操作改善のラダー転移を検証中** |
-| **v006** | charmq 非ex ＋ generic（自己最良） | 再提出(PENDING, μ600)。退役前 **1086.7**。安全側 |
-| v007/v009/v008 | 専用/規律/dispatch | 退役 |
+| **v011 revenge** | v010 gust ＋ **revenge-window 機構**（Hop's Trevenant Revenge +100 を window 検出で +50 modeling）。ミラー 0.45→**0.505** / Crustle 0.73→**0.78**（n=200, 0err） | 提出(PENDING, μ600, sub 54044198)。**gust クラスの転移を検証中** |
+| **v006** | charmq 非ex ＋ generic（自己最良） | 再提出(PENDING, μ600)。退役前 **1086.7**。安全側アンカー |
+| v010/v007/v009/v008 | gust/専用/規律/dispatch | v010 は eligible 枠外（v011 ⊃ v010）。他は退役 |
 
 ### 中心的発見
 - **メタは三すくみで一周し、収束する**: ex ビート → Crustle 壁 → **単サイド非ex** → …。06-18 Crustle 一色 → 06-20 ex 復権 →
