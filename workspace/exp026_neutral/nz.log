@@ -1,0 +1,13 @@
+### BASELINE charmq (Legacy Energy) ###
+  archaludon   wr=0.120 (12-88-0) err_self=0 err_opp=0
+  ex_lucario   wr=0.690 (69-31-0) err_self=0 err_opp=0
+  dragapult    wr=0.120 (12-88-0) err_self=0 err_opp=0
+  mirror_v010  wr=0.490 (49-50-1) err_self=0 err_opp=0
+  crustle      wr=0.790 (79-21-0) err_self=0 err_opp=0
+### NZ charmq (Neutralization Zone) ###
+  archaludon   wr=0.160 (16-84-0) err_self=0 err_opp=0
+  ex_lucario   wr=0.730 (73-27-0) err_self=0 err_opp=0
+  dragapult    wr=0.180 (18-82-0) err_self=0 err_opp=0
+  mirror_v010  wr=0.450 (45-55-0) err_self=0 err_opp=0
+  crustle      wr=0.590 (59-41-0) err_self=0 err_opp=0
+DONE

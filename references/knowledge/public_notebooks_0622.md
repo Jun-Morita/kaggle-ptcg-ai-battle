@@ -67,3 +67,10 @@
   4. 我々の律速＝**pilotability**（exp020 Tinkaton）。共起/fit 最適化はそこに効かない。GPU+学習コストに見合わず。
   5. 転用部品（battle JSON→60枚抽出）は decode_replay.py/meta_watch で保有済。新情報は日次バルク dataset だが既知。
 - コンプラ: 公開ノート＝学習参照OK（実行不要）。**結論: よく出来たデッキ/勝率ツールだが我々には不採用**。
+
+## 2026-06-26: 公開ノート4本（archeops×2 / multiply-940 / mega-lucario-v62）+ Neutralization Zone 検証
+- raw: `references/raw/public_notebooks/{archeops-draw, japanese-archeops-devolve, multiply-agent-best-940-lb, ptcg-mega-lucario-ex-v62}.ipynb`。**採用ゼロ・intel 多**。
+- **ptcg-mega-lucario-ex-v62**（Mega Lucario ex, rule-based）: 我々の方法論を**独立に裏付け** — ①matchup tech は全て **gated**（相手盤面に counter カードがある時だけ発火＝zero-downside）②**moderate 値**（"高値は over-commit して価値ある KO を逃す"＝exp023 RB=50/exp025 と一致）③**進化前を先に潰す**（Riolu→Lucario, Snover→Mega Abomasnow +950, Abra/Kadabra→Alakazam +400）＝exp025「Duraludon を Archaludon 前に」と同原理。opponent intel。
+- **multiply-agent-best-940-lb**: 実 Search API（beam3 + MCTS15, 1.5s）を正用も **LB 940 < v006 1086**＝探索≤ヒューリスティック再確認。不採用。
+- **archeops×2**（退化軸: げんしのつばさ→いわおとし100で進化前KO）: honest negative（PUBLIC 3-9/6-9）。学び＝化石2進化が遅い＝pilotability 律速／CV-LB 乖離／過ドローでデッキ切れ。Tinkaton/TR 結論を補強。
+- **★Neutralization Zone(1247)(exp026)**: Stadium/ACE SPEC「非ルールポケが相手ex/Vダメージ無効」。charmq の Legacy Energy(12)→NZ 差し替え(n=100): archaludon 0.12→0.16/ex 0.69→0.73/dragapult 0.12→0.18（小・反転せず）だが **crustle 0.79→0.59(−0.20)**/mirror −0.04 ＝**不採用**。理由: NZ は Stadium で自 Postwick(+30) を上書き＋uptime低／非ex(Duraludon/Drakloak)が貫通／非ex相手に dead card。net 中立〜微負。出典 `workspace/exp026_neutral/`。

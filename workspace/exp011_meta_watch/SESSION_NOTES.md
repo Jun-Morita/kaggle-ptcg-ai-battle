@@ -73,3 +73,11 @@
 - 頂点到達には **非ex アタッカーデッキ（charmq の実リスト複製）** が必要 = 次実験(exp012)候補。
   操縦方策が課題（Crustle mimic と同様）。まず汎用方策で試し、ダメなら専用方策。
 - shu のリストは ex ミラー操縦が上手い → v003 の ex-mirror 改善余地もあるが、非ex の方が天井が高い。
+
+## 2026-06-26: fine_classify.py 移植（公開 en-replay-archetype-analysis の classify_deck を ID ベース化）
+- 目的: 粗いバケット(mixed_ex3/4)を named archetype に分解。`uv run python fine_classify.py [dir] [name]`。
+- **v011(0626_54044198, 47 cached replays) 結果**:
+  - Mega Lucario ex + Solrock/Lunatone **0.71 (n17)** = 大票田・制圧。Crustle 0.80(n5)。Hop ミラー 0.50(n6)。Other 1.00(n9)。
+  - **mixed_ex3/4 の正体 = ex デッキのロングテール**: Mega Starmie ex 0.40(n5)＋Cynthia's Garchomp ex / Iono's Bellibolt ex / Mega Charizard / N's Zoroark / Ethan's Typhlosion×2 / Dragapult ＝ 各 ~1戦・ほぼ負け。**単一の支配的脅威は無い**。
+  - Archaludon は v011 cached field に**不在**（#1 だが我々の μ帯より上に集中）＝実遭遇率低く 0.10 不利の影響は限定的。
+- **含意**: 負けは多様な ex の long tail ＝ **per-archetype gated-tech は ROI 極小**（各 ~1-2% of field）。pilot 天井・charmq+v011 が pilotable 最適、の結論を補強。新脅威が*集中*したら fine_classify が検知→その時 gated-tech 検討。

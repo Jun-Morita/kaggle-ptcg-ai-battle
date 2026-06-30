@@ -1,0 +1,13 @@
+### charmq (n=200) ###
+  ex_lucario  wr=0.710 (142-58-0) err_self=0
+  dragapult   wr=0.125 (25-175-0) err_self=0
+  archaludon  wr=0.130 (26-174-0) err_self=0
+  mirror      wr=0.465 (93-99-8) err_self=0
+  crustle     wr=0.710 (142-56-2) err_self=0
+### v_trev (n=200) ###
+  ex_lucario  wr=0.770 (154-45-1) err_self=0
+  dragapult   wr=0.155 (31-169-0) err_self=0
+  archaludon  wr=0.175 (35-165-0) err_self=0
+  mirror      wr=0.585 (117-76-7) err_self=0
+  crustle     wr=0.765 (153-46-1) err_self=0
+DONE

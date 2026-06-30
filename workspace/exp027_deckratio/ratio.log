@@ -1,0 +1,25 @@
+### charmq ###
+  ex_lucario  wr=0.762 (61-19-0) err_self=0
+  dragapult   wr=0.050 (4-76-0) err_self=0
+  archaludon  wr=0.138 (11-69-0) err_self=0
+  mirror      wr=0.463 (37-41-2) err_self=0
+  crustle     wr=0.812 (65-15-0) err_self=0
+### v_cram ###
+  ex_lucario  wr=0.725 (58-22-0) err_self=0
+  dragapult   wr=0.150 (12-68-0) err_self=0
+  archaludon  wr=0.087 (7-73-0) err_self=0
+  mirror      wr=0.487 (39-41-0) err_self=0
+  crustle     wr=0.662 (53-27-0) err_self=0
+### v_trev ###
+  ex_lucario  wr=0.800 (64-16-0) err_self=0
+  dragapult   wr=0.125 (10-70-0) err_self=0
+  archaludon  wr=0.125 (10-70-0) err_self=0
+  mirror      wr=0.463 (37-42-1) err_self=0
+  crustle     wr=0.838 (67-13-0) err_self=0
+### v_both ###
+  ex_lucario  wr=0.662 (53-27-0) err_self=0
+  dragapult   wr=0.087 (7-73-0) err_self=0
+  archaludon  wr=0.025 (2-78-0) err_self=0
+  mirror      wr=0.475 (38-42-0) err_self=0
+  crustle     wr=0.750 (60-20-0) err_self=0
+DONE
