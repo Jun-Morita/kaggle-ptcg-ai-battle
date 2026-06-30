@@ -1,0 +1,11 @@
+### revenge ###
+  archaludon   wr=0.120 (18-132-0) err_self=0 err_opp=0
+  mirror_v010  wr=0.547 (82-67-1) err_self=0 err_opp=0
+  ex           wr=0.733 (110-40-0) err_self=0 err_opp=0
+  crustle      wr=0.667 (100-49-1) err_self=0 err_opp=0
+### unkoable ###
+  archaludon   wr=0.160 (24-126-0) err_self=0 err_opp=0
+  mirror_v010  wr=0.473 (71-75-4) err_self=0 err_opp=0
+  ex           wr=0.733 (110-40-0) err_self=0 err_opp=0
+  crustle      wr=0.727 (109-40-1) err_self=0 err_opp=0
+DONE
