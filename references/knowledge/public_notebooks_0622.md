@@ -74,3 +74,8 @@
 - **multiply-agent-best-940-lb**: 実 Search API（beam3 + MCTS15, 1.5s）を正用も **LB 940 < v006 1086**＝探索≤ヒューリスティック再確認。不採用。
 - **archeops×2**（退化軸: げんしのつばさ→いわおとし100で進化前KO）: honest negative（PUBLIC 3-9/6-9）。学び＝化石2進化が遅い＝pilotability 律速／CV-LB 乖離／過ドローでデッキ切れ。Tinkaton/TR 結論を補強。
 - **★Neutralization Zone(1247)(exp026)**: Stadium/ACE SPEC「非ルールポケが相手ex/Vダメージ無効」。charmq の Legacy Energy(12)→NZ 差し替え(n=100): archaludon 0.12→0.16/ex 0.69→0.73/dragapult 0.12→0.18（小・反転せず）だが **crustle 0.79→0.59(−0.20)**/mirror −0.04 ＝**不採用**。理由: NZ は Stadium で自 Postwick(+30) を上書き＋uptime低／非ex(Duraludon/Drakloak)が貫通／非ex相手に dead card。net 中立〜微負。出典 `workspace/exp026_neutral/`。
+
+## 追記 2026-07-02: mega-pokemon-reinforcement-ai-battle.ipynb
+- タイトルに "Reinforcement" とあるが**学習要素ゼロの純ルールベース Mega Lucario**（全文検査: torch/報酬/Q値/更新則なし。"trained to" は比喩）。
+- 中身は lucario_v2 同クラスの手書きスコア（prize優先ターゲット、エネ×150、弱点2倍、hand<6ドロー、Boss条件付き）。我々の v009-v012 が既に上位互換。スコア実績表示なし。**採用なし**。
+- 教訓: 公開NBのタイトル/説明は実装と乖離しうる。コード検査を先に。

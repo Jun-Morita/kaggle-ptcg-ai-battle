@@ -1,0 +1,3 @@
+# guard(v013 cand) K=4 mode=paired n=200
+  v012_plain  wr=0.515 (103-91-6) err=0 [245s, 1.23s/game] stats={'checked': 14569, 'doomed': 826, 'fired': 279, 'errors': 0}
+DONE

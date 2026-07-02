@@ -24,6 +24,7 @@ MGARDEVOIR, MCHARX, MCHARY = 747, 790, 928
 OKIDOGI, OKIDOGI_EX, BARBARACLE = 116, 138, 1052
 HOPTREV, HOPSNORLAX = 879, 878   # Hop's Trevenant line (our deck)
 DIPPLIN, THWACKEY, FESTIVAL = 93, 90, 1245
+GREAT_TUSK = 58   # Land Collapse mill = library-out archetype (public NB 1083.6, 0702)
 
 
 def classify(idset):
@@ -34,6 +35,7 @@ def classify(idset):
     if h(WALREIN): return "Walrein"
     if h(ZOROARK): return "N's Zoroark ex"
     if h(GRIMMSNARL): return "Marnie's Grimmsnarl ex"
+    if h(GREAT_TUSK): return "Great Tusk LO (mill)"
     if h(ALAKAZAM) and h(DUDUNSPARCE): return "Alakazam + Dudunsparce"
     if h(ALAKAZAM): return "Alakazam"
     if h(COMFEY) and h(CHANDELURE): return "Comfey + Chandelure"

@@ -1,0 +1,4 @@
+# guard(v013 cand) K=4 mode=field n=200
+  ex_lucario  wr=0.860 (172-27-1) err=0 [133s, 0.67s/game] stats={'checked': 9095, 'doomed': 355, 'fired': 124, 'errors': 0}
+  dragapult   wr=0.205 (41-159-0) err=0 [79s, 0.40s/game] stats={'checked': 16399, 'doomed': 472, 'fired': 189, 'errors': 0}
+  archaludon  wr=0.165 (33-167-0) err=0 [360s, 1.80s/game] stats={'checked': 28732, 'doomed': 1824, 'fired': 591, 'errors': 0}
