@@ -75,3 +75,7 @@ workspace/exp022_megastarmie/results/*.pt
 workspace/exp030_lomill/lo_agent/
 workspace/exp032_valuescale/native/
 workspace/exp032_valuescale/data/
+workspace/exp032_valuescale/data2/
+workspace/exp032_valuescale/*.npz
+workspace/exp029_beliefsearch/build_v0*/
+workspace/exp033_valueguard/chunks*/
