@@ -1,0 +1,10 @@
+  crustle     wr=0.700 (14-6-0) err=0 [6.34s/g] stats={'checked': 885, 'fired': 121, 'errors': 0}
+  crustle     wr=0.800 (16-4-0) err=0 [6.28s/g] stats={'checked': 864, 'fired': 125, 'errors': 0}
+  crustle     wr=0.650 (13-7-0) err=0 [6.34s/g] stats={'checked': 825, 'fired': 107, 'errors': 0}
+  crustle     wr=0.700 (14-6-0) err=0 [4.94s/g] stats={'checked': 687, 'fired': 101, 'errors': 0}
+  crustle     wr=0.700 (14-6-0) err=0 [8.60s/g] stats={'checked': 1117, 'fired': 167, 'errors': 0}
+  crustle     wr=0.650 (13-7-0) err=0 [3.80s/g] stats={'checked': 646, 'fired': 122, 'errors': 0}
+  crustle     wr=0.850 (17-3-0) err=0 [5.94s/g] stats={'checked': 882, 'fired': 125, 'errors': 0}
+  crustle     wr=0.650 (13-7-0) err=0 [5.12s/g] stats={'checked': 795, 'fired': 128, 'errors': 0}
+  crustle     wr=0.700 (14-6-0) err=0 [5.94s/g] stats={'checked': 872, 'fired': 116, 'errors': 0}
+  crustle     wr=0.750 (15-5-0) err=0 [5.95s/g] stats={'checked': 867, 'fired': 109, 'errors': 0}

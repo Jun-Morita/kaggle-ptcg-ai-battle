@@ -1,0 +1,10 @@
+  v013_guard  wr=0.550 (11-9-0) err=0 [9.08s/g] stats={'checked': 1046, 'fired': 100, 'errors': 0}
+  v013_guard  wr=0.450 (9-9-2) err=0 [11.05s/g] stats={'checked': 1111, 'fired': 157, 'errors': 0}
+  v013_guard  wr=0.500 (10-9-1) err=0 [10.73s/g] stats={'checked': 1348, 'fired': 168, 'errors': 0}
+  v013_guard  wr=0.450 (9-11-0) err=0 [11.09s/g] stats={'checked': 1258, 'fired': 162, 'errors': 0}
+  v013_guard  wr=0.550 (11-9-0) err=0 [11.27s/g] stats={'checked': 1243, 'fired': 138, 'errors': 0}
+  v013_guard  wr=0.450 (9-10-1) err=0 [10.97s/g] stats={'checked': 1243, 'fired': 186, 'errors': 0}
+  v013_guard  wr=0.550 (11-9-0) err=0 [7.73s/g] stats={'checked': 1005, 'fired': 81, 'errors': 0}
+  v013_guard  wr=0.400 (8-11-1) err=0 [11.18s/g] stats={'checked': 1206, 'fired': 153, 'errors': 0}
+  v013_guard  wr=0.700 (14-6-0) err=0 [10.88s/g] stats={'checked': 1174, 'fired': 118, 'errors': 0}
+  v013_guard  wr=0.400 (8-12-0) err=0 [10.13s/g] stats={'checked': 1114, 'fired': 145, 'errors': 0}

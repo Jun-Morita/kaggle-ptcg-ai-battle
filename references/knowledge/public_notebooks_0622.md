@@ -79,3 +79,19 @@
 - タイトルに "Reinforcement" とあるが**学習要素ゼロの純ルールベース Mega Lucario**（全文検査: torch/報酬/Q値/更新則なし。"trained to" は比喩）。
 - 中身は lucario_v2 同クラスの手書きスコア（prize優先ターゲット、エネ×150、弱点2倍、hand<6ドロー、Boss条件付き）。我々の v009-v012 が既に上位互換。スコア実績表示なし。**採用なし**。
 - 教訓: 公開NBのタイトル/説明は実装と乖離しうる。コード検査を先に。
+
+## 追記 2026-07-03: pokemon-metall.ipynb（955.6, Archaludon+Cinderace metal-tempo）
+- デッキ: Archaludon ex×4/Duraludon×4/Cinderace×4 + Full Metal Lab×4 + Explorer's×4（8=鋼エネ11）。
+  ShumpeiNomura 系（元#1, 現在は top14 から後退）アーキタイプの公開版。
+- **対 Hop 専用モード搭載＝我々のアーキタイプへのカウンター実装**:
+  detect_matchup で HOP_LINE 検出 → (a) **Boss's Orders で我々の Snorlax を釣り出して排除**
+  （Cinderace Turbo Flare で狙撃 / 「Extra Helpings +30 を早期除去」と明記）、
+  (b) 対 hop 想定最大打点 220 と見て Archaludon HP>220 を維持する回復ゲート。
+  → 我々の Snorlax がベンチ負債である傍証（v009 規律の裏付け）。
+- **本番でも探索を使用**（MultiPly 系 beam search）: 公式 search API、CAND=6/depth40/margin ゲート/
+  時間予算/例外時ヒューリスティックフォールバック。`obs.search_begin_input`（本番 obs に常設の
+  シリアライズ状態文字列）経由 → **公開エージェントにも本番探索層が普及し始めている**。
+  我々の v013 guard と同族だが、彼らは「良さそうなら上書き」、我々は「全K破滅時のみ拒否権」でより保守的。
+- 含意: (1) 公開により **Archaludon+対Hop テックが我々の μ帯(800-950)に増える恐れ**
+  ＝我々の最悪マッチ(0.165-0.175)のシェア上昇リスク。/meta-watch で Archaludon シェア要監視。
+  (2) 静的な per-matchup 打点上限テーブルは、我々の guard が動的・正確に計算するものの下位互換＝採用不要。

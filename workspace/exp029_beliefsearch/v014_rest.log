@@ -1,0 +1,3 @@
+# guard(v013 cand) K=4 mode=field n=200
+  mirror_chq  wr=0.530 (106-89-5) err=0 [201s, 1.01s/game] stats={'checked': 14535, 'doomed': 673, 'fired': 270, 'errors': 0}
+  crustle     wr=0.790 (158-42-0) err=0 [89s, 0.45s/game] stats={'checked': 23640, 'doomed': 1187, 'fired': 479, 'errors': 0}

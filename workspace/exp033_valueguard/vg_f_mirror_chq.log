@@ -1,0 +1,10 @@
+  mirror_chq  wr=0.600 (12-8-0) err=0 [9.86s/g] stats={'checked': 978, 'fired': 115, 'errors': 0}
+  mirror_chq  wr=0.550 (11-8-1) err=0 [11.61s/g] stats={'checked': 1179, 'fired': 131, 'errors': 0}
+  mirror_chq  wr=0.500 (10-10-0) err=0 [11.30s/g] stats={'checked': 1206, 'fired': 114, 'errors': 0}
+  mirror_chq  wr=0.500 (10-10-0) err=0 [9.80s/g] stats={'checked': 1018, 'fired': 94, 'errors': 0}
+  mirror_chq  wr=0.600 (12-8-0) err=0 [8.48s/g] stats={'checked': 883, 'fired': 93, 'errors': 0}
+  mirror_chq  wr=0.600 (12-7-1) err=0 [9.85s/g] stats={'checked': 996, 'fired': 102, 'errors': 0}
+  mirror_chq  wr=0.750 (15-5-0) err=0 [9.89s/g] stats={'checked': 999, 'fired': 80, 'errors': 0}
+  mirror_chq  wr=0.650 (13-7-0) err=0 [10.80s/g] stats={'checked': 1107, 'fired': 95, 'errors': 0}
+  mirror_chq  wr=0.750 (15-4-1) err=0 [11.61s/g] stats={'checked': 1100, 'fired': 120, 'errors': 0}
+  mirror_chq  wr=0.500 (10-10-0) err=0 [12.03s/g] stats={'checked': 1156, 'fired': 158, 'errors': 0}

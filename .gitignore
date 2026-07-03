@@ -73,3 +73,5 @@ workspace/exp022_megastarmie/build_*/
 workspace/exp022_megastarmie/results/*.npz
 workspace/exp022_megastarmie/results/*.pt
 workspace/exp030_lomill/lo_agent/
+workspace/exp032_valuescale/native/
+workspace/exp032_valuescale/data/

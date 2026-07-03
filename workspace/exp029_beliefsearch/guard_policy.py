@@ -34,7 +34,13 @@ for p in (os.path.join(ROOT, "workspace", "exp001_harness"),
         sys.path.insert(0, p)
 
 from harness import load_engine  # noqa
-import revenge_policy as P  # noqa  (v012 pilot)
+if os.environ.get("GUARD_BASE", "revenge") == "exact":
+    _p31 = os.path.join(ROOT, "workspace", "exp031_exactrev")
+    if _p31 not in sys.path:
+        sys.path.insert(0, _p31)
+    import exact_policy as P  # noqa  (exp031 exact-window pilot)
+else:
+    import revenge_policy as P  # noqa  (v012 pilot)
 from prize_tracker import PrizeTracker  # noqa
 
 api, _ = load_engine()

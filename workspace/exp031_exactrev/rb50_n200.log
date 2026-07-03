@@ -1,0 +1,6 @@
+# exact-window RB=50 n=200
+  ex_lucario  wr=0.750 (150-50-0) err=0
+  dragapult   wr=0.165 (33-167-0) err=0
+  archaludon  wr=0.120 (24-176-0) err=0
+  mirror_chq  wr=0.540 (108-90-2) err=0
+  crustle     wr=0.795 (159-41-0) err=0
