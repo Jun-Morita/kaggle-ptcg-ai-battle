@@ -1,0 +1,10 @@
+  ex_lucario  wr=0.650 (13-7-0) err=0 [0.94s/g] stats={'planned': 840, 'fired': 33, 'bail': 0, 'errors': 0}
+  ex_lucario  wr=0.850 (17-3-0) err=0 [0.82s/g] stats={'planned': 818, 'fired': 36, 'bail': 0, 'errors': 0}
+  ex_lucario  wr=0.900 (18-2-0) err=0 [0.97s/g] stats={'planned': 917, 'fired': 21, 'bail': 0, 'errors': 0}
+  ex_lucario  wr=0.500 (10-10-0) err=0 [0.80s/g] stats={'planned': 761, 'fired': 15, 'bail': 0, 'errors': 0}
+  ex_lucario  wr=0.800 (16-4-0) err=0 [0.79s/g] stats={'planned': 781, 'fired': 21, 'bail': 0, 'errors': 0}
+  ex_lucario  wr=0.750 (15-5-0) err=0 [0.85s/g] stats={'planned': 777, 'fired': 38, 'bail': 0, 'errors': 0}
+  ex_lucario  wr=0.750 (15-5-0) err=0 [0.74s/g] stats={'planned': 772, 'fired': 24, 'bail': 0, 'errors': 0}
+  ex_lucario  wr=0.750 (15-5-0) err=0 [0.79s/g] stats={'planned': 803, 'fired': 27, 'bail': 0, 'errors': 0}
+  ex_lucario  wr=0.850 (17-3-0) err=0 [0.82s/g] stats={'planned': 826, 'fired': 24, 'bail': 0, 'errors': 0}
+  ex_lucario  wr=0.900 (18-2-0) err=0 [0.81s/g] stats={'planned': 795, 'fired': 34, 'bail': 0, 'errors': 0}

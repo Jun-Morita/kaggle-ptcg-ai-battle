@@ -1,0 +1,10 @@
+  crustle     wr=0.800 (16-4-0) err=0 [25s, 1.27s/game] stats={'checked': 848, 'doomed': 73, 'fired': 35, 'errors': 0}
+  crustle     wr=0.850 (17-3-0) err=0 [24s, 1.20s/game] stats={'checked': 769, 'doomed': 62, 'fired': 30, 'errors': 0}
+  crustle     wr=0.900 (18-2-0) err=0 [16s, 0.79s/game] stats={'checked': 631, 'doomed': 23, 'fired': 11, 'errors': 0}
+  crustle     wr=0.900 (18-2-0) err=0 [14s, 0.71s/game] stats={'checked': 585, 'doomed': 15, 'fired': 11, 'errors': 0}
+  crustle     wr=0.800 (16-4-0) err=0 [26s, 1.31s/game] stats={'checked': 827, 'doomed': 85, 'fired': 37, 'errors': 0}
+  crustle     wr=0.900 (18-2-0) err=0 [24s, 1.19s/game] stats={'checked': 839, 'doomed': 42, 'fired': 25, 'errors': 0}
+  crustle     wr=0.800 (16-4-0) err=0 [18s, 0.88s/game] stats={'checked': 645, 'doomed': 43, 'fired': 14, 'errors': 0}
+  crustle     wr=0.900 (18-2-0) err=0 [19s, 0.93s/game] stats={'checked': 664, 'doomed': 24, 'fired': 14, 'errors': 0}
+  crustle     wr=0.900 (18-2-0) err=0 [16s, 0.82s/game] stats={'checked': 606, 'doomed': 29, 'fired': 9, 'errors': 0}
+  crustle     wr=0.950 (19-1-0) err=0 [17s, 0.84s/game] stats={'checked': 645, 'doomed': 24, 'fired': 9, 'errors': 0}

@@ -1,0 +1,125 @@
+Warning: Looks like you're using an outdated `kaggle` version (installed: 2.2.1), please consider upgrading to the latest version (2.2.2)
+Warning: Looks like you're using an outdated `kaggle` version (installed: 2.2.1), please consider upgrading to the latest version (2.2.2)
+submission 54269701: 85 episodes
+
+=== 84 games by opponent archetype (our W-L-D) ===
+  lucario_ex           21-3-0  (wr=0.88, n=24)
+  mixed_ex4            8-9-0  (wr=0.47, n=17)
+  dragapult            1-12-0  (wr=0.08, n=13)
+  mixed_ex3            2-7-0  (wr=0.22, n=9)
+  non_ex_attackers     4-4-0  (wr=0.50, n=8)
+  mixed_ex1            3-3-0  (wr=0.50, n=6)
+  crustle_control      4-0-0  (wr=1.00, n=4)
+  ex_beatdown          1-1-0  (wr=0.50, n=2)
+  mixed_ex2            0-1-0  (wr=0.00, n=1)
+
+=== by opponent team ===
+  uesi                         0-1-0
+  Naoshin                      1-0-0
+  Sukjae Cho                   1-0-0
+  Baidalin Adilzhan [dsml.kz]  1-0-0
+  TAKUTO INOUE                 0-1-0
+  czhhhhh                      1-0-0
+  塩尻祐大                         1-0-0
+  Mibbles' Lab                 0-1-0
+  hideMonkey                   0-1-0
+  Rintaro Moriwaki             1-0-0
+  Adam Radziwanowski           0-1-0
+  nogu                         0-1-0
+  L7n                          0-1-0
+  Tokiya Osuka                 1-0-0
+  yyy yyy                      1-0-0
+  N.Y                          0-1-0
+  Yigit Kayali                 0-1-0
+  Masahiro Nagasawa            0-1-0
+   me-keh-dev                  1-0-0
+  haruki nishio                0-1-0
+  denden12                     1-0-0
+  Eruto Kondo                  1-0-0
+  mhiro2                       0-1-0
+  Jason Anderson               0-1-0
+  Kamal Das                    0-1-0
+  charu                        0-1-0
+  yawara                       0-1-0
+  Harigane Ippei               0-1-0
+  StephenNedumpally            0-1-0
+  [ODS] waniz                  0-1-0
+  DittleDev                    0-1-0
+  hatakazu93                   0-1-0
+  Ha huy                       1-0-0
+  AibePC                       1-0-0
+  TG_Aetheryx                  0-1-0
+  Gotta Prompt ’Em All         0-1-0
+  BluezLee                     0-1-0
+  Ryosei T                     0-1-0
+  Kaikaku                      1-0-0
+  matsurih                     0-1-0
+  fp563yu                      1-0-0
+  Poké Bowl                    1-0-0
+  SCU_12600883                 1-0-0
+  Kazuhiro Masuyama            1-0-0
+  Vishesh Banna                1-0-0
+  Haruto Koizumi               1-0-0
+  Tomonobu Niwa                1-0-0
+  Manoj Gowda BG               1-0-0
+  Shunsuke Kurita              1-0-0
+  sk1012                       1-0-0
+  ryusei                       1-0-0
+  fufufufufuko                 0-1-0
+  datawizardd                  0-1-0
+  Team BlackBox                1-0-0
+  tks                          1-0-0
+  Oleksandr_Savsunenko         0-1-0
+  Mojumbo                      0-1-0
+  チーム魔剤                        1-0-0
+  Ilham Sadewa                 1-0-0
+  ktr                          0-1-0
+  okg                          1-0-0
+  やまちー                         0-1-0
+  Pavel Pavlov                 1-0-0
+  HaogeBob                     1-0-0
+  テライFACC                      0-1-0
+  secchanu                     0-1-0
+  yoshi                        1-0-0
+  koiwashi                     0-1-0
+  Toshiki Tsuchiya             1-0-0
+  junXD5                       0-1-0
+  鈴木裕登                         1-0-0
+  Hiyato                       1-0-0
+  あぴょぴょ                        0-1-0
+  Ryutaro Murayama             1-0-0
+  KollekTCG                    1-0-0
+  cha7ura                      0-1-0
+  midnq                        1-0-0
+  wangyuou                     0-1-0
+  fanmili                      1-0-0
+  どんぐりん                        1-0-0
+  satory074                    1-0-0
+  kinakomochi                  1-0-0
+  urnotsam                     0-1-0
+  daigakupotato                1-0-0
+
+wrote /home/jun/kaggle-ptcg-ai-battle/workspace/exp011_meta_watch/results/meta_0704_54269701.json
+
+=== meta shift vs meta_0701_54044198.json (n=121) — share Δ ===
+  lucario_ex           29% -> 29%  (-0%)
+  mixed_ex4            12% -> 20%  (+9%)
+  dragapult            6% -> 15%  (+10%)
+  mixed_ex3            14% -> 11%  (-3%)
+  non_ex_attackers     20% -> 10%  (-10%)
+  mixed_ex1            7% -> 7%  (-0%)
+  crustle_control      8% -> 5%  (-4%)
+  ex_beatdown          3% -> 2%  (-1%)
+  mixed_ex2            1% -> 1%  (+0%)
+No major rotation (>=15% share change). Hold / monitor.
+
+=== LB top 8 ===
+Next Page Token = CfDJ8EgiEKLz2SFKpKvT-xxAYKKXFmhY-wdI_KSQmsnm9jgT6NnKLmQONiNiaVhh829qXbaaB1wKO2xuGpcEcjeJROk
+  tonakaiiii                 1247.1
+  kazuki0123                 1161.3
+  disgruntled.coffee         1158.1
+  Yushin Ito                 1150.9
+  S4nkurero                  1147.5
+  btk15049                   1144.1
+  XP3RiX                     1143.0
+  WinDecks                   1140.6

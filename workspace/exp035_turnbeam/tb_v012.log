@@ -1,0 +1,10 @@
+  v012_plain  wr=0.450 (9-10-1) err=0 [1.07s/g] stats={'planned': 1108, 'fired': 36, 'bail': 0, 'errors': 0}
+  v012_plain  wr=0.400 (8-11-1) err=0 [0.92s/g] stats={'planned': 986, 'fired': 39, 'bail': 0, 'errors': 0}
+  v012_plain  wr=0.500 (10-10-0) err=0 [0.93s/g] stats={'planned': 1050, 'fired': 29, 'bail': 0, 'errors': 0}
+  v012_plain  wr=0.450 (9-11-0) err=0 [1.00s/g] stats={'planned': 1087, 'fired': 34, 'bail': 0, 'errors': 0}
+  v012_plain  wr=0.500 (10-9-1) err=0 [2.52s/g] stats={'planned': 2555, 'fired': 38, 'bail': 0, 'errors': 0}
+  v012_plain  wr=0.550 (11-9-0) err=0 [1.00s/g] stats={'planned': 1077, 'fired': 53, 'bail': 0, 'errors': 0}
+  v012_plain  wr=0.600 (12-8-0) err=0 [0.97s/g] stats={'planned': 1008, 'fired': 48, 'bail': 0, 'errors': 0}
+  v012_plain  wr=0.500 (10-10-0) err=0 [0.92s/g] stats={'planned': 1078, 'fired': 37, 'bail': 0, 'errors': 0}
+  v012_plain  wr=0.700 (14-6-0) err=0 [1.08s/g] stats={'planned': 1040, 'fired': 49, 'bail': 0, 'errors': 0}
+  v012_plain  wr=0.650 (13-7-0) err=0 [0.93s/g] stats={'planned': 981, 'fired': 41, 'bail': 0, 'errors': 0}

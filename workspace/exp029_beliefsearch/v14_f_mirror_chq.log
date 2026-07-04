@@ -1,0 +1,10 @@
+  mirror_chq  wr=0.550 (11-8-1) err=0 [38s, 1.88s/game] stats={'checked': 1099, 'doomed': 66, 'fired': 23, 'errors': 0}
+  mirror_chq  wr=0.650 (13-6-1) err=0 [78s, 3.90s/game] stats={'checked': 2549, 'doomed': 58, 'fired': 30, 'errors': 0}
+  mirror_chq  wr=0.700 (14-6-0) err=0 [37s, 1.85s/game] stats={'checked': 1249, 'doomed': 68, 'fired': 44, 'errors': 0}
+  mirror_chq  wr=0.400 (8-12-0) err=0 [34s, 1.71s/game] stats={'checked': 967, 'doomed': 67, 'fired': 15, 'errors': 0}
+  mirror_chq  wr=0.500 (10-10-0) err=0 [46s, 2.32s/game] stats={'checked': 1156, 'doomed': 76, 'fired': 26, 'errors': 0}
+  mirror_chq  wr=0.700 (14-5-1) err=0 [83s, 4.17s/game] stats={'checked': 2656, 'doomed': 86, 'fired': 20, 'errors': 0}
+  mirror_chq  wr=0.550 (11-9-0) err=0 [42s, 2.08s/game] stats={'checked': 1140, 'doomed': 90, 'fired': 29, 'errors': 0}
+  mirror_chq  wr=0.850 (17-3-0) err=0 [34s, 1.71s/game] stats={'checked': 1140, 'doomed': 44, 'fired': 25, 'errors': 0}
+  mirror_chq  wr=0.700 (14-5-1) err=0 [55s, 2.73s/game] stats={'checked': 2084, 'doomed': 67, 'fired': 39, 'errors': 0}
+  mirror_chq  wr=0.600 (12-8-0) err=0 [32s, 1.59s/game] stats={'checked': 1045, 'doomed': 42, 'fired': 20, 'errors': 0}

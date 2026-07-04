@@ -1,0 +1,10 @@
+  ex_lucario  wr=0.900 (18-2-0) err=0 [35s, 1.74s/game] stats={'checked': 959, 'doomed': 23, 'fired': 11, 'errors': 0}
+  ex_lucario  wr=0.600 (12-8-0) err=0 [32s, 1.61s/game] stats={'checked': 869, 'doomed': 47, 'fired': 18, 'errors': 0}
+  ex_lucario  wr=0.750 (15-5-0) err=0 [19s, 0.95s/game] stats={'checked': 690, 'doomed': 22, 'fired': 6, 'errors': 0}
+  ex_lucario  wr=0.850 (17-2-1) err=0 [27s, 1.36s/game] stats={'checked': 910, 'doomed': 34, 'fired': 10, 'errors': 0}
+  ex_lucario  wr=0.650 (13-7-0) err=0 [27s, 1.33s/game] stats={'checked': 778, 'doomed': 43, 'fired': 15, 'errors': 0}
+  ex_lucario  wr=0.550 (11-9-0) err=0 [36s, 1.81s/game] stats={'checked': 890, 'doomed': 39, 'fired': 13, 'errors': 0}
+  ex_lucario  wr=0.850 (17-3-0) err=0 [26s, 1.32s/game] stats={'checked': 762, 'doomed': 34, 'fired': 12, 'errors': 0}
+  ex_lucario  wr=0.900 (18-2-0) err=0 [31s, 1.53s/game] stats={'checked': 918, 'doomed': 30, 'fired': 10, 'errors': 0}
+  ex_lucario  wr=0.850 (17-3-0) err=0 [32s, 1.61s/game] stats={'checked': 893, 'doomed': 34, 'fired': 9, 'errors': 0}
+  ex_lucario  wr=0.850 (17-3-0) err=0 [24s, 1.21s/game] stats={'checked': 774, 'doomed': 21, 'fired': 11, 'errors': 0}

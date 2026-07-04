@@ -1,0 +1,2 @@
+# guard(v013 cand) K=4 mode=field n=80
+  dragapult   wr=0.200 (16-64-0) err=0 [40s, 0.50s/game] stats={'checked': 2831, 'doomed': 43, 'fired': 27, 'errors': 0}

@@ -34,13 +34,25 @@ for p in (os.path.join(ROOT, "workspace", "exp001_harness"),
         sys.path.insert(0, p)
 
 from harness import load_engine  # noqa
-if os.environ.get("GUARD_BASE", "revenge") == "exact":
+_GB = os.environ.get("GUARD_BASE", "revenge")
+if _GB == "exact":
     _p31 = os.path.join(ROOT, "workspace", "exp031_exactrev")
     if _p31 not in sys.path:
         sys.path.insert(0, _p31)
     import exact_policy as P  # noqa  (exp031 exact-window pilot)
+elif _GB == "antispread":
+    _p34 = os.path.join(ROOT, "workspace", "exp034_antispread")
+    if _p34 not in sys.path:
+        sys.path.insert(0, _p34)
+    import antispread_policy as P  # noqa  (exp034 gated anti-dragapult discipline)
+elif _GB == "turnbeam":
+    _p35 = os.path.join(ROOT, "workspace", "exp035_turnbeam")
+    if _p35 not in sys.path:
+        sys.path.insert(0, _p35)
+    import turnbeam_policy as P  # noqa  (exp035 verified turn-sequencing)
 else:
     import revenge_policy as P  # noqa  (v012 pilot)
+import revenge_policy as RVP  # rollout policy is ALWAYS the cheap plain pilot
 from prize_tracker import PrizeTracker  # noqa
 
 api, _ = load_engine()
@@ -93,8 +105,8 @@ def _max_energy(player):
 
 def make_agent(deck):
     base = P.make_agent(deck)
-    roll_me = P.make_agent(deck)      # plays our seat inside the search
-    roll_opp = P.make_agent(deck)     # plays the opponent seat (generic rules)
+    roll_me = RVP.make_agent(deck)    # plays our seat inside the search (plain pilot:
+    roll_opp = RVP.make_agent(deck)   # cheap + no beam recursion inside guard rollouts)
     tracker = PrizeTracker(deck)
     rng = random.Random(20260702)
 

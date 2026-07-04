@@ -1,0 +1,10 @@
+  v012_plain  wr=0.550 (11-9-0) err=0 [27s, 1.35s/game] stats={'checked': 987, 'doomed': 49, 'fired': 22, 'errors': 0}
+  v012_plain  wr=0.650 (13-7-0) err=0 [44s, 2.20s/game] stats={'checked': 1280, 'doomed': 85, 'fired': 46, 'errors': 0}
+  v012_plain  wr=0.700 (14-6-0) err=0 [29s, 1.44s/game] stats={'checked': 984, 'doomed': 47, 'fired': 27, 'errors': 0}
+  v012_plain  wr=0.650 (13-7-0) err=0 [49s, 2.43s/game] stats={'checked': 1261, 'doomed': 134, 'fired': 66, 'errors': 0}
+  v012_plain  wr=0.550 (11-9-0) err=0 [37s, 1.87s/game] stats={'checked': 1118, 'doomed': 91, 'fired': 40, 'errors': 0}
+  v012_plain  wr=0.350 (7-12-1) err=0 [29s, 1.47s/game] stats={'checked': 1009, 'doomed': 50, 'fired': 22, 'errors': 0}
+  v012_plain  wr=0.600 (12-8-0) err=0 [37s, 1.87s/game] stats={'checked': 1151, 'doomed': 56, 'fired': 23, 'errors': 0}
+  v012_plain  wr=0.600 (12-8-0) err=0 [31s, 1.55s/game] stats={'checked': 1012, 'doomed': 58, 'fired': 28, 'errors': 0}
+  v012_plain  wr=0.650 (13-7-0) err=0 [39s, 1.97s/game] stats={'checked': 1220, 'doomed': 82, 'fired': 38, 'errors': 0}
+  v012_plain  wr=0.400 (8-10-2) err=0 [81s, 4.05s/game] stats={'checked': 2380, 'doomed': 132, 'fired': 54, 'errors': 0}
