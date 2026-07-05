@@ -1,0 +1,5 @@
+  crustle     wr=0.850 (17-3-0) err=0 [0.84s/g] stats={'checked': 585, 'doomed': 43, 'fired': 31, 'errors': 0}
+  crustle     wr=0.950 (19-1-0) err=0 [0.77s/g] stats={'checked': 554, 'doomed': 26, 'fired': 12, 'errors': 0}
+  crustle     wr=0.900 (18-2-0) err=0 [0.87s/g] stats={'checked': 704, 'doomed': 26, 'fired': 8, 'errors': 0}
+  crustle     wr=0.900 (18-2-0) err=0 [0.79s/g] stats={'checked': 614, 'doomed': 40, 'fired': 8, 'errors': 0}
+  crustle     wr=0.900 (18-2-0) err=0 [0.91s/g] stats={'checked': 651, 'doomed': 44, 'fired': 12, 'errors': 0}

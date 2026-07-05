@@ -1,0 +1,2 @@
+  mirror_chq  wr=0.300 (6-14-0) err=0 [4.07s/g] stats={'planned': 944, 'fired': 262, 'errors': 0}
+  mirror_chq  wr=0.200 (4-15-1) err=0 [10.98s/g] stats={'planned': 2339, 'fired': 629, 'errors': 0}

@@ -79,3 +79,4 @@ workspace/exp032_valuescale/data2/
 workspace/exp032_valuescale/*.npz
 workspace/exp029_beliefsearch/build_v0*/
 workspace/exp033_valueguard/chunks*/
+workspace/exp036_ga/gens/

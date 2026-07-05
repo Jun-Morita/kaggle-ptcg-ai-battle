@@ -148,4 +148,7 @@ def make_agent(deck):
     def agent(obs_dict):
         o = mod.to_observation_class(obs_dict)
         return list(deck) if o.select is None else mod.agent(obs_dict)
+    agent._mod = mod  # non-invasive: lets callers snapshot/restore cross-turn
+                       # globals (e.g. _rev) when reusing this instance for
+                       # hypothetical search rollouts spanning turn boundaries
     return agent

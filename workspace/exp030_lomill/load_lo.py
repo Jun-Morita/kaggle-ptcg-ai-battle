@@ -36,4 +36,6 @@ def make_lo_agent():
         if o.select is None:
             return list(deck)
         return mod.agent(obs_dict)
+    agent._mod = mod  # non-invasive: lets callers snapshot/restore this pilot's
+                       # cross-turn globals when reused for hypothetical search rollouts
     return agent

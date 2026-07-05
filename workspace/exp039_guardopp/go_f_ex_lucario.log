@@ -1,0 +1,5 @@
+  ex_lucario  wr=0.850 (17-3-0) err=0 [1.52s/g] stats={'checked': 915, 'doomed': 18, 'fired': 8, 'errors': 0}
+  ex_lucario  wr=0.700 (14-6-0) err=0 [1.57s/g] stats={'checked': 806, 'doomed': 50, 'fired': 20, 'errors': 0}
+  ex_lucario  wr=0.750 (15-5-0) err=0 [1.64s/g] stats={'checked': 782, 'doomed': 55, 'fired': 9, 'errors': 0}
+  ex_lucario  wr=0.800 (16-4-0) err=0 [1.42s/g] stats={'checked': 810, 'doomed': 39, 'fired': 12, 'errors': 0}
+  ex_lucario  wr=0.800 (16-4-0) err=0 [1.75s/g] stats={'checked': 907, 'doomed': 42, 'fired': 12, 'errors': 0}

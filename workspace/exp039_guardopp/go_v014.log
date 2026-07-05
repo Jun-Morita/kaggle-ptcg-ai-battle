@@ -1,0 +1,5 @@
+  v014_beam   wr=0.550 (11-9-0) err=0 [3.18s/g] stats={'checked': 1199, 'doomed': 83, 'fired': 34, 'errors': 0}
+  v014_beam   wr=0.500 (10-10-0) err=0 [3.04s/g] stats={'checked': 1289, 'doomed': 76, 'fired': 50, 'errors': 0}
+  v014_beam   wr=0.500 (10-10-0) err=0 [2.57s/g] stats={'checked': 1070, 'doomed': 61, 'fired': 30, 'errors': 0}
+  v014_beam   wr=0.500 (10-10-0) err=0 [2.22s/g] stats={'checked': 956, 'doomed': 45, 'fired': 19, 'errors': 0}
+  v014_beam   wr=0.550 (11-9-0) err=0 [3.21s/g] stats={'checked': 1214, 'doomed': 73, 'fired': 31, 'errors': 0}

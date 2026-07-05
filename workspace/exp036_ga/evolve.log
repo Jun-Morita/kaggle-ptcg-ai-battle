@@ -1,0 +1,48 @@
+resuming from gen 0
+gen 001: best=0.624 mean=0.499 champ_detail={'ex_lucario': 0.7142857142857143, 'dragapult': 0.1, 'mirror': 0.9, 'grimmsnarl': 0.8, 'crustle': 0.8, 'archaludon': 0.5}
+gen 002: best=0.587 mean=0.485 champ_detail={'ex_lucario': 0.8571428571428571, 'dragapult': 0.1, 'mirror': 0.4, 'grimmsnarl': 0.8, 'crustle': 1.0, 'archaludon': 0.5}
+gen 003: best=0.605 mean=0.503 champ_detail={'ex_lucario': 1.0, 'dragapult': 0.2, 'mirror': 0.4, 'grimmsnarl': 0.6, 'crustle': 1.0, 'archaludon': 0.25}
+gen 004: best=0.637 mean=0.517 champ_detail={'ex_lucario': 0.8571428571428571, 'dragapult': 0.3, 'mirror': 0.7, 'grimmsnarl': 0.8, 'crustle': 1.0, 'archaludon': 0.0}
+gen 005: best=0.622 mean=0.519 champ_detail={'ex_lucario': 0.8571428571428571, 'dragapult': 0.3, 'mirror': 0.6, 'grimmsnarl': 0.8, 'crustle': 0.8, 'archaludon': 0.25}
+  holdout: 0.650 {'lo': 0.9, 'charmq_mirror': 0.4}
+gen 006: best=0.659 mean=0.527 champ_detail={'ex_lucario': 0.9285714285714286, 'dragapult': 0.3, 'mirror': 0.9, 'grimmsnarl': 0.6, 'crustle': 0.8, 'archaludon': 0.0}
+gen 007: best=0.620 mean=0.502 champ_detail={'ex_lucario': 1.0, 'dragapult': 0.5, 'mirror': 0.4, 'grimmsnarl': 0.4, 'crustle': 1.0, 'archaludon': 0.0}
+gen 008: best=0.625 mean=0.533 champ_detail={'ex_lucario': 1.0, 'dragapult': 0.1, 'mirror': 0.5, 'grimmsnarl': 1.0, 'crustle': 0.8, 'archaludon': 0.25}
+gen 009: best=0.637 mean=0.522 champ_detail={'ex_lucario': 0.8571428571428571, 'dragapult': 0.5, 'mirror': 0.6, 'grimmsnarl': 0.6, 'crustle': 1.0, 'archaludon': 0.0}
+gen 010: best=0.642 mean=0.549 champ_detail={'ex_lucario': 0.8571428571428571, 'dragapult': 0.2, 'mirror': 0.6, 'grimmsnarl': 1.0, 'crustle': 1.0, 'archaludon': 0.25}
+  holdout: 0.600 {'lo': 0.85, 'charmq_mirror': 0.35}
+gen 011: best=0.647 mean=0.542 champ_detail={'ex_lucario': 0.8571428571428571, 'dragapult': 0.2, 'mirror': 0.6, 'grimmsnarl': 1.0, 'crustle': 0.8, 'archaludon': 0.5}
+gen 012: best=0.644 mean=0.512 champ_detail={'ex_lucario': 0.7142857142857143, 'dragapult': 0.3, 'mirror': 0.6, 'grimmsnarl': 1.0, 'crustle': 1.0, 'archaludon': 0.5}
+gen 013: best=0.689 mean=0.526 champ_detail={'ex_lucario': 0.9285714285714286, 'dragapult': 0.3, 'mirror': 0.6, 'grimmsnarl': 1.0, 'crustle': 0.8, 'archaludon': 0.5}
+gen 014: best=0.626 mean=0.525 champ_detail={'ex_lucario': 0.7857142857142857, 'dragapult': 0.3, 'mirror': 0.6, 'grimmsnarl': 0.8, 'crustle': 0.8, 'archaludon': 0.5}
+gen 015: best=0.579 mean=0.518 champ_detail={'ex_lucario': 0.9285714285714286, 'dragapult': 0.4, 'mirror': 0.6, 'grimmsnarl': 0.2, 'crustle': 0.8, 'archaludon': 0.0}
+  holdout: 0.625 {'lo': 0.8, 'charmq_mirror': 0.45}
+gen 016: best=0.640 mean=0.511 champ_detail={'ex_lucario': 1.0, 'dragapult': 0.1, 'mirror': 0.7, 'grimmsnarl': 0.8, 'crustle': 1.0, 'archaludon': 0.0}
+gen 017: best=0.620 mean=0.519 champ_detail={'ex_lucario': 1.0, 'dragapult': 0.3, 'mirror': 0.5, 'grimmsnarl': 0.8, 'crustle': 0.8, 'archaludon': 0.0}
+gen 018: best=0.644 mean=0.507 champ_detail={'ex_lucario': 0.9285714285714286, 'dragapult': 0.3, 'mirror': 0.6, 'grimmsnarl': 0.6, 'crustle': 1.0, 'archaludon': 0.25}
+gen 019: best=0.667 mean=0.539 champ_detail={'ex_lucario': 0.8571428571428571, 'dragapult': 0.3, 'mirror': 0.6, 'grimmsnarl': 0.8, 'crustle': 1.0, 'archaludon': 0.5}
+gen 020: best=0.689 mean=0.521 champ_detail={'ex_lucario': 0.9285714285714286, 'dragapult': 0.2, 'mirror': 0.8, 'grimmsnarl': 0.8, 'crustle': 0.8, 'archaludon': 0.5}
+  holdout: 0.775 {'lo': 0.9, 'charmq_mirror': 0.65}
+gen 021: best=0.651 mean=0.513 champ_detail={'ex_lucario': 0.7857142857142857, 'dragapult': 0.2, 'mirror': 0.6, 'grimmsnarl': 0.8, 'crustle': 1.0, 'archaludon': 0.75}
+gen 022: best=0.670 mean=0.549 champ_detail={'ex_lucario': 1.0, 'dragapult': 0.1, 'mirror': 0.8, 'grimmsnarl': 0.6, 'crustle': 0.8, 'archaludon': 0.5}
+gen 023: best=0.734 mean=0.529 champ_detail={'ex_lucario': 0.9285714285714286, 'dragapult': 0.3, 'mirror': 0.7, 'grimmsnarl': 0.8, 'crustle': 1.0, 'archaludon': 0.75}
+gen 024: best=0.617 mean=0.518 champ_detail={'ex_lucario': 0.8571428571428571, 'dragapult': 0.2, 'mirror': 0.6, 'grimmsnarl': 1.0, 'crustle': 1.0, 'archaludon': 0.0}
+gen 025: best=0.609 mean=0.513 champ_detail={'ex_lucario': 0.7142857142857143, 'dragapult': 0.1, 'mirror': 0.6, 'grimmsnarl': 0.8, 'crustle': 1.0, 'archaludon': 0.75}
+  holdout: 0.750 {'lo': 0.85, 'charmq_mirror': 0.65}
+gen 026: best=0.650 mean=0.518 champ_detail={'ex_lucario': 1.0, 'dragapult': 0.1, 'mirror': 0.6, 'grimmsnarl': 0.6, 'crustle': 1.0, 'archaludon': 0.5}
+gen 027: best=0.661 mean=0.524 champ_detail={'ex_lucario': 0.7857142857142857, 'dragapult': 0.3, 'mirror': 0.7, 'grimmsnarl': 1.0, 'crustle': 1.0, 'archaludon': 0.25}
+gen 028: best=0.656 mean=0.526 champ_detail={'ex_lucario': 0.7857142857142857, 'dragapult': 0.2, 'mirror': 1.0, 'grimmsnarl': 1.0, 'crustle': 0.8, 'archaludon': 0.0}
+gen 029: best=0.662 mean=0.514 champ_detail={'ex_lucario': 0.8571428571428571, 'dragapult': 0.4, 'mirror': 0.6, 'grimmsnarl': 0.8, 'crustle': 1.0, 'archaludon': 0.25}
+gen 030: best=0.689 mean=0.514 champ_detail={'ex_lucario': 0.9285714285714286, 'dragapult': 0.1, 'mirror': 0.8, 'grimmsnarl': 1.0, 'crustle': 0.8, 'archaludon': 0.5}
+  holdout: 0.725 {'lo': 0.9, 'charmq_mirror': 0.55}
+gen 031: best=0.641 mean=0.510 champ_detail={'ex_lucario': 0.7857142857142857, 'dragapult': 0.1, 'mirror': 0.8, 'grimmsnarl': 1.0, 'crustle': 1.0, 'archaludon': 0.25}
+gen 032: best=0.665 mean=0.529 champ_detail={'ex_lucario': 1.0, 'dragapult': 0.1, 'mirror': 0.8, 'grimmsnarl': 0.8, 'crustle': 0.8, 'archaludon': 0.25}
+gen 033: best=0.669 mean=0.500 champ_detail={'ex_lucario': 0.9285714285714286, 'dragapult': 0.3, 'mirror': 0.7, 'grimmsnarl': 0.4, 'crustle': 1.0, 'archaludon': 0.5}
+gen 034: best=0.686 mean=0.532 champ_detail={'ex_lucario': 0.7857142857142857, 'dragapult': 0.5, 'mirror': 0.6, 'grimmsnarl': 1.0, 'crustle': 0.8, 'archaludon': 0.5}
+gen 035: best=0.634 mean=0.529 champ_detail={'ex_lucario': 0.7142857142857143, 'dragapult': 0.3, 'mirror': 0.9, 'grimmsnarl': 0.8, 'crustle': 1.0, 'archaludon': 0.0}
+  holdout: 0.750 {'lo': 0.85, 'charmq_mirror': 0.65}
+gen 036: best=0.639 mean=0.506 champ_detail={'ex_lucario': 0.9285714285714286, 'dragapult': 0.5, 'mirror': 0.5, 'grimmsnarl': 0.8, 'crustle': 0.8, 'archaludon': 0.0}
+gen 037: best=0.597 mean=0.507 champ_detail={'ex_lucario': 0.8571428571428571, 'dragapult': 0.3, 'mirror': 0.6, 'grimmsnarl': 0.6, 'crustle': 1.0, 'archaludon': 0.0}
+gen 038: best=0.687 mean=0.527 champ_detail={'ex_lucario': 0.8571428571428571, 'dragapult': 0.4, 'mirror': 0.6, 'grimmsnarl': 0.8, 'crustle': 1.0, 'archaludon': 0.5}
+gen 039: best=0.704 mean=0.503 champ_detail={'ex_lucario': 0.9285714285714286, 'dragapult': 0.3, 'mirror': 0.7, 'grimmsnarl': 1.0, 'crustle': 1.0, 'archaludon': 0.25}
+done

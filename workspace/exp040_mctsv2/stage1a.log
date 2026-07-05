@@ -1,0 +1,12 @@
+device=cuda card_count=1268 attack_count=1557 decoder_size=73847
+[gen 0] eval vs random: 14W-6L-0D (70%)
+[gen 0] samples=5971 loss=0.2711 828s
+[gen 1] eval vs random: 7W-13L-0D (35%)
+[gen 1] samples=5625 loss=0.1425 1369s
+[gen 2] eval vs random: 8W-12L-0D (40%)
+[gen 2] samples=4781 loss=0.0656 1337s
+[gen 3] eval vs random: 8W-12L-0D (40%)
+[gen 3] samples=4205 loss=0.0372 1207s
+[gen 4] eval vs random: 13W-7L-0D (65%)
+[gen 4] samples=4326 loss=0.0344 1123s
+done. saved models + train_history.json

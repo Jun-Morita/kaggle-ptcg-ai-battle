@@ -1,0 +1,8 @@
+loaded results/model_gen4.pth on cuda; search_count=16 n=40/opp
+vs random      winrate=0.700 (28-12-0) maxmove=10.02s 3.54s/game
+vs dragapult   winrate=0.000 (0-40-0) maxmove=7.37s 2.27s/game
+vs lucario_v1  winrate=0.000 (0-40-0) maxmove=2.58s 0.82s/game
+vs lucario_v2  winrate=0.000 (0-40-0) maxmove=4.03s 0.77s/game
+
+avg vs rule-based = 0.000  (bar: lucario_v2 0.680)
+saved -> /home/jun/kaggle-ptcg-ai-battle/workspace/exp040_mctsv2/results/pool_eval.json

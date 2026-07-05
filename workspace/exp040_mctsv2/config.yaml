@@ -1,0 +1,14 @@
+# exp004: AlphaZero-style self-play (RL + MCTS)
+experiment: exp004_mcts
+hypothesis: >
+  公式 RL/MCTS サンプル（Transformer value/policy + MCTS over Search API + 自己対戦）を
+  動かし、学習価値関数で exp002 のバー(プール平均 lucario_v2 0.680)を超える。
+base: 公式 "Reinforcement Learning and MCTS" サンプル（references/raw/official_notebooks/）
+seed: 42
+deck: lucario_v2
+run1: {generations: 5, search_count: 16, selfplay: 40, eval: 20, d_model: 128}
+model: {d_model: 128, heads: 2, ff: 256, enc_layers: 1, dec_layers: 1}  # ~50MB/ckpt
+result: NEGATIVE  # gen0(untrained) 0.033, gen3 0.017 vs pool (bar 0.680)
+notes: >
+  pipeline は GPU で完走。学習データ過少＋placeholder相手モデルで、デモ規模では非競争的。
+  models(.pth)/log は results/(gitignore)。

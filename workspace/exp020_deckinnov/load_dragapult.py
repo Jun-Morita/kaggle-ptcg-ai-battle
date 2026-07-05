@@ -31,4 +31,7 @@ def make_dragapult_agent():
         spec.loader.exec_module(mod)
     finally:
         os.chdir(prev)
+    mod.agent._mod = mod  # non-invasive: lets callers snapshot/restore this
+                          # pilot's cross-turn globals (pre_turn_log etc.) when
+                          # reused for hypothetical search rollouts
     return mod.agent

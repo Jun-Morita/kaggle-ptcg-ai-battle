@@ -1,0 +1,5 @@
+  mirror_chq  wr=0.650 (13-7-0) err=0 [2.04s/g] stats={'checked': 1128, 'doomed': 60, 'fired': 29, 'errors': 0}
+  mirror_chq  wr=0.600 (12-7-1) err=0 [1.83s/g] stats={'checked': 1045, 'doomed': 65, 'fired': 37, 'errors': 0}
+  mirror_chq  wr=0.550 (11-9-0) err=0 [1.88s/g] stats={'checked': 950, 'doomed': 79, 'fired': 43, 'errors': 0}
+  mirror_chq  wr=0.450 (9-10-1) err=0 [2.08s/g] stats={'checked': 1129, 'doomed': 62, 'fired': 24, 'errors': 0}
+  mirror_chq  wr=0.700 (14-6-0) err=0 [2.38s/g] stats={'checked': 1177, 'doomed': 71, 'fired': 22, 'errors': 0}

@@ -1,0 +1,5 @@
+  v012_plain  wr=0.450 (9-10-1) err=0 [2.02s/g] stats={'checked': 1057, 'doomed': 67, 'fired': 32, 'errors': 0}
+  v012_plain  wr=0.600 (12-8-0) err=0 [2.58s/g] stats={'checked': 1254, 'doomed': 124, 'fired': 72, 'errors': 0}
+  v012_plain  wr=0.350 (7-13-0) err=0 [2.67s/g] stats={'checked': 1110, 'doomed': 125, 'fired': 39, 'errors': 0}
+  v012_plain  wr=0.450 (9-10-1) err=0 [5.15s/g] stats={'checked': 2501, 'doomed': 176, 'fired': 101, 'errors': 0}
+  v012_plain  wr=0.600 (12-7-1) err=0 [2.22s/g] stats={'checked': 1213, 'doomed': 97, 'fired': 43, 'errors': 0}

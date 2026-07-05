@@ -35,4 +35,7 @@ def make_archaludon_agent():
         if o.select is None:
             return list(deck)
         return mod.agent(obs_dict)
+    agent._mod = mod  # non-invasive: lets callers snapshot/restore this pilot's
+                       # cross-turn globals (_cur_turn_logs etc.) when reused for
+                       # hypothetical search rollouts
     return agent

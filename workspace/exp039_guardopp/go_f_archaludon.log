@@ -1,0 +1,5 @@
+  archaludon  wr=0.300 (6-14-0) err=0 [1.20s/g] stats={'checked': 100, 'doomed': 0, 'fired': 0, 'errors': 0}
+  archaludon  wr=0.050 (1-19-0) err=0 [1.58s/g] stats={'checked': 54, 'doomed': 0, 'fired': 0, 'errors': 0}
+  archaludon  wr=0.250 (5-15-0) err=0 [1.16s/g] stats={'checked': 71, 'doomed': 0, 'fired': 0, 'errors': 0}
+  archaludon  wr=0.100 (2-18-0) err=0 [0.97s/g] stats={'checked': 69, 'doomed': 0, 'fired': 0, 'errors': 0}
+  archaludon  wr=0.250 (5-15-0) err=0 [1.05s/g] stats={'checked': 35, 'doomed': 0, 'fired': 0, 'errors': 0}
