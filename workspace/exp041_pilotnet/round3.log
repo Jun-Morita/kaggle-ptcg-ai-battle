@@ -1,0 +1,18 @@
+resumed from results/pre1b/model_ep2.pth
+device=cuda files=4 tag=pre1c
+{"epoch": 0, "loss": 0.1774, "batches": 21671, "sec": 352, "n_val": 147778, "acc": {"all": 0.7947, "ex_lucario": 0.7937, "multi": 0.7765, "archaludon": 0.794, "crustle": 0.7886, "dragapult": 0.8021, "mirror_revenge": 0.795}, "auc_by_phase": {"q1": 0.8392, "q2": 0.8914, "q3": 0.9185, "q4": 0.9697}}
+{"epoch": 1, "loss": 0.1749, "batches": 21671, "sec": 399, "n_val": 147778, "acc": {"all": 0.7984, "ex_lucario": 0.7999, "multi": 0.7806, "archaludon": 0.7999, "crustle": 0.7843, "dragapult": 0.7969, "mirror_revenge": 0.8052}, "auc_by_phase": {"q1": 0.8492, "q2": 0.8853, "q3": 0.9086, "q4": 0.9633}}
+{"epoch": 2, "loss": 0.173, "batches": 21671, "sec": 410, "n_val": 147778, "acc": {"all": 0.8088, "ex_lucario": 0.8079, "multi": 0.7918, "archaludon": 0.8069, "crustle": 0.7965, "dragapult": 0.8152, "mirror_revenge": 0.8144}, "auc_by_phase": {"q1": 0.8409, "q2": 0.8809, "q3": 0.9033, "q4": 0.9645}}
+done.
+crustle         raw=0.640 (32-18-0, err=0) pilot_ref=0.827
+ex_lucario      raw=0.780 (39-11-0, err=0) pilot_ref=0.775
+dragapult       raw=0.160 (8-42-0, err=0) pilot_ref=0.16
+archaludon      raw=0.100 (5-45-0, err=0) pilot_ref=0.158
+mirror_revenge  raw=0.540 (27-23-0, err=0) pilot_ref=0.576
+TOTAL raw=2.220 pilot_ref=2.496 (48s)
+crustle         mcts16=0.580 (29-21-0, err=0) pilot_ref=0.827
+ex_lucario      mcts16=0.660 (33-17-0, err=0) pilot_ref=0.775
+dragapult       mcts16=0.000 (0-50-0, err=0) pilot_ref=0.16
+archaludon      mcts16=0.100 (5-45-0, err=0) pilot_ref=0.158
+mirror_revenge  mcts16=0.360 (18-31-1, err=0) pilot_ref=0.576
+TOTAL mcts16=1.700 pilot_ref=2.496 (723s)

@@ -1,0 +1,6 @@
+crustle         mcts32=0.660 (33-17-0, err=0) pilot_ref=0.827
+ex_lucario      mcts32=0.440 (22-27-1, err=0) pilot_ref=0.775
+dragapult       mcts32=0.000 (0-50-0, err=0) pilot_ref=0.16
+archaludon      mcts32=0.020 (1-49-0, err=0) pilot_ref=0.158
+mirror_revenge  mcts32=0.560 (28-22-0, err=0) pilot_ref=0.576
+TOTAL mcts32=1.680 pilot_ref=2.496 (1720s)

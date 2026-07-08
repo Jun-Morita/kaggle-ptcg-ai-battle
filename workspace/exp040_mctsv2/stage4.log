@@ -1,0 +1,123 @@
+device=cuda card_count=1268 attack_count=1557 decoder_size=73847 teacher=pool
+teacher pool: crustle(w=1.0), ex_lucario(w=1.0), dragapult(w=1.0), archaludon(w=1.0), mirror_revenge(w=2.0), mirror_turnbeam(w=0.3), random(w=0.5)
+[gen 0] eval vs random: 10W-10L-0D (50%) | pool crustle=0.05 ex_lucario=0.10 dragapult=0.00 archaludon=0.00
+[gen 0] samples=5639 loss=0.0810 285s matchups={'archaludon': 23, 'ex_lucario': 24, 'dragapult': 19, 'crustle': 22, 'mirror_revenge': 43, 'random': 16, 'mirror_turnbeam': 3} buffer=5639
+[gen 1] eval vs random: 7W-13L-0D (35%)
+[gen 1] samples=1529 loss=0.0524 76s matchups={'ex_lucario': 23, 'mirror_turnbeam': 3, 'mirror_revenge': 45, 'crustle': 24, 'archaludon': 28, 'dragapult': 18, 'random': 9} buffer=7168
+[gen 2] eval vs random: 8W-11L-1D (42%)
+[gen 2] samples=1508 loss=0.0454 76s matchups={'archaludon': 32, 'ex_lucario': 11, 'mirror_revenge': 52, 'crustle': 24, 'mirror_turnbeam': 8, 'dragapult': 16, 'random': 7} buffer=8676
+[gen 3] eval vs random: 9W-11L-0D (45%)
+[gen 3] samples=2000 loss=0.0399 107s matchups={'random': 17, 'crustle': 20, 'mirror_revenge': 38, 'ex_lucario': 32, 'archaludon': 19, 'dragapult': 20, 'mirror_turnbeam': 4} buffer=10676
+[gen 4] eval vs random: 6W-14L-0D (30%)
+[gen 4] samples=954 loss=0.0395 63s matchups={'archaludon': 22, 'ex_lucario': 23, 'dragapult': 25, 'mirror_revenge': 52, 'mirror_turnbeam': 7, 'crustle': 14, 'random': 7} buffer=11630
+[gen 5] eval vs random: 3W-17L-0D (15%) | pool crustle=0.00 ex_lucario=0.00 dragapult=0.00 archaludon=0.05
+[gen 5] samples=1378 loss=0.0402 82s matchups={'dragapult': 19, 'ex_lucario': 21, 'archaludon': 30, 'mirror_revenge': 43, 'crustle': 18, 'random': 14, 'mirror_turnbeam': 5} buffer=13008
+[gen 6] eval vs random: 4W-16L-0D (20%)
+[gen 6] samples=1269 loss=0.0390 59s matchups={'mirror_turnbeam': 6, 'random': 16, 'archaludon': 19, 'crustle': 21, 'dragapult': 24, 'ex_lucario': 21, 'mirror_revenge': 43} buffer=14277
+[gen 7] eval vs random: 9W-11L-0D (45%)
+[gen 7] samples=1158 loss=0.0389 63s matchups={'mirror_revenge': 48, 'archaludon': 26, 'crustle': 20, 'ex_lucario': 20, 'dragapult': 19, 'random': 12, 'mirror_turnbeam': 5} buffer=15435
+[gen 8] eval vs random: 8W-12L-0D (40%)
+[gen 8] samples=997 loss=0.0388 61s matchups={'dragapult': 26, 'mirror_revenge': 47, 'archaludon': 19, 'ex_lucario': 23, 'crustle': 21, 'random': 12, 'mirror_turnbeam': 2} buffer=16432
+[gen 9] eval vs random: 7W-13L-0D (35%)
+[gen 9] samples=1447 loss=0.0387 80s matchups={'ex_lucario': 22, 'random': 14, 'dragapult': 22, 'archaludon': 25, 'mirror_revenge': 45, 'crustle': 17, 'mirror_turnbeam': 5} buffer=17879
+[gen 10] eval vs random: 4W-16L-0D (20%) | pool crustle=0.00 ex_lucario=0.00 dragapult=0.00 archaludon=0.00
+[gen 10] samples=1123 loss=0.0401 78s matchups={'mirror_revenge': 40, 'archaludon': 22, 'dragapult': 26, 'crustle': 24, 'ex_lucario': 19, 'mirror_turnbeam': 9, 'random': 10} buffer=19002
+[gen 11] eval vs random: 2W-18L-0D (10%)
+[gen 11] samples=1246 loss=0.0404 55s matchups={'ex_lucario': 17, 'mirror_revenge': 56, 'dragapult': 23, 'archaludon': 20, 'random': 15, 'crustle': 16, 'mirror_turnbeam': 3} buffer=20248
+[gen 12] eval vs random: 3W-17L-0D (15%)
+[gen 12] samples=1200 loss=0.0409 55s matchups={'mirror_revenge': 40, 'random': 9, 'dragapult': 20, 'archaludon': 24, 'ex_lucario': 28, 'mirror_turnbeam': 11, 'crustle': 18} buffer=21448
+[gen 13] eval vs random: 6W-14L-0D (30%)
+[gen 13] samples=1537 loss=0.0390 71s matchups={'dragapult': 17, 'mirror_revenge': 50, 'mirror_turnbeam': 7, 'random': 12, 'ex_lucario': 26, 'archaludon': 23, 'crustle': 15} buffer=22985
+[gen 14] eval vs random: 7W-13L-0D (35%)
+[gen 14] samples=1372 loss=0.0399 82s matchups={'mirror_revenge': 38, 'dragapult': 24, 'random': 12, 'ex_lucario': 23, 'archaludon': 17, 'crustle': 27, 'mirror_turnbeam': 9} buffer=24357
+[gen 15] eval vs random: 6W-14L-0D (30%) | pool crustle=0.00 ex_lucario=0.00 dragapult=0.00 archaludon=0.00
+[gen 15] samples=1304 loss=0.0390 75s matchups={'crustle': 24, 'archaludon': 34, 'mirror_revenge': 40, 'random': 11, 'dragapult': 17, 'ex_lucario': 21, 'mirror_turnbeam': 3} buffer=25661
+[gen 16] eval vs random: 11W-9L-0D (55%)
+[gen 16] samples=1216 loss=0.0393 80s matchups={'dragapult': 23, 'mirror_revenge': 41, 'ex_lucario': 26, 'crustle': 21, 'archaludon': 23, 'mirror_turnbeam': 4, 'random': 12} buffer=26877
+[gen 17] eval vs random: 6W-14L-0D (30%)
+[gen 17] samples=913 loss=0.0381 60s matchups={'mirror_revenge': 49, 'ex_lucario': 18, 'dragapult': 30, 'archaludon': 20, 'crustle': 29, 'random': 2, 'mirror_turnbeam': 2} buffer=27790
+[gen 18] eval vs random: 4W-16L-0D (20%)
+[gen 18] samples=1019 loss=0.0376 57s matchups={'mirror_revenge': 44, 'ex_lucario': 27, 'dragapult': 25, 'archaludon': 19, 'mirror_turnbeam': 10, 'crustle': 20, 'random': 5} buffer=28809
+[gen 19] eval vs random: 6W-14L-0D (30%)
+[gen 19] samples=1229 loss=0.0376 70s matchups={'dragapult': 19, 'random': 7, 'mirror_turnbeam': 8, 'crustle': 28, 'mirror_revenge': 46, 'ex_lucario': 19, 'archaludon': 23} buffer=30038
+[gen 20] eval vs random: 6W-14L-0D (30%) | pool crustle=0.00 ex_lucario=0.00 dragapult=0.00 archaludon=0.00
+[gen 20] samples=1021 loss=0.0378 89s matchups={'ex_lucario': 20, 'dragapult': 26, 'crustle': 21, 'mirror_revenge': 45, 'mirror_turnbeam': 6, 'archaludon': 21, 'random': 11} buffer=31059
+[gen 21] eval vs random: 4W-16L-0D (20%)
+[gen 21] samples=1066 loss=0.0375 57s matchups={'mirror_revenge': 40, 'ex_lucario': 19, 'crustle': 21, 'dragapult': 22, 'random': 13, 'archaludon': 27, 'mirror_turnbeam': 8} buffer=32125
+[gen 22] eval vs random: 5W-15L-0D (25%)
+[gen 22] samples=1108 loss=0.0374 67s matchups={'mirror_revenge': 40, 'archaludon': 20, 'dragapult': 31, 'crustle': 22, 'random': 10, 'ex_lucario': 21, 'mirror_turnbeam': 6} buffer=33233
+[gen 23] eval vs random: 9W-11L-0D (45%)
+[gen 23] samples=1437 loss=0.0377 80s matchups={'crustle': 21, 'ex_lucario': 18, 'archaludon': 16, 'random': 15, 'dragapult': 21, 'mirror_revenge': 52, 'mirror_turnbeam': 7} buffer=34670
+[gen 24] eval vs random: 5W-15L-0D (25%)
+[gen 24] samples=920 loss=0.0379 55s matchups={'archaludon': 24, 'mirror_revenge': 43, 'dragapult': 25, 'mirror_turnbeam': 8, 'crustle': 20, 'ex_lucario': 18, 'random': 12} buffer=35590
+[gen 25] eval vs random: 8W-12L-0D (40%) | pool crustle=0.00 ex_lucario=0.00 dragapult=0.00 archaludon=0.00
+[gen 25] samples=1641 loss=0.0366 123s matchups={'random': 13, 'mirror_revenge': 48, 'mirror_turnbeam': 7, 'dragapult': 23, 'ex_lucario': 19, 'archaludon': 23, 'crustle': 17} buffer=37231
+[gen 26] eval vs random: 2W-18L-0D (10%)
+[gen 26] samples=1399 loss=0.0371 64s matchups={'random': 14, 'mirror_revenge': 49, 'crustle': 20, 'archaludon': 24, 'dragapult': 20, 'ex_lucario': 17, 'mirror_turnbeam': 6} buffer=38630
+[gen 27] eval vs random: 5W-15L-0D (25%)
+[gen 27] samples=1464 loss=0.0369 77s matchups={'mirror_revenge': 51, 'dragapult': 24, 'crustle': 27, 'random': 10, 'archaludon': 16, 'ex_lucario': 16, 'mirror_turnbeam': 6} buffer=40094
+[gen 28] eval vs random: 8W-12L-0D (40%)
+[gen 28] samples=1339 loss=0.0367 81s matchups={'mirror_turnbeam': 4, 'crustle': 40, 'mirror_revenge': 34, 'random': 12, 'ex_lucario': 21, 'dragapult': 16, 'archaludon': 23} buffer=41433
+[gen 29] eval vs random: 5W-15L-0D (25%)
+[gen 29] samples=1118 loss=0.0368 64s matchups={'archaludon': 25, 'mirror_revenge': 40, 'mirror_turnbeam': 11, 'dragapult': 23, 'crustle': 23, 'ex_lucario': 23, 'random': 5} buffer=42551
+[gen 30] eval vs random: 7W-13L-0D (35%) | pool crustle=0.00 ex_lucario=0.00 dragapult=0.00 archaludon=0.00
+[gen 30] samples=1404 loss=0.0379 92s matchups={'archaludon': 14, 'ex_lucario': 21, 'mirror_turnbeam': 6, 'mirror_revenge': 49, 'crustle': 24, 'random': 15, 'dragapult': 21} buffer=43955
+[gen 31] eval vs random: 5W-15L-0D (25%)
+[gen 31] samples=1068 loss=0.0368 58s matchups={'mirror_revenge': 45, 'dragapult': 32, 'random': 8, 'archaludon': 20, 'crustle': 20, 'ex_lucario': 21, 'mirror_turnbeam': 4} buffer=45023
+[gen 32] eval vs random: 3W-17L-0D (15%)
+[gen 32] samples=1168 loss=0.0382 53s matchups={'dragapult': 29, 'mirror_revenge': 44, 'random': 15, 'ex_lucario': 19, 'crustle': 20, 'archaludon': 14, 'mirror_turnbeam': 9} buffer=46191
+[gen 33] eval vs random: 5W-15L-0D (25%)
+[gen 33] samples=980 loss=0.0375 53s matchups={'random': 7, 'archaludon': 25, 'ex_lucario': 21, 'dragapult': 15, 'mirror_turnbeam': 9, 'mirror_revenge': 48, 'crustle': 25} buffer=47171
+[gen 34] eval vs random: 9W-11L-0D (45%)
+[gen 34] samples=1109 loss=0.0378 75s matchups={'dragapult': 18, 'ex_lucario': 23, 'mirror_revenge': 47, 'crustle': 26, 'archaludon': 18, 'mirror_turnbeam': 8, 'random': 10} buffer=48280
+[gen 35] eval vs random: 2W-18L-0D (10%) | pool crustle=0.00 ex_lucario=0.00 dragapult=0.00 archaludon=0.00
+[gen 35] samples=1195 loss=0.0381 77s matchups={'mirror_revenge': 46, 'mirror_turnbeam': 5, 'crustle': 25, 'ex_lucario': 25, 'archaludon': 26, 'random': 10, 'dragapult': 13} buffer=49475
+[gen 36] eval vs random: 7W-13L-0D (35%)
+[gen 36] samples=1199 loss=0.0373 71s matchups={'dragapult': 20, 'mirror_turnbeam': 9, 'mirror_revenge': 43, 'crustle': 14, 'archaludon': 24, 'random': 11, 'ex_lucario': 29} buffer=50674
+[gen 37] eval vs random: 7W-13L-0D (35%)
+[gen 37] samples=1267 loss=0.0381 64s matchups={'ex_lucario': 26, 'mirror_revenge': 40, 'dragapult': 24, 'mirror_turnbeam': 8, 'archaludon': 19, 'crustle': 22, 'random': 11} buffer=51941
+[gen 38] eval vs random: 4W-16L-0D (20%)
+[gen 38] samples=1612 loss=0.0400 78s matchups={'crustle': 22, 'dragapult': 19, 'mirror_revenge': 35, 'ex_lucario': 23, 'mirror_turnbeam': 10, 'archaludon': 25, 'random': 16} buffer=53553
+[gen 39] eval vs random: 5W-15L-0D (25%)
+[gen 39] samples=1185 loss=0.0393 64s matchups={'archaludon': 24, 'crustle': 18, 'mirror_revenge': 41, 'ex_lucario': 28, 'mirror_turnbeam': 10, 'random': 12, 'dragapult': 17} buffer=54738
+[gen 40] eval vs random: 3W-17L-0D (15%) | pool crustle=0.00 ex_lucario=0.00 dragapult=0.00 archaludon=0.00
+[gen 40] samples=1045 loss=0.0395 71s matchups={'dragapult': 32, 'archaludon': 14, 'mirror_turnbeam': 4, 'mirror_revenge': 48, 'ex_lucario': 26, 'crustle': 17, 'random': 9} buffer=55783
+[gen 41] eval vs random: 7W-13L-0D (35%)
+[gen 41] samples=1405 loss=0.0392 75s matchups={'random': 12, 'mirror_revenge': 45, 'ex_lucario': 24, 'mirror_turnbeam': 10, 'dragapult': 22, 'archaludon': 21, 'crustle': 16} buffer=57188
+[gen 42] eval vs random: 1W-19L-0D (5%)
+[gen 42] samples=1284 loss=0.0390 66s matchups={'mirror_revenge': 44, 'random': 12, 'archaludon': 16, 'crustle': 24, 'ex_lucario': 22, 'dragapult': 29, 'mirror_turnbeam': 3} buffer=58472
+[gen 43] eval vs random: 4W-16L-0D (20%)
+[gen 43] samples=1070 loss=0.0383 54s matchups={'mirror_revenge': 44, 'ex_lucario': 19, 'crustle': 21, 'dragapult': 20, 'random': 8, 'archaludon': 30, 'mirror_turnbeam': 8} buffer=59542
+[gen 44] eval vs random: 6W-14L-0D (30%)
+[gen 44] samples=1197 loss=0.0399 67s matchups={'ex_lucario': 27, 'archaludon': 25, 'crustle': 18, 'mirror_revenge': 35, 'dragapult': 22, 'random': 15, 'mirror_turnbeam': 8} buffer=60739
+[gen 45] eval vs random: 8W-12L-0D (40%) | pool crustle=0.00 ex_lucario=0.00 dragapult=0.00 archaludon=0.00
+[gen 45] samples=1100 loss=0.0385 86s matchups={'dragapult': 18, 'archaludon': 22, 'mirror_revenge': 50, 'ex_lucario': 15, 'crustle': 22, 'mirror_turnbeam': 9, 'random': 14} buffer=61839
+[gen 46] eval vs random: 4W-16L-0D (20%)
+[gen 46] samples=1540 loss=0.0380 78s matchups={'ex_lucario': 23, 'mirror_revenge': 46, 'dragapult': 31, 'crustle': 18, 'archaludon': 19, 'random': 9, 'mirror_turnbeam': 4} buffer=63379
+[gen 47] eval vs random: 5W-15L-0D (25%)
+[gen 47] samples=903 loss=0.0382 64s matchups={'crustle': 18, 'mirror_revenge': 51, 'dragapult': 25, 'archaludon': 23, 'random': 6, 'ex_lucario': 20, 'mirror_turnbeam': 7} buffer=64282
+[gen 48] eval vs random: 4W-16L-0D (20%)
+[gen 48] samples=1136 loss=0.0382 53s matchups={'archaludon': 21, 'crustle': 23, 'mirror_revenge': 47, 'ex_lucario': 25, 'dragapult': 21, 'random': 7, 'mirror_turnbeam': 6} buffer=65418
+[gen 49] eval vs random: 2W-18L-0D (10%)
+[gen 49] samples=1204 loss=0.0391 65s matchups={'mirror_turnbeam': 10, 'dragapult': 30, 'ex_lucario': 21, 'mirror_revenge': 39, 'crustle': 25, 'random': 13, 'archaludon': 12} buffer=66622
+[gen 50] eval vs random: 6W-14L-0D (30%) | pool crustle=0.00 ex_lucario=0.05 dragapult=0.00 archaludon=0.00
+[gen 50] samples=1224 loss=0.0389 79s matchups={'mirror_turnbeam': 5, 'ex_lucario': 25, 'crustle': 23, 'dragapult': 19, 'archaludon': 19, 'mirror_revenge': 49, 'random': 10} buffer=67846
+[gen 51] eval vs random: 6W-14L-0D (30%)
+[gen 51] samples=898 loss=0.0383 58s matchups={'archaludon': 17, 'dragapult': 23, 'ex_lucario': 26, 'mirror_revenge': 49, 'crustle': 23, 'random': 7, 'mirror_turnbeam': 5} buffer=68744
+[gen 52] eval vs random: 7W-13L-0D (35%)
+[gen 52] samples=1191 loss=0.0387 69s matchups={'crustle': 22, 'mirror_revenge': 38, 'ex_lucario': 24, 'dragapult': 27, 'archaludon': 26, 'mirror_turnbeam': 5, 'random': 8} buffer=69935
+[gen 53] eval vs random: 1W-19L-0D (5%)
+[gen 53] samples=1114 loss=0.0386 56s matchups={'mirror_revenge': 43, 'dragapult': 27, 'ex_lucario': 21, 'archaludon': 23, 'crustle': 21, 'random': 9, 'mirror_turnbeam': 6} buffer=71049
+[gen 54] eval vs random: 6W-14L-0D (30%)
+[gen 54] samples=1224 loss=0.0390 73s matchups={'mirror_revenge': 43, 'dragapult': 23, 'random': 11, 'archaludon': 23, 'ex_lucario': 18, 'crustle': 20, 'mirror_turnbeam': 12} buffer=72273
+[gen 55] eval vs random: 3W-17L-0D (15%) | pool crustle=0.00 ex_lucario=0.00 dragapult=0.00 archaludon=0.00
+[gen 55] samples=1177 loss=0.0387 83s matchups={'archaludon': 21, 'mirror_revenge': 51, 'ex_lucario': 22, 'crustle': 23, 'mirror_turnbeam': 8, 'dragapult': 15, 'random': 10} buffer=73450
+[gen 56] eval vs random: 2W-18L-0D (10%)
+[gen 56] samples=958 loss=0.0385 57s matchups={'crustle': 24, 'ex_lucario': 23, 'mirror_revenge': 38, 'dragapult': 21, 'archaludon': 30, 'random': 10, 'mirror_turnbeam': 4} buffer=74408
+[gen 57] eval vs random: 5W-15L-0D (25%)
+[gen 57] samples=1020 loss=0.0386 59s matchups={'mirror_revenge': 43, 'dragapult': 24, 'random': 12, 'archaludon': 25, 'ex_lucario': 19, 'crustle': 19, 'mirror_turnbeam': 8} buffer=75428
+[gen 58] eval vs random: 4W-16L-0D (20%)
+[gen 58] samples=1589 loss=0.0381 77s matchups={'mirror_revenge': 38, 'crustle': 29, 'random': 15, 'dragapult': 19, 'ex_lucario': 25, 'mirror_turnbeam': 7, 'archaludon': 17} buffer=77017
+[gen 59] eval vs random: 2W-18L-0D (10%)
+[gen 59] samples=1146 loss=0.0385 53s matchups={'crustle': 25, 'ex_lucario': 22, 'mirror_turnbeam': 9, 'dragapult': 14, 'mirror_revenge': 45, 'archaludon': 26, 'random': 9} buffer=78163
+done. saved models + train_history.json

@@ -1,0 +1,12 @@
+crustle         raw=0.700 (35-15-0, err=0) pilot_ref=0.827
+ex_lucario      raw=0.600 (30-20-0, err=0) pilot_ref=0.775
+dragapult       raw=0.120 (6-44-0, err=0) pilot_ref=0.16
+archaludon      raw=0.060 (3-47-0, err=0) pilot_ref=0.158
+mirror_revenge  raw=0.560 (28-22-0, err=0) pilot_ref=0.576
+TOTAL raw=2.040 pilot_ref=2.496 (41s)
+crustle         mcts16=0.800 (40-10-0, err=0) pilot_ref=0.827
+ex_lucario      mcts16=0.540 (27-23-0, err=0) pilot_ref=0.775
+dragapult       mcts16=0.040 (2-48-0, err=0) pilot_ref=0.16
+archaludon      mcts16=0.120 (6-44-0, err=0) pilot_ref=0.158
+mirror_revenge  mcts16=0.640 (32-18-0, err=0) pilot_ref=0.576
+TOTAL mcts16=2.140 pilot_ref=2.496 (558s)

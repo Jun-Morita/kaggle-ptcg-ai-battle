@@ -1,0 +1,6 @@
+resumed from results/pre1/model_ep2.pth
+device=cuda files=4 tag=pre1b
+{"epoch": 0, "loss": 0.1868, "batches": 21671, "sec": 495, "n_val": 147778, "acc": {"all": 0.7682, "ex_lucario": 0.7651, "multi": 0.7476, "archaludon": 0.7698, "crustle": 0.765, "dragapult": 0.7674, "mirror_revenge": 0.7713}, "auc_by_phase": {"q1": 0.8346, "q2": 0.8886, "q3": 0.9168, "q4": 0.9645}}
+{"epoch": 1, "loss": 0.1843, "batches": 21671, "sec": 553, "n_val": 147778, "acc": {"all": 0.7765, "ex_lucario": 0.7767, "multi": 0.7567, "archaludon": 0.7775, "crustle": 0.769, "dragapult": 0.777, "mirror_revenge": 0.7795}, "auc_by_phase": {"q1": 0.8341, "q2": 0.874, "q3": 0.899, "q4": 0.9626}}
+{"epoch": 2, "loss": 0.1801, "batches": 21671, "sec": 551, "n_val": 147778, "acc": {"all": 0.7916, "ex_lucario": 0.7898, "multi": 0.7732, "archaludon": 0.7949, "crustle": 0.7827, "dragapult": 0.7911, "mirror_revenge": 0.7953}, "auc_by_phase": {"q1": 0.8293, "q2": 0.8857, "q3": 0.915, "q4": 0.9691}}
+done.

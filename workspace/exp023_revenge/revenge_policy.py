@@ -39,6 +39,8 @@ import gust_policy as G
 REVENGE_BONUS = int(os.environ.get("REVENGE_BONUS", "0"))
 PRIZE_W = int(os.environ.get("PRIZE_W", "0"))
 BACKUP_CHARGE = int(os.environ.get("BACKUP_CHARGE", "0"))
+BENCH_DISC = int(os.environ.get("BENCH_DISC", "0"))  # exp042 deck->bench discipline
+SEARCH_PRI = int(os.environ.get("SEARCH_PRI", "0"))  # exp043 learned TO_HAND priority fix
 
 # _plan_attack: gust logic + revenge-window damage + prize-trade-weighted KO bonus.
 _REVENGE = '''
@@ -126,7 +128,75 @@ _REVENGE = (_REVENGE
             .replace("__PRIZE_W__", str(PRIZE_W))
             .replace("__BACKUP_CHARGE__", str(BACKUP_CHARGE)))
 
+# exp042 (2026-07-08): deck->bench discipline, env-gated (BENCH_DISC=1).
+# Evidence (exp042/policy_diff2.py vs Mogja J #3-era, same charmq-style deck,
+# 61 games / 4116 decisions AGAINST THE CURRENT v012 CHAIN): TO_BENCH match
+# 0.15, SETUP_BENCH 0.00 -- every mismatch is their=[1 card] vs ours=[2 cards].
+# Root cause: base choose() always returns ranked[:maxCount] and
+# _score_card_choice has NO branch for TO_BENCH/SETUP_BENCH (all candidates
+# score 0), so deck->bench effects (Buddy-Buddy Poffin etc.) always bench the
+# MAXIMUM -- stacking 1-prize KO targets. The exp018 discipline (in-chain via
+# gust_policy) only throttles PLAY-from-hand, not these selects.
+_BENCHDISC = '''
+# ===== exp042 deck->bench discipline (Mogja-pattern: one good piece per effect) =====
+_bd_orig_choose = LucarioPolicy.choose
+_BD_CTX = {SelectContext.TO_BENCH, SelectContext.SETUP_BENCH_POKEMON}
+
+def _bd_bench_score(self, card):
+    if card is None or not hasattr(card, "id"):
+        return -1
+    cid = card.id
+    line = self.field_counts[_TREVENANT] + self.field_counts[_PHANTUMP]
+    behind = len(self.me.prize) > len(self.opponent.prize)
+    cap = 3 + (1 if behind else 0)
+    if cid == _PHANTUMP:
+        return -1 if line >= cap else (300 - 120 * line)
+    if cid == _TREVENANT:
+        return -1 if line >= cap else 200
+    if cid == _SNORLAX:
+        return -1 if self.field_counts[_SNORLAX] >= 1 else 60
+    if cid in (_DUNSPARCE, _DUDUNSPARCE):
+        dline = self.field_counts[_DUNSPARCE] + self.field_counts[_DUDUNSPARCE]
+        return -1 if dline >= 2 else 80
+    return 10
+
+def _bd_choose(self):
+    if self.context not in _BD_CTX or not self.select.option or self.select.maxCount == 0:
+        return _bd_orig_choose(self)
+    scored = []
+    for i, option in enumerate(self.select.option):
+        card = get_card(self.obs, option.area, option.index, option.playerIndex)
+        scored.append((_bd_bench_score(self, card), i))
+    scored.sort(reverse=True)
+    positives = sum(1 for s, _ in scored if s > 0)
+    # bench ONE good piece per effect (the observed top-player pattern);
+    # more only when the select forces it (minCount)
+    want = max(self.select.minCount, min(positives, 1))
+    return [i for _, i in scored[:want]]
+LucarioPolicy.choose = _bd_choose
+'''
+
 PATCH_SRC = G.PATCH_SRC + "\n" + _REVENGE
+if BENCH_DISC:
+    PATCH_SRC += "\n" + _BENCHDISC
+
+# exp043 (2026-07-08): TO_HAND search-priority fix, scouted from Yushin Ito
+# (LB#7, 1097, SAME Hop's-Trevenant archetype, n=1000 games). Two cards WE RUN
+# (Postwick x4, Lillie's Determination x4 in charmq) are entirely absent from
+# router_policy's _TO_HAND_PRI dict (default score 100 = bottom tier), yet
+# Yushin fetches both at a rate comparable to Mist Energy (currently scored 220):
+# per-200-game fetch counts -- Postwick 108, Mist Energy 88, Lillie's Determination 88,
+# vs our simulated fetch counts on the same states -- Postwick 142 (already ok),
+# Lillie's Determination 15 (5.9x under). This ADDS the two missing entries at a
+# score matching their observed importance tier; it does not touch any already-
+# tuned score (Boss's Orders/Choice Band over-fetch is a separate, riskier lever
+# left for a later iteration). See exp043_learnpri/SESSION_NOTES.md.
+_SEARCHPRI = '''
+_TO_HAND_PRI[1255] = 150   # Postwick (already competitive; small nudge from 100)
+_TO_HAND_PRI[1227] = 150   # Lillie's Determination (was unscored, defaulted to 100)
+'''
+if SEARCH_PRI:
+    PATCH_SRC += "\n" + _SEARCHPRI
 
 _n = [0]
 

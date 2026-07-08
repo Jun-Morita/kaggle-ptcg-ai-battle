@@ -1,0 +1,6 @@
+crustle         raw=0.720 (36-14-0, err=0) pilot_ref=0.827
+ex_lucario      raw=0.440 (22-28-0, err=0) pilot_ref=0.775
+dragapult       raw=0.080 (4-46-0, err=0) pilot_ref=0.16
+archaludon      raw=0.100 (5-45-0, err=0) pilot_ref=0.158
+mirror_revenge  raw=0.320 (16-33-1, err=0) pilot_ref=0.576
+TOTAL raw=1.660 pilot_ref=2.496 (51s)

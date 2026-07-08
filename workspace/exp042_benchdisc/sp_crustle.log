@@ -1,0 +1,10 @@
+  crustle     wr=0.850 (17-3-0) err=0 [0.48s/g] stats={'planned': 725, 'fired': 61, 'bail': 0, 'errors': 0}
+  crustle     wr=0.800 (16-4-0) err=0 [0.47s/g] stats={'planned': 675, 'fired': 64, 'bail': 0, 'errors': 0}
+  crustle     wr=0.950 (19-1-0) err=0 [0.42s/g] stats={'planned': 568, 'fired': 61, 'bail': 0, 'errors': 0}
+  crustle     wr=0.950 (19-1-0) err=0 [0.43s/g] stats={'planned': 651, 'fired': 48, 'bail': 0, 'errors': 0}
+  crustle     wr=0.850 (17-3-0) err=0 [0.40s/g] stats={'planned': 609, 'fired': 45, 'bail': 0, 'errors': 0}
+  crustle     wr=0.900 (18-2-0) err=0 [0.36s/g] stats={'planned': 520, 'fired': 48, 'bail': 0, 'errors': 0}
+  crustle     wr=0.850 (17-3-0) err=0 [0.45s/g] stats={'planned': 685, 'fired': 51, 'bail': 0, 'errors': 0}
+  crustle     wr=0.850 (17-3-0) err=0 [0.49s/g] stats={'planned': 646, 'fired': 70, 'bail': 0, 'errors': 0}
+  crustle     wr=0.900 (18-2-0) err=0 [0.36s/g] stats={'planned': 525, 'fired': 51, 'bail': 0, 'errors': 0}
+  crustle     wr=0.850 (17-3-0) err=0 [0.40s/g] stats={'planned': 583, 'fired': 61, 'bail': 0, 'errors': 0}

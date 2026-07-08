@@ -61,8 +61,8 @@ POKEMON_IDS = {c.cardId for c in all_card if c.cardType == CardType.POKEMON}
 card_count = max(all_card, key=lambda c: c.cardId).cardId + 1
 attack_count = max(all_attack(), key=lambda a: a.attackId).attackId + 1
 
-num_words_encoder = 24
-encoder_size = 22000
+num_words_encoder = 25  # +1 vs exp004 original: opp_deck word (see get_encoder_input)
+encoder_size = 24000  # +card_count(1268) margin vs exp004's 22000 for the new opp_deck word
 decoder_main_feature = 8
 decoder_attack_offset = 14
 decoder_card_offset = decoder_attack_offset + attack_count
@@ -187,7 +187,15 @@ def add_player(sv, ps):
     add_cards(sv, ps.discard, 0.25)
 
 
-def get_encoder_input(obs, your_deck):
+def get_encoder_input(obs, your_deck, opp_deck=None):
+    """`opp_deck` (added for exp040 Stage 4, oracle opponent-archetype probe):
+    exp004's original had no opponent-identity feature at all -- the net had
+    to infer "what kind of opponent is this" purely from unfolding board
+    state each turn. In self-play (mirror OR teacher_pool) the true opponent
+    decklist is always known to the caller, so we feed it directly as a
+    second bag-of-cards word (same encoding as your_deck) instead of forcing
+    the net to reconstruct archetype identity implicitly. Defaults to
+    your_deck (mirror) for backward compatibility."""
     your_index = obs.current.yourIndex
     state = obs.current
     sv = SparseVector()
@@ -217,6 +225,10 @@ def get_encoder_input(obs, your_deck):
     add_cards(sv, state.players[your_index].hand, 0.25)
     sv.word_start()
     for id in your_deck:
+        sv.add(id, 0.25)
+    sv.add_pos(card_count)
+    sv.word_start()
+    for id in (opp_deck if opp_deck is not None else your_deck):
         sv.add(id, 0.25)
     sv.add_pos(card_count)
     sv.word_start()
@@ -332,11 +344,12 @@ def eval_nn(sv_enc, sv_dec, model):
 
 # ---- MCTS ----------------------------------------------------------------------
 class LearnSample:
-    def __init__(self, value, policy, sv_enc, sv_dec):
+    def __init__(self, value, policy, sv_enc, sv_dec, matchup=None):
         self.value = value
         self.policy = policy
         self.sv_enc = sv_enc
         self.sv_dec = sv_dec
+        self.matchup = matchup  # e.g. "crustle" -- see MATCHUP_LOSS_WEIGHT in train()
 
 
 class Child:
@@ -362,7 +375,30 @@ class Node:
             self.parent.backprop(value)
 
 
-def create_node(parent, search_state, your_index, your_deck, model):
+def enumerate_candidates(obs):
+    """Verbatim candidate enumeration from the official sample's create_node:
+    all ascending index-combinations of size obs.select.maxCount over
+    obs.select.option, capped at 64. Extracted as a shared helper (2026-07-07)
+    so exp041's datagen can map a rule-based pilot's chosen move onto the SAME
+    candidate list the decoder scores -- any drift between the two would
+    silently corrupt the BC labels."""
+    actions = []
+    indices = list(range(obs.select.maxCount))
+    for _ in range(64):
+        actions.append(indices.copy())
+        for i in range(len(indices)):
+            index = len(indices) - i - 1
+            if indices[index] < len(obs.select.option) - i - 1:
+                indices[index] += 1
+                for j in range(index + 1, len(indices)):
+                    indices[j] = indices[j - 1] + 1
+                break
+        else:
+            break
+    return actions
+
+
+def create_node(parent, search_state, your_index, your_deck, model, opp_deck=None):
     node = Node(parent, search_state)
     obs = search_state.observation
     state = obs.current
@@ -376,20 +412,8 @@ def create_node(parent, search_state, your_index, your_deck, model):
         node.backprop(node.value)
         sample = None
     else:
-        actions = []
-        indices = list(range(obs.select.maxCount))
-        for _ in range(64):
-            actions.append(indices.copy())
-            for i in range(len(indices)):
-                index = len(indices) - i - 1
-                if indices[index] < len(obs.select.option) - i - 1:
-                    indices[index] += 1
-                    for j in range(index + 1, len(indices)):
-                        indices[j] = indices[j - 1] + 1
-                    break
-            else:
-                break
-        sv_enc = get_encoder_input(obs, your_deck)
+        actions = enumerate_candidates(obs)
+        sv_enc = get_encoder_input(obs, your_deck, opp_deck)
         sv_dec = get_decoder_input(obs, actions)
         value, policy = eval_nn(sv_enc, sv_dec, model)
         v = value
@@ -418,7 +442,7 @@ def mcts_agent(obs_dict, your_deck, model, search_count, opp_deck=None):
     search_state = search_begin(
         obs, **determinize(obs, your_index, your_deck,
                             your_deck if opp_deck is None else opp_deck, POKEMON_IDS))
-    root, sample = create_node(None, search_state, your_index, your_deck, model)
+    root, sample = create_node(None, search_state, your_index, your_deck, model, opp_deck)
 
     for _ in range(search_count):
         current = root
@@ -443,7 +467,7 @@ def mcts_agent(obs_dict, your_deck, model, search_count, opp_deck=None):
                 break
             if nxt.node is None:
                 ss = search_step(current.state.searchId, nxt.select)
-                nxt.node, _ = create_node(current, ss, your_index, your_deck, model)
+                nxt.node, _ = create_node(current, ss, your_index, your_deck, model, opp_deck)
                 break
             else:
                 current = nxt.node
@@ -601,8 +625,17 @@ def selfplay_vs_teacher_pool(trainee_deck, model, search_count, n_games, teacher
             label = (value + sample.value) * 0.5
             value = value * LAMBDA + sample.value * (1.0 - LAMBDA)
             sample.value = label
+            sample.matchup = name
             sample_list.append(sample)
     return sample_list, dict(matchup_counts)
+
+
+MATCHUP_LOSS_WEIGHT = {}  # per-matchup loss weights, default 1.0 (see train())
+# History: Stage 4 (2026-07-06) tried {"crustle": 2.0} against the crustle
+# shutout -- no effect, because the real cause was zero positive-label crustle
+# trajectories in self-play (weighting can't fix missing positives; exp041's
+# pilot-data pretraining fixed it). Neutralized 2026-07-07 for the exp041
+# Phase 4 fine-tune so reweighting isn't a confound.
 
 
 def train(model, optimizer, sample_list, device, batch_size=128, max_batches=None):
@@ -610,7 +643,7 @@ def train(model, optimizer, sample_list, device, batch_size=128, max_batches=Non
     `sample_list` (the replay buffer) has grown -- decouples per-generation
     wall-clock from buffer size. Since `sample_list` is shuffled first, this
     is a random subsample without replacement each call, not a fixed prefix."""
-    loss_fn_enc = torch.nn.HuberLoss(delta=0.2)
+    loss_fn_enc = torch.nn.HuberLoss(reduction="none", delta=0.2)
     loss_fn_dec = torch.nn.HuberLoss(reduction="none", delta=0.1)
     random.shuffle(sample_list)
     n_batches = len(sample_list) // batch_size
@@ -619,13 +652,14 @@ def train(model, optimizer, sample_list, device, batch_size=128, max_batches=Non
     total = 0.0
     for b in range(n_batches):
         ie, idd = LearnInput(), LearnInput()
-        mask, le, ld = [], [], []
+        mask, le, ld, sw = [], [], [], []
         for j in range(batch_size * b, batch_size * b + batch_size):
             s = sample_list[j]
             ie.add(s.sv_enc)
             idd.add(s.sv_dec)
             le.append(s.value)
             ld.extend(s.policy)
+            sw.append(MATCHUP_LOSS_WEIGHT.get(s.matchup, 1.0))
             for _ in range(len(s.policy)):
                 mask.append(1.0)
             for _ in range(64 - len(s.policy)):
@@ -635,6 +669,7 @@ def train(model, optimizer, sample_list, device, batch_size=128, max_batches=Non
         mt = torch.tensor(mask, dtype=torch.float32, device=device).view(batch_size, -1)
         lte = torch.tensor(le, dtype=torch.float32, device=device).view(batch_size, -1)
         ltd = torch.tensor(ld, dtype=torch.float32, device=device).view(batch_size, -1)
+        swt = torch.tensor(sw, dtype=torch.float32, device=device).view(batch_size, -1)
         optimizer.zero_grad()
         oe, od = model(
             torch.tensor(ie.index, dtype=torch.int32, device=device),
@@ -643,8 +678,9 @@ def train(model, optimizer, sample_list, device, batch_size=128, max_batches=Non
             torch.tensor(idd.index, dtype=torch.int32, device=device),
             torch.tensor(idd.value, dtype=torch.float32, device=device),
             torch.tensor(idd.offset, dtype=torch.int32, device=device))
-        loss_enc = loss_fn_enc(oe, lte)
-        loss_dec = (loss_fn_dec(od, ltd) * mt).sum() / float(batch_size)
+        loss_enc = (loss_fn_enc(oe, lte) * swt).sum() / swt.sum()
+        dec_row_sum = (loss_fn_dec(od, ltd) * mt).sum(dim=1, keepdim=True)
+        loss_dec = (dec_row_sum * swt).sum() / swt.sum()
         loss = loss_enc + loss_dec
         loss.backward()
         optimizer.step()
@@ -688,10 +724,10 @@ def pool_eval(deck, model, search_count, n_games):
 
     out = {}
     for name, opp_deck, factory, _ in build_teacher_pool(deck):
-        if name.startswith("mirror"):
-            continue  # mirror uses OUR OWN deck as opp_deck -- already covered
-                      # structurally by evaluate_vs_random-style checks; skip
-                      # here to keep this per-gen check cheap (4 matchups, not 6).
+        if name.startswith("mirror") or name == "random":
+            continue  # mirror/random already covered structurally by the
+                      # separate evaluate_vs_random check each gen; skip here
+                      # to keep this per-gen check cheap (4 matchups, not 7).
         agent = make_agent(deck, opp_deck)
         st = run_gauntlet(agent, factory(opp_deck), n_games=n_games, swap_sides=True)
         out[name] = st.winrate0
@@ -709,6 +745,10 @@ def main():
                           "exp004's original 'lucario_v2' is pre-pivot and stale.")
     ap.add_argument("--d-model", type=int, default=128)
     ap.add_argument("--seed", type=int, default=42)
+    ap.add_argument("--lr", type=float, default=3e-4,
+                     help="AdamW learning rate. Default = official sample's 3e-4 "
+                          "(from-scratch); use ~3e-5 when fine-tuning a pretrained "
+                          "net (exp041 Phase 4) so noisy TD targets don't wreck it.")
     ap.add_argument("--teacher", default="none", choices=["none", "revenge", "turnbeam", "pool"],
                      help="Stage 2 cold-start fix: fixed fast heuristic(s) for the non-trainee "
                           "seat instead of mirror self-play. 'pool' = teacher_pool.py's diverse "
@@ -762,7 +802,7 @@ def main():
         teacher_pool = [(args.teacher, deck, lambda d: make_teacher_agent(args.teacher, d), 1.0)]
 
     model = MyModel(args.d_model, 2, args.d_model * 2, 1, 1).to(device)
-    optimizer = torch.optim.AdamW(model.parameters(), lr=3e-4)
+    optimizer = torch.optim.AdamW(model.parameters(), lr=args.lr)
     start_gen = 0
     history = []
     replay_buffer = []

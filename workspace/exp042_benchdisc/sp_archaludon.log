@@ -1,0 +1,10 @@
+  archaludon  wr=0.250 (5-15-0) err=0 [1.00s/g] stats={'planned': 1113, 'fired': 53, 'bail': 0, 'errors': 0}
+  archaludon  wr=0.200 (4-16-0) err=0 [1.11s/g] stats={'planned': 1101, 'fired': 89, 'bail': 0, 'errors': 0}
+  archaludon  wr=0.150 (3-17-0) err=0 [1.06s/g] stats={'planned': 1162, 'fired': 76, 'bail': 0, 'errors': 0}
+  archaludon  wr=0.100 (2-18-0) err=0 [1.11s/g] stats={'planned': 1139, 'fired': 64, 'bail': 0, 'errors': 0}
+  archaludon  wr=0.200 (4-16-0) err=0 [0.71s/g] stats={'planned': 916, 'fired': 42, 'bail': 0, 'errors': 0}
+  archaludon  wr=0.450 (9-11-0) err=0 [0.80s/g] stats={'planned': 1061, 'fired': 52, 'bail': 0, 'errors': 0}
+  archaludon  wr=0.150 (3-17-0) err=0 [0.84s/g] stats={'planned': 910, 'fired': 47, 'bail': 0, 'errors': 0}
+  archaludon  wr=0.200 (4-16-0) err=0 [0.94s/g] stats={'planned': 1104, 'fired': 60, 'bail': 0, 'errors': 0}
+  archaludon  wr=0.100 (2-18-0) err=0 [0.88s/g] stats={'planned': 1063, 'fired': 34, 'bail': 0, 'errors': 0}
+  archaludon  wr=0.150 (3-17-0) err=0 [0.78s/g] stats={'planned': 971, 'fired': 56, 'bail': 0, 'errors': 0}

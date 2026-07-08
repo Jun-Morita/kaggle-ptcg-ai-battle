@@ -37,18 +37,32 @@ Loop: `/meta-watch` (what) → **`/scout-top`** (how + our gap) → patch → `/
    - **Uniformly low match across all matchups = a consistent style gap** (e.g. they
      bench fewer / hold resources), not opponent-switching — fix it globally.
 
-3. **Decoded decisions** (what cards/choices differ), for the concrete patch:
+3. **Decoded decisions** (what cards/choices differ), for the concrete patch.
+   **Use policy_diff2 — it takes OUR CURRENT policy as the baseline.** The old
+   `exp013_router/policy_diff.py` hardcodes v008 (router) as the comparison policy;
+   in exp042 this nearly produced a wrong conclusion ("discipline is missing" when
+   it was already in the v010+ chain). Env flags select the chain version:
    ```
-   cd workspace/exp013_router
-   uv run python policy_diff.py <sub_id> <deck.json> [max_episodes]
+   cd workspace/exp042_benchdisc
+   REVENGE_BONUS=50 [BENCH_DISC=1] uv run python policy_diff2.py \
+       <sub_id> <deck.json> <max_eps> ../exp023_revenge/revenge_policy.py
    ```
    Lists TO_HAND search targets they fetch vs we fetch, and top divergence examples
-   (their choice vs ours) decoded to card names, by SelectContext. Interpret with the
+   decoded to card names, by SelectContext. **Read the sem-rate column, not the raw
+   match rate**: index-based comparison counts same-card-different-copy picks as
+   mismatches (measurement artifact found in exp042). Interpret with the
    6 lenses in `references/knowledge/ptcg_strategy.md` (prize / tempo / search /
    sequence / disruption / prize-liability).
+   A low-match SelectContext is only actionable after checking the BASE `choose()`:
+   e.g. TO_BENCH/SETUP_BENCH had NO scoring branch at all (always `ranked[:maxCount]`),
+   so the gap was structural, not a tuning constant.
 
 4. **Turn findings into tuning targets**, then patch the policy (a small monkeypatch
    in a `*_policy.py` exposing `PATCH_SRC` / `make_agent`, like discipline_policy.py).
+   **Preferred pattern (established, exp023/exp042): add an env-gated block to
+   `exp023_revenge/revenge_policy.py`** (default 0 = byte-identical to shipped
+   behavior; turnbeam/v014 imports revenge_policy so the flag propagates to the
+   whole current chain with zero code duplication).
    Prefer **indicator-triggered rules** (bench-free, line counts, prize diff, energy,
    opponent wall) over blanket changes; gate a tweak by opponent when it helps one
    matchup but hurts another (e.g. discipline ON vs mirror/aggro, OFF vs Crustle wall).
@@ -60,13 +74,27 @@ Loop: `/meta-watch` (what) → **`/scout-top`** (how + our gap) → patch → `/
    uv run python workspace/exp018_adaptive/eval_mirror.py 200 <buildA> <buildB>
    uv run python workspace/exp018_adaptive/eval_compare.py 80   # vs ex/Crustle/dragapult
    ```
-   Require: target matchup up, **no regression elsewhere, 0 crash errors**. Then
-   `/build-submit` and (after approval) submit.
+   For the CURRENT chain (v014/turnbeam), the directly comparable field eval is
+   `exp035_turnbeam/eval_tb.py` in resumable 20-game chunks (template:
+   `exp042_benchdisc/run_benchdisc.sh`); v014 n=200 reference: crustle .905 /
+   ex_lucario .77 / dragapult .17 / archaludon .195 / mirror .585, total 2.67.
+   MATCH=field is safe with env flags set process-wide (no field opponent imports
+   revenge_policy); a paired candidate-vs-v014 run needs SEPARATE BUILDS.
+   Require: target matchup up (past ship bar: total +0.10), **no regression
+   elsewhere, 0 crash errors**. Then `/build-submit` and (after approval) submit.
+   **A behavioral match improvement is NOT a strength improvement** — exp042 raised
+   TO_BENCH sem-rate 0.23→0.69 yet showed no winrate gain; always run the n≥200
+   strength eval before shipping.
 
 ## Notes
 - Needs the cabt engine (`uv run`) + cached replays. Behavioral signals from small
   caches (20-65 games) are directional, not significant — confirm with the n≥200 eval.
 - Top players' edge is often CONSISTENCY/discipline (prize-liability, resource
   conservation), not opponent-archetype switching — see [[meta-and-leaderboard]].
-- Reusable assets: `analyze_adaptation.py` (behavior by opponent), `policy_diff.py`
-  (decoded decision diff), `eval_mirror.py` / `eval_compare.py` (noise-safe validation).
+- Reusable assets: `analyze_adaptation.py` (behavior by opponent),
+  `exp042_benchdisc/policy_diff2.py` (decoded decision diff vs a SELECTABLE policy,
+  with sem-rate), `eval_mirror.py` / `eval_compare.py` and
+  `exp035_turnbeam/eval_tb.py` (noise-safe validation).
+- A top player's cached replays are also **BC / fine-tune material** for the exp041
+  pretraining pipeline (Plan B2: Mogja J mirror games) — scouting output is dual-use,
+  keep the decoded-decision caches.

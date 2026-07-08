@@ -11,6 +11,7 @@ Deck paths / agent constructors reused from exp038's opponent_model.py mapping
 from __future__ import annotations
 import json
 import os
+import random
 import sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -29,6 +30,19 @@ _ARCHALUDON_DECK_CSV = os.path.join(ROOT, "workspace", "exp025_unkoable", "archa
 
 def _read_deck_csv(path):
     return [int(x) for x in open(path).read().split() if x.strip().isdigit()]
+
+
+def _random_agent(obs_dict):
+    """Uniform-random legal move -- same logic as train_mcts.random_agent,
+    duplicated (not imported) to avoid a circular import (train_mcts imports
+    this module at load time). Added 2026-07-06 (user request): a curriculum
+    "easy tier" opponent the trainee can reliably beat, mixed into the pool
+    alongside the competent rule-based teachers -- Stage 2/4 only ever saw
+    winnable games via mirror_revenge (also non-trivial) or hard 4 real decks;
+    there was no guaranteed source of early positive-outcome trajectories."""
+    from cg.api import to_observation_class
+    obs = to_observation_class(obs_dict)
+    return random.sample(list(range(len(obs.select.option))), obs.select.maxCount)
 
 
 def build_teacher_pool(trainee_deck):
@@ -53,4 +67,9 @@ def build_teacher_pool(trainee_deck):
         # so it's slower -- low weight keeps it "occasional", not the bulk).
         ("mirror_revenge", list(trainee_deck), lambda deck: RVP.make_agent(deck), 2.0),
         ("mirror_turnbeam", list(trainee_deck), lambda deck: TB.make_agent(deck), 0.3),
+        # curriculum easy tier (2026-07-06): reliably winnable so the trainee
+        # accumulates some positive-outcome trajectories early, not just
+        # losses against competent teachers. Weighted low -- a supplement,
+        # not the bulk of training (mirror_revenge/hard-4 stay dominant).
+        ("random", list(trainee_deck), lambda deck: _random_agent, 0.5),
     ]

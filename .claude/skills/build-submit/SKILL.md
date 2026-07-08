@@ -47,6 +47,12 @@ Codifies the CLAUDE.md submission checklist end-to-end. Pairs with `/extract-dec
    - update [[meta-and-leaderboard]] memory if the meta/strategy state changed.
 
 ## Notes
+- **Env-gated patch flags are baked at BUILD time.** The current chain
+  (`exp023_revenge/revenge_policy.py`, wrapped by `exp035_turnbeam` = v014) assembles
+  `PATCH_SRC` at import from env vars (`REVENGE_BONUS`, `BENCH_DISC`, ...). Set them
+  on the build command line (e.g. `REVENGE_BONUS=50 uv run python scripts/build_submission.py ...`)
+  and record the flag values in `submit/SUBMISSIONS.md`; a build with defaults silently
+  omits the tuned behavior.
 - A persistent per-experiment `build_vNNN.py` is optional; this generic builder covers
   base-policy / patched-policy / arbitrary-deck cases. Keep heavy `.tar.gz` out of git.
 - The generic `lucario_v2` policy is a strong default pilot; only add `--patch` when a

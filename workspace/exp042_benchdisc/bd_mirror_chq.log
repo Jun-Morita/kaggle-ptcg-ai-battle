@@ -1,0 +1,10 @@
+  mirror_chq  wr=0.550 (11-8-1) err=0 [0.82s/g] stats={'planned': 1013, 'fired': 51, 'bail': 0, 'errors': 0}
+  mirror_chq  wr=0.550 (11-9-0) err=0 [0.92s/g] stats={'planned': 1008, 'fired': 51, 'bail': 0, 'errors': 0}
+  mirror_chq  wr=0.500 (10-9-1) err=0 [0.96s/g] stats={'planned': 1039, 'fired': 31, 'bail': 0, 'errors': 0}
+  mirror_chq  wr=0.550 (11-8-1) err=0 [0.88s/g] stats={'planned': 1039, 'fired': 42, 'bail': 0, 'errors': 0}
+  mirror_chq  wr=0.650 (13-7-0) err=0 [0.85s/g] stats={'planned': 1012, 'fired': 40, 'bail': 0, 'errors': 0}
+  mirror_chq  wr=0.550 (11-9-0) err=0 [0.94s/g] stats={'planned': 1088, 'fired': 50, 'bail': 0, 'errors': 0}
+  mirror_chq  wr=0.400 (8-12-0) err=0 [1.01s/g] stats={'planned': 1064, 'fired': 51, 'bail': 0, 'errors': 0}
+  mirror_chq  wr=0.600 (12-8-0) err=0 [1.18s/g] stats={'planned': 982, 'fired': 45, 'bail': 0, 'errors': 0}
+  mirror_chq  wr=0.350 (7-13-0) err=0 [0.96s/g] stats={'planned': 1052, 'fired': 36, 'bail': 0, 'errors': 0}
+  mirror_chq  wr=0.550 (11-9-0) err=0 [0.76s/g] stats={'planned': 943, 'fired': 27, 'bail': 0, 'errors': 0}
