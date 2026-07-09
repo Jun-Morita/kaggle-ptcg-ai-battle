@@ -32,14 +32,18 @@ from cg.api import to_observation_class  # noqa: E402
 from cg.game import battle_start, battle_finish, battle_select  # noqa: E402
 
 
-def make_raw_agent(model, my_deck, opp_deck):
-    """argmax(policy head) over the official candidate enumeration; no MCTS."""
+def make_raw_agent(model, my_deck, opp_deck, oracle_free=False):
+    """argmax(policy head) over the official candidate enumeration; no MCTS.
+    oracle_free=True feeds opp_deck=None (ship-relevant condition: exp041's A2
+    re-pretrain trained with opp_deck-word dropout so this should barely move)."""
+    fed_opp_deck = None if oracle_free else opp_deck
+
     def agent(obs_dict):
         oc = to_observation_class(obs_dict)
         cands = tm.enumerate_candidates(oc)
         if len(cands) == 1:
             return cands[0]
-        sv_e = tm.get_encoder_input(oc, my_deck, opp_deck)
+        sv_e = tm.get_encoder_input(oc, my_deck, fed_opp_deck)
         sv_d = tm.get_decoder_input(oc, cands)
         _, policy = tm.eval_nn(sv_e, sv_d, model)
         best = max(range(len(cands)), key=lambda i: policy[i])
@@ -91,6 +95,8 @@ def main():
     ap.add_argument("model_path")
     ap.add_argument("--n", type=int, default=50)
     ap.add_argument("--d-model", type=int, default=128)
+    ap.add_argument("--oracle-free", action="store_true",
+                    help="feed opp_deck=None (ship-relevant; needs opp_drop-trained model)")
     args = ap.parse_args()
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -111,7 +117,8 @@ def main():
     for name, opp_deck, factory, _ in build_teacher_pool(my_deck):
         if name not in pilot_ref:
             continue
-        w, l, d, e = run_matchup(model, my_deck, opp_deck, factory, args.n)
+        af = (lambda m, md, od: make_raw_agent(m, md, od, oracle_free=args.oracle_free))
+        w, l, d, e = run_matchup(model, my_deck, opp_deck, factory, args.n, agent_factory=af)
         wr = w / max(w + l + d, 1)
         out[name] = {"wr": round(wr, 3), "record": f"{w}-{l}-{d}", "errors": e,
                      "pilot_ref": pilot_ref[name]}

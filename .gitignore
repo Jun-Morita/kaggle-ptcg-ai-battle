@@ -82,3 +82,8 @@ workspace/exp033_valueguard/chunks*/
 workspace/exp036_ga/gens/
 workspace/exp041_pilotnet/data/
 workspace/exp043_learnpri/data/
+workspace/exp041_pilotnet/build_np/
+workspace/exp043_learnpri/build_sp1/
+workspace/exp041_pilotnet/results/
+/episode-*-replay.json
+/episode-*-logs.json

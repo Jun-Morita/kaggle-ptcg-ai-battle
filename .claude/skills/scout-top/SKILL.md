@@ -79,12 +79,25 @@ Loop: `/meta-watch` (what) → **`/scout-top`** (how + our gap) → patch → `/
    `exp042_benchdisc/run_benchdisc.sh`); v014 n=200 reference: crustle .905 /
    ex_lucario .77 / dragapult .17 / archaludon .195 / mirror .585, total 2.67.
    MATCH=field is safe with env flags set process-wide (no field opponent imports
-   revenge_policy); a paired candidate-vs-v014 run needs SEPARATE BUILDS.
+   revenge_policy); a paired candidate-vs-v014 run needs SEPARATE BUILDS (build the
+   candidate with the SAME `--policy`/`--patch`/`--deck` as v014's actual build --
+   e.g. `tb_patch.py` + `v_trev.json` -- and diff the two `main.py`s to confirm only
+   the intended lines changed; reuse `exp035_turnbeam/build_v014/` as-is for the
+   v014 side, no rebuild needed).
    Require: target matchup up (past ship bar: total +0.10), **no regression
    elsewhere, 0 crash errors**. Then `/build-submit` and (after approval) submit.
    **A behavioral match improvement is NOT a strength improvement** — exp042 raised
    TO_BENCH sem-rate 0.23→0.69 yet showed no winrate gain; always run the n≥200
    strength eval before shipping.
+   **A field-eval total improvement is NOT a paired-strength improvement either**
+   — exp043's SEARCH_PRI patch showed total 2.760 (+0.09) vs the 5-matchup field,
+   driven by a mirror gain against the field's non-turnbeam `gust_policy` mirror
+   reference, but scored a dead-even 0.505 (101-97-2, n=200) head-to-head against
+   the ACTUAL v014 (which has the same full turn-beam search that can partly
+   route around a search-priority gap the simpler field opponent can't). For any
+   turn-beam-chain patch, **the paired vs-v014 eval is the deciding gate, run it
+   even when the field total already clears +0.10** — don't ship on field numbers
+   alone.
 
 ## Notes
 - Needs the cabt engine (`uv run`) + cached replays. Behavioral signals from small

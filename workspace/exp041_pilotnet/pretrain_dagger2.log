@@ -1,0 +1,6 @@
+5/13 files are policy-only (DAgger; value loss zeroed)
+resumed from results/pre2/model_ep8.pth
+device=cuda files=13 tag=dagger2
+{"epoch": 0, "loss": 0.1612, "batches": 49579, "sec": 1007, "n_val": 200074, "acc": {"all": 0.8376, "ex_lucario": 0.8339, "multi": 0.8232, "archaludon": 0.8377, "crustle": 0.8322, "dragapult": 0.8398, "mirror_revenge": 0.8423}, "auc_by_phase": {"q1": 0.8344, "q2": 0.8878, "q3": 0.9232, "q4": 0.9726}, "oracle_free": {"acc": {"all": 0.8375, "ex_lucario": 0.8335, "multi": 0.8231, "archaludon": 0.839, "crustle": 0.8307, "dragapult": 0.8398, "mirror_revenge": 0.8419}, "auc_by_phase": {"q1": 0.8208, "q2": 0.8875, "q3": 0.9231, "q4": 0.9723}}}
+{"epoch": 1, "loss": 0.1593, "batches": 49579, "sec": 1135, "n_val": 200074, "acc": {"all": 0.8398, "ex_lucario": 0.8348, "multi": 0.8256, "archaludon": 0.842, "crustle": 0.8336, "dragapult": 0.8427, "mirror_revenge": 0.8433}, "auc_by_phase": {"q1": 0.8281, "q2": 0.8848, "q3": 0.9192, "q4": 0.9728}, "oracle_free": {"acc": {"all": 0.8386, "ex_lucario": 0.8337, "multi": 0.8243, "archaludon": 0.8398, "crustle": 0.8332, "dragapult": 0.8421, "mirror_revenge": 0.8422}, "auc_by_phase": {"q1": 0.8136, "q2": 0.8851, "q3": 0.9193, "q4": 0.9726}}}
+done.

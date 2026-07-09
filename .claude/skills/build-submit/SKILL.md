@@ -32,6 +32,38 @@ Codifies the CLAUDE.md submission checklist end-to-end. Pairs with `/extract-dec
    dragapult). If errors appear or winrates look wrong, fix before submitting. For a
    deeper read, run the relevant `workspace/exp012_nonex/test_*.py` matchup eval.
 
+3b. **Sandbox-replica gate (v015 lesson, 2026-07-09/10 — 4 straight silent failures).**
+   The harness smoke's win/error counts do NOT guarantee sandbox validation passes.
+   Two distinct failure classes were found ONLY by replicating the real Kaggle loader
+   exactly, not by the harness smoke:
+   - **Per-act time**: all historically successful subs act in milliseconds; ~2.3s/act
+     (pure-python MCTS sc16) failed validation (`Validation Episode failed` at ~125s).
+   - **`__file__` is never defined** (the actual root cause of 4 straight ERRORs):
+     `kaggle_environments.agent.get_last_callable` loads `main.py` via
+     `exec(code_object, env)` on the raw SOURCE TEXT — this does NOT set `__file__`,
+     unlike a normal `import` or `importlib.spec_from_file_location`. Any module-level
+     code using `__file__` (e.g. to locate a bundled weights file) crashes at import,
+     before `agent()` exists — invisible to any try/except inside `agent()`. Locate
+     any bundled non-deck/non-cg file the same relative-path(+`/kaggle_simulations/agent/`
+     fallback) way `deck.csv` already does; never touch `__file__` in `main.py`.
+   For ANY agent beyond a trivial hand-written policy (esp. anything with extra bundled
+   files or non-ms-per-act inference), run the sandbox replica before asking for approval:
+   ```
+   uv run python workspace/exp041_pilotnet/sandbox_replica.py <build_dir>/submission.tar.gz
+   ```
+   (extracts the tar, execs `main.py`'s source text in a bare namespace exactly like the
+   real loader — no `__file__` — uses ONLY the shipped cg, full mirror self-play = the
+   validation condition, prints per-act times). Require: import succeeds, game completes,
+   max act well under 1s. If it still errors on Kaggle after this passes, download the
+   failing episode's agent stderr logs before guessing again:
+   ```python
+   from kaggle.api.kaggle_api_extended import KaggleApi
+   api = KaggleApi(); api.authenticate()
+   api.competition_episode_agent_logs(episode_id, agent_index, path="/tmp", quiet=False)
+   ```
+   (find `episode_id` via `api.competition_list_episodes(submission_ref)`) — the actual
+   traceback is far faster than another round of hypothesis-and-resubmit.
+
 4. **Decide the eligible pair.** Submitting makes this the newest; **eligible = latest 2
    by time**. Confirm which existing submission gets evicted and that the resulting pair
    is the intended hedge. Check current state: `kaggle competitions submissions pokemon-tcg-ai-battle`.

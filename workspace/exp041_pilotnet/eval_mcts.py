@@ -25,11 +25,26 @@ from teacher_pool import build_teacher_pool  # noqa: E402
 from eval_raw import run_matchup  # noqa: E402  (same game loop, same conditions)
 
 
-def make_mcts_agent_factory(search_count):
+def make_mcts_agent_factory(search_count, oracle_free=False):
+    """oracle_free=True: determinize() still samples the TRUE opp_deck (that's
+    about hidden-info search accuracy, unaffected by the ship-time oracle
+    question) but the ENCODER feature (the opp_deck bag-of-cards word the net
+    was trained with opp_drop on) is forced to None -- the ship-relevant
+    condition. Implemented as a scoped monkeypatch of get_encoder_input inside
+    train_mcts, since create_node's opp_deck param feeds both uses."""
     def make(model, my_deck, opp_deck):
         def agent(obs_dict):
-            sel, _ = tm.mcts_agent(obs_dict, my_deck, model, search_count,
-                                   opp_deck=opp_deck)
+            if oracle_free:
+                orig = tm.get_encoder_input
+                tm.get_encoder_input = lambda obs, yd, od=None: orig(obs, yd, None)
+                try:
+                    sel, _ = tm.mcts_agent(obs_dict, my_deck, model, search_count,
+                                           opp_deck=opp_deck)
+                finally:
+                    tm.get_encoder_input = orig
+            else:
+                sel, _ = tm.mcts_agent(obs_dict, my_deck, model, search_count,
+                                       opp_deck=opp_deck)
             return sel
         return agent
     return make
@@ -42,6 +57,7 @@ def main():
     ap.add_argument("--search-count", type=int, default=16)
     ap.add_argument("--d-model", type=int, default=128)
     ap.add_argument("--only", default=None, help="limit to one matchup name")
+    ap.add_argument("--oracle-free", action="store_true")
     args = ap.parse_args()
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -53,7 +69,7 @@ def main():
     pilot_ref = {"crustle": 0.827, "ex_lucario": 0.775, "dragapult": 0.160,
                  "archaludon": 0.158, "mirror_revenge": 0.576}
 
-    factory = make_mcts_agent_factory(args.search_count)
+    factory = make_mcts_agent_factory(args.search_count, oracle_free=args.oracle_free)
     out = {}
     t0 = time.time()
     with torch.no_grad():
