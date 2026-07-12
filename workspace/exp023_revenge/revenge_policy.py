@@ -41,6 +41,10 @@ PRIZE_W = int(os.environ.get("PRIZE_W", "0"))
 BACKUP_CHARGE = int(os.environ.get("BACKUP_CHARGE", "0"))
 BENCH_DISC = int(os.environ.get("BENCH_DISC", "0"))  # exp042 deck->bench discipline
 SEARCH_PRI = int(os.environ.get("SEARCH_PRI", "0"))  # exp043 learned TO_HAND priority fix
+SEARCH_PRI2 = int(os.environ.get("SEARCH_PRI2", "0"))  # exp043v2 STATE-CONDITIONED learned TO_HAND chooser
+DRAG_SNIPE = int(os.environ.get("DRAG_SNIPE", "0"))  # exp044 dragapult evolution-line denial bonus
+DRAG_MIST = int(os.environ.get("DRAG_MIST", "0"))    # exp044 Mist-to-bench vs dragapult (Phantom Dive shield)
+SEARCH_PRI3 = int(os.environ.get("SEARCH_PRI3", "0"))  # exp047 STATE-CONDITIONED learned DISCARD chooser
 
 # _plan_attack: gust logic + revenge-window damage + prize-trade-weighted KO bonus.
 _REVENGE = '''
@@ -104,6 +108,7 @@ def _rev_plan_attack(self):
                 # (2) prize trade: flat +500 for a KO, plus extra for multi-prize (ex) targets
                 if prize >= 1:
                     sc += 500 + __PRIZE_W__ * (prize - 1)
+__DRAGSNIPE_LINE__
                 if sc > best:
                     best = sc
                     plan = AttackPlan(attacker=ai, target=ti, attack_index=idx,
@@ -123,10 +128,24 @@ if __BACKUP_CHARGE__:
     LucarioPolicy._energy_target_score = _bc_energy_target_score
 '''
 
+# exp044 (2026-07-11): dragapult evolution-line denial, env-gated (DRAG_SNIPE=<bonus>).
+# Evidence (exp044/analyze_drag.py + attackers.py, NEXT-STEP pairing on real replays):
+# Yushin (same archetype, 15W-16L=0.48 vs dragapult vs our ladder 11W-38L=0.22) wins
+# by KO'ing the Dreepy/Drakloak pre-evolutions early (W: 13 Dreepy attacks + gust
+# pulls Dreepy/Drakloak 6/7) before they become 320HP/2-prize Dragapult ex; our
+# losses funnel attacks into Budew(30hp wall) x37 and chip the 320HP body x20, and
+# burn Boss pulling un-KO-able Fezandipiti/Dragapult ex. Current scoring makes the
+# active-Budew KO (1830) always beat the Dreepy gust-KO (1570); DRAG_SNIPE adds a
+# bonus to KO-able Dreepy(119)/Drakloak(120) targets so line-denial wins the tie.
+# Self-gating on card ids -> zero effect in every non-dragapult matchup.
+_DRAGSNIPE_LINE = ("                if prize >= 1 and op.id in (119, 120):\n"
+                   "                    sc += __DRAG_SNIPE__   # exp044 evolution-line denial\n")
 _REVENGE = (_REVENGE
             .replace("__REVENGE_BONUS__", str(REVENGE_BONUS))
             .replace("__PRIZE_W__", str(PRIZE_W))
-            .replace("__BACKUP_CHARGE__", str(BACKUP_CHARGE)))
+            .replace("__BACKUP_CHARGE__", str(BACKUP_CHARGE))
+            .replace("__DRAGSNIPE_LINE__",
+                     _DRAGSNIPE_LINE.replace("__DRAG_SNIPE__", str(DRAG_SNIPE)) if DRAG_SNIPE else ""))
 
 # exp042 (2026-07-08): deck->bench discipline, env-gated (BENCH_DISC=1).
 # Evidence (exp042/policy_diff2.py vs Mogja J #3-era, same charmq-style deck,
@@ -197,6 +216,215 @@ _TO_HAND_PRI[1227] = 150   # Lillie's Determination (was unscored, defaulted to 
 '''
 if SEARCH_PRI:
     PATCH_SRC += "\n" + _SEARCHPRI
+
+# exp043 v2 (2026-07-11): STATE-CONDITIONED learned TO_HAND chooser, env-gated
+# (SEARCH_PRI2=1). Background: exp043 v1 concluded "no learnable state-dependence"
+# (val top-1 0.526 ~= static 0.514) -- but its extractor used the SAME-STEP action
+# pairing bug (found 2026-07-10). Re-extraction with the verified next-step pairing
+# (extract_selects2.py, 8,460 decisions/979 games) OVERTURNS that: val top-1 0.861
+# vs static most-fetched baseline 0.704 (game-level holdout n=368, ~6.5 sigma).
+# Model (results/pri2/pri.npz, 303 params): score(cand) = b[card] + W[card].f(14
+# state feats) + u.(copies in hand/field/discard); STOP head for voluntary
+# declines. Weights are inlined into PATCH_SRC as literals at build time -> the
+# shipped main.py needs NO extra file and NO numpy. Decisions with any candidate
+# card outside the trained 19-card table fall back to the original choose()
+# (conservative: Yushin's deck is the TR-tutor variant, 42/60 shared with ours).
+def _gen_searchpri2():
+    import numpy as _np
+    z = _np.load(os.path.join(_ROOT, "workspace", "exp043_learnpri", "results", "pri2", "pri.npz"))
+    tbl = {int(c): (float(b), tuple(float(x) for x in w))
+           for c, b, w in zip(z["cards"], z["b"], z["W"])}
+    lit = "{" + ", ".join(f"{c}: ({b!r}, {w!r})" for c, (b, w) in sorted(tbl.items())) + "}"
+    return f'''
+# ===== exp043v2 state-conditioned learned TO_HAND chooser (pairing-fixed data) =====
+_SP2_TBL = {lit}
+_SP2_U = {tuple(float(x) for x in z["u"])!r}
+_SP2_STOP_B = {float(z["b_stop"][0])!r}
+_SP2_STOP_W = {tuple(float(x) for x in z["w_stop"])!r}
+_sp2_orig_choose = LucarioPolicy.choose
+
+def _sp2_feats(self):
+    me, op = self.me, self.opponent
+    board = self._my_board()
+    act = board[0] if board else None
+    line = self.field_counts[_TREVENANT] + self.field_counts[_PHANTUMP]
+    return (
+        min(self.state.turn, 30) / 30.0,
+        len(me.hand) / 10.0,
+        me.deckCount / 60.0,
+        len(me.prize) / 6.0,
+        len(op.prize) / 6.0,
+        (len(me.prize) - len(op.prize)) / 6.0,
+        len(me.bench) / 5.0,
+        len(op.bench) / 5.0,
+        line / 4.0,
+        1.0 if self.state.energyAttached else 0.0,
+        1.0 if self.state.supporterPlayed else 0.0,
+        1.0 if (act is not None and act.id in (_TREVENANT, _PHANTUMP)) else 0.0,
+        min(len(act.energies) if act is not None else 0, 3) / 3.0,
+        1.0,
+    )
+
+def _sp2_choose(self):
+    if self.context != SelectContext.TO_HAND or not self.select.option:
+        return _sp2_orig_choose(self)
+    cids = []
+    for option in self.select.option:
+        card = get_card(self.obs, option.area, option.index, option.playerIndex)
+        cid = getattr(card, "id", None)
+        if cid is None or cid not in _SP2_TBL:
+            return _sp2_orig_choose(self)   # unknown card -> conservative fallback
+        cids.append(cid)
+    f = _sp2_feats(self)
+    scores = []
+    for cid in cids:
+        b, w = _SP2_TBL[cid]
+        s = b + sum(wi * fi for wi, fi in zip(w, f))
+        s += (_SP2_U[0] * min(self.hand_counts[cid], 3) / 3.0
+              + _SP2_U[1] * min(self.field_counts[cid], 3) / 3.0
+              + _SP2_U[2] * min(self.discard_counts[cid], 3) / 3.0)
+        scores.append(s)
+    stop = _SP2_STOP_B + sum(wi * fi for wi, fi in zip(_SP2_STOP_W, f))
+    remaining = sorted(range(len(cids)), key=lambda i: -scores[i])
+    out = []
+    for i in remaining:
+        if len(out) >= self.select.maxCount:
+            break
+        if len(out) >= self.select.minCount and scores[i] <= stop:
+            break                            # model prefers STOP over this pick
+        out.append(i)
+    if len(out) < self.select.minCount:
+        return _sp2_orig_choose(self)
+    return out
+LucarioPolicy.choose = _sp2_choose
+'''
+if SEARCH_PRI2:
+    PATCH_SRC += "\n" + _gen_searchpri2()
+
+# exp047 (2026-07-12): STATE-CONDITIONED learned DISCARD chooser, env-gated
+# (SEARCH_PRI3=1). Same structural-gap pattern as SEARCH_PRI2: the base
+# LucarioPolicy.choose() has NO scoring branch for SelectContext.DISCARD at all
+# (_score_card_choice only handles SWITCH/TO_ACTIVE/SETUP_ACTIVE_POKEMON/TO_HAND/
+# ATTACH_FROM, falls through to `return 0` otherwise) -> hand-size/effect discards
+# are decided by arbitrary tie-break (stable sort of all-zero scores = original
+# option order), not by any strategy. Scouted from Yushin Ito (same next-step-
+# paired extractor as exp043v2): 943 decisions/786 games, 19 distinct candidate
+# cards, val top-1 0.36-0.42 vs static most-discarded baseline 0.220 (game-level
+# holdout n=50 -- directional, smaller sample than TO_HAND's 8,460/979, so this
+# is a WEAKER prior than SEARCH_PRI2's 6.5-sigma result and needs the field +
+# paired gates before any ship decision). Same model form/export as pri2
+# (results/discard1/pri.npz), same literal-inlining build-time mechanism.
+def _gen_searchpri3():
+    import numpy as _np
+    z = _np.load(os.path.join(_ROOT, "workspace", "exp047_pri_tobench", "results", "discard1", "pri.npz"))
+    tbl = {int(c): (float(b), tuple(float(x) for x in w))
+           for c, b, w in zip(z["cards"], z["b"], z["W"])}
+    lit = "{" + ", ".join(f"{c}: ({b!r}, {w!r})" for c, (b, w) in sorted(tbl.items())) + "}"
+    return f'''
+# ===== exp047 state-conditioned learned DISCARD chooser =====
+_SP3_TBL = {lit}
+_SP3_U = {tuple(float(x) for x in z["u"])!r}
+_SP3_STOP_B = {float(z["b_stop"][0])!r}
+_SP3_STOP_W = {tuple(float(x) for x in z["w_stop"])!r}
+_sp3_orig_choose = LucarioPolicy.choose
+
+def _sp3_feats(self):
+    me, op = self.me, self.opponent
+    board = self._my_board()
+    act = board[0] if board else None
+    line = self.field_counts[_TREVENANT] + self.field_counts[_PHANTUMP]
+    return (
+        min(self.state.turn, 30) / 30.0,
+        len(me.hand) / 10.0,
+        me.deckCount / 60.0,
+        len(me.prize) / 6.0,
+        len(op.prize) / 6.0,
+        (len(me.prize) - len(op.prize)) / 6.0,
+        len(me.bench) / 5.0,
+        len(op.bench) / 5.0,
+        line / 4.0,
+        1.0 if self.state.energyAttached else 0.0,
+        1.0 if self.state.supporterPlayed else 0.0,
+        1.0 if (act is not None and act.id in (_TREVENANT, _PHANTUMP)) else 0.0,
+        min(len(act.energies) if act is not None else 0, 3) / 3.0,
+        1.0,
+    )
+
+def _sp3_choose(self):
+    if self.context != SelectContext.DISCARD or not self.select.option:
+        return _sp3_orig_choose(self)
+    cids = []
+    for option in self.select.option:
+        card = get_card(self.obs, option.area, option.index, option.playerIndex)
+        cid = getattr(card, "id", None)
+        if cid is None or cid not in _SP3_TBL:
+            return _sp3_orig_choose(self)   # unknown card -> conservative fallback
+        cids.append(cid)
+    f = _sp3_feats(self)
+    scores = []
+    for cid in cids:
+        b, w = _SP3_TBL[cid]
+        s = b + sum(wi * fi for wi, fi in zip(w, f))
+        s += (_SP3_U[0] * min(self.hand_counts[cid], 3) / 3.0
+              + _SP3_U[1] * min(self.field_counts[cid], 3) / 3.0
+              + _SP3_U[2] * min(self.discard_counts[cid], 3) / 3.0)
+        scores.append(s)
+    stop = _SP3_STOP_B + sum(wi * fi for wi, fi in zip(_SP3_STOP_W, f))
+    remaining = sorted(range(len(cids)), key=lambda i: -scores[i])
+    out = []
+    for i in remaining:
+        if len(out) >= self.select.maxCount:
+            break
+        if len(out) >= self.select.minCount and scores[i] <= stop:
+            break                            # model prefers STOP over this pick
+        out.append(i)
+    if len(out) < self.select.minCount:
+        return _sp3_orig_choose(self)
+    return out
+LucarioPolicy.choose = _sp3_choose
+'''
+if SEARCH_PRI3:
+    PATCH_SRC += "\n" + _gen_searchpri3()
+
+# exp044 (2026-07-11): Mist Energy -> benched evolver vs dragapult, env-gated
+# (DRAG_MIST=<bonus>). Mechanism VERIFIED IN ENGINE SOURCE (references/raw/
+# ptcg_engine/CardImpl.h): Phantom Dive's 6 bench damage counters are a
+# .postEffect (attack effect), and Mist Energy has
+# .effectEnergyContinual(NoEffectEnemyAttack) -> a benched Pokemon with Mist
+# attached IGNORES the spread entirely. Evidence: our ladder wins vs dragapult
+# fetch Mist 0.55/game vs 0.24 in losses. The base _score_attach ignores the
+# ENERGY CARD identity completely (only scores the target), so Mist is never
+# deliberately placed on the bench piece Phantom Dive will snipe. This bonus
+# routes Mist to a benched, Mist-less Trevenant/Phantump when the Dreepy line
+# is on the opponent's board -- but never diverts an energy the planned
+# attacker needs this turn (plan.needs_energy guard). Self-gating on opponent
+# card ids -> zero effect in every non-dragapult matchup.
+_DRAGMIST = '''
+# ===== exp044 Mist-to-bench vs dragapult (Phantom Dive shield) =====
+_dm_orig_score_attach = LucarioPolicy._score_attach
+_DM_DRAG_LINE = {119, 120, 121}   # Dreepy / Drakloak / Dragapult ex
+_MIST_ENERGY_ID = 11
+
+def _dm_score_attach(self, option):
+    sc = _dm_orig_score_attach(self, option)
+    card = get_card(self.obs, AreaType.HAND, option.index, self.my_index)
+    if card is None or card.id != _MIST_ENERGY_ID:
+        return sc
+    if plan.needs_energy:
+        return sc
+    opp_ids = {p.id for p in self._opponent_board() if p is not None}
+    if not (opp_ids & _DM_DRAG_LINE):
+        return sc
+    pokemon = get_card(self.obs, option.inPlayArea, option.inPlayIndex, self.my_index)
+    if (isinstance(pokemon, Pokemon) and option.inPlayArea == AreaType.BENCH
+            and pokemon.id in (_TREVENANT, _PHANTUMP)
+            and not any(getattr(e, "id", None) == _MIST_ENERGY_ID for e in pokemon.energyCards)):
+        sc += __DRAG_MIST__
+    return sc
+LucarioPolicy._score_attach = _dm_score_attach
+'''
+if DRAG_MIST:
+    PATCH_SRC += "\n" + _DRAGMIST.replace("__DRAG_MIST__", str(DRAG_MIST))
 
 _n = [0]
 

@@ -1,0 +1,138 @@
+"""exp043 v2 — TO_HAND extraction with the FIXED action pairing.
+
+The original extract_selects.py paired obs and action at the SAME step index,
+which is WRONG (verified 2026-07-10 in exp041/replay_to_records.py: the action
+stored at steps[t] responds to the obs at steps[t-1]; same-step pairing gives
+4% out-of-range actions and shifted labels). This version pairs the obs at
+steps[si] with steps[si+1][ti]["action"], and finds the target's seat OFFLINE
+via info.TeamNames (no Kaggle API call needed; replays are already cached).
+
+Everything else (features, candidate decoding, record schema) is identical to
+v1 so train_pri.py runs unchanged on the output.
+
+Usage: uv run python extract_selects2.py [team] [cache_tag] [out.pkl]
+       uv run python extract_selects2.py "Yushin Ito" top_yushin_0708 data/tohand2.pkl
+"""
+from __future__ import annotations
+import json
+import os
+import pickle
+import sys
+from collections import Counter
+
+HERE = os.path.dirname(os.path.abspath(__file__))
+ROOT = os.path.abspath(os.path.join(HERE, "..", ".."))
+sys.path.insert(0, HERE)
+sys.path.insert(0, os.path.join(ROOT, "workspace", "exp001_harness"))
+sys.path.insert(0, os.path.join(ROOT, "workspace", "exp013_router"))
+
+from extract_selects import (_LINE_NAMES, card_id_of, field_ids, hand_ids,
+                             discard_ids, make_feats)  # noqa: E402
+
+
+def main():
+    team = sys.argv[1] if len(sys.argv) > 1 else "Yushin Ito"
+    tag = sys.argv[2] if len(sys.argv) > 2 else "top_yushin_0708"
+    out_path = sys.argv[3] if len(sys.argv) > 3 else os.path.join(HERE, "data", "tohand2.pkl")
+
+    from harness import load_engine
+    api, _ = load_engine()
+    TO_HAND = int(api.SelectContext.TO_HAND)
+    name2id = {}
+    for c in api.all_card_data():
+        name2id.setdefault(c.name, c.cardId)
+    line_ids = {name2id[n] for n in _LINE_NAMES if n in name2id}
+    nm_of = {c.cardId: c.name for c in api.all_card_data()}
+
+    raw_dir = os.path.join(ROOT, "references", "raw", "replays", tag)
+    files = sorted(f for f in os.listdir(raw_dir) if f.endswith("replay.json"))
+    print(f"extracting TO_HAND decisions of '{team}' from {len(files)} cached replays in {tag}")
+
+    records, pick_counter, skipped = [], Counter(), Counter()
+    seen = set()
+    for fn in files:
+        try:
+            rep = json.load(open(os.path.join(raw_dir, fn)))
+        except Exception:
+            skipped["bad_json"] += 1
+            continue
+        epid = rep.get("info", {}).get("EpisodeId")
+        if epid in seen:
+            continue
+        seen.add(epid)
+        names = rep.get("info", {}).get("TeamNames") or []
+        idxs = [i for i, n in enumerate(names) if n == team]
+        if not idxs:
+            skipped["no_agent"] += 1
+            continue
+        steps = rep.get("steps", [])
+        for ti in idxs:
+            for si, st in enumerate(steps):
+                if ti >= len(st):
+                    continue
+                ag = st[ti]
+                if ag.get("status") != "ACTIVE":
+                    continue
+                obs = ag.get("observation")
+                # FIXED PAIRING: the response to this obs is the NEXT step's action
+                if si + 1 >= len(steps) or ti >= len(steps[si + 1]):
+                    skipped["no_next"] += 1
+                    continue
+                act = steps[si + 1][ti].get("action")
+                if not isinstance(obs, dict) or obs.get("select") is None or not isinstance(act, list):
+                    continue
+                if len(act) == 60:   # deck-submission pseudo-step
+                    continue
+                sel = obs["select"]
+                if sel.get("context") != TO_HAND:
+                    continue
+                opts = sel.get("option", [])
+                if len(opts) < 2:
+                    continue
+                mn, mx = sel.get("minCount", 1), sel.get("maxCount", 1)
+                if not (mn <= len(act) <= mx):
+                    skipped["count_out_of_bounds"] += 1
+                    continue
+                cands = [card_id_of(obs, o) for o in opts]
+                if any(c is None for c in cands):
+                    skipped["undecoded_cand"] += 1
+                    continue
+                if any((not isinstance(i, int)) or i < 0 or i >= len(opts) for i in act):
+                    skipped["bad_action_idx"] += 1
+                    continue
+                cur = obs["current"]
+                yi = cur.get("yourIndex", 0)
+                me = cur["players"][yi]
+                hand = Counter(hand_ids(me))
+                fld = Counter(field_ids(me))
+                dsc = Counter(discard_ids(me))
+                cand_xf = [[min(hand[c], 3) / 3.0, min(fld[c], 3) / 3.0, min(dsc[c], 3) / 3.0]
+                           for c in cands]
+                records.append({
+                    "epid": epid,
+                    "feats": make_feats(obs, line_ids),
+                    "cands": cands,
+                    "cand_xf": cand_xf,
+                    "picks": sorted(act),
+                    "min": mn, "max": mx,
+                })
+                for i in act:
+                    pick_counter[nm_of.get(cands[i], cands[i])] += 1
+                if not act:
+                    pick_counter["<STOP/none>"] += 1
+
+    os.makedirs(os.path.dirname(out_path), exist_ok=True)
+    with open(out_path, "wb") as f:
+        pickle.dump(records, f)
+    games = len({r["epid"] for r in records})
+    print(f"wrote {len(records)} decisions from {games} games -> {out_path}")
+    print("skips:", dict(skipped))
+    print("their pick distribution (top 20):")
+    for nm, n in pick_counter.most_common(20):
+        print(f"  {n:6d}  {nm}")
+    npicks = Counter(len(r["picks"]) for r in records)
+    print("picks-per-decision:", dict(sorted(npicks.items())))
+
+
+if __name__ == "__main__":
+    main()

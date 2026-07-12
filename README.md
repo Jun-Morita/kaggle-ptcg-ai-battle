@@ -84,11 +84,171 @@ uv run python run_gauntlet.py 20      # random vs random
 - `agents.py` … ベースラインエージェント
 - 結果は `results/` に JSON で保存（`.gitignore` 対象）
 
-## 進捗（2026-07-09/10 時点）
+## 進捗（2026-07-12 時点）
 
-**eligible = {v015-fix4 (RLプローブ), diag-probe (v014クローン)}**。v014自体はハーネス上の
-出荷最良版（crustle 0.765→0.905 +0.14 のターン全体プランナー）のまま健在——ラダー枠は
-RLフィードバック収集のため一時的にRL版へ切り替え中。
+**eligible = {v019-searchpri3, v020-archaludon}**（07-12提出、収束中）。シルバーカット:
+**933.4点**、締切8/16（Simulation）・9/13（Strategy）。残り約1ヶ月の方針:
+「デッキ⊗メタの噛み合わせが最大レバー、最終提出目安8/2（収束期間2週確保）」。
+
+### exp049: Archaludonデッキ複製 → v020提出（「全員が負けるデッキに乗る」戦略転換）
+mixed_ex4/Archaludon(メタ16%)はLB#1 taksai(0.28)・tomatomato(0.25)・v016壁(0.22)が
+全員負ける現メタ頂点——倒す研究でなく使う側に回った。ShumpeiNomura(LB 1083)のデッキを
+複製したが、**exp025の公開専用pilot+自前Cinderace型**が最強（Nomura構成差し替えは劣化
+=pilotが自前デッキに調律済み、deck⊗pilotの再確認）。n=200×6合計**4.625/6**
+（v016壁0.825・v019 0.870含む、全マッチ0.645+、0エラー）——ローカル計測史上最強。
+bare-execレプリカ0エラー確認の上v020として提出。v016壁は意図的ドロップ（v020が壁の
+標的を上位互換でカバー）。詳細: [`workspace/exp049_archaludon/SESSION_NOTES.md`](workspace/exp049_archaludon/SESSION_NOTES.md)。
+
+### exp048: Mega Starmie exパイロット高度化(b) → 診断成功・強さは不動（一致率≠強さの再確認）
+taksai(LB#1)/tomatomato(948.8、537試合)は同一のMega Starmie/Froslass構成でcrustle壁を
+**22勝2敗**——"ex_beatdown"は壁に強いStarmie系と壁に弱いKangaskhan系の2系統が混在すると
+判明。修正済みペアリングのdiff(`exp048/policy_diff_fixed.py`)でSETUP_ACTIVE 0.58→1.00・
+TO_BENCH 0.30→0.62に改善したが対壁勝率は0.950→0.933でほぼ不動。乖離の65%を占める
+MAIN決定はBC(exp041パイプライン、GPU待ち)でないと届かない。
+
+### exp047: SEARCH_PRI2手法の横展開 → SEARCH_PRI3(DISCARD) GO→v019として提出済み
+SEARCH_PRI2(TO_HAND, v018出荷済み)と同じ「select文脈の学習済み状態条件付き差し替え」を
+他の文脈へ横展開。`extract_selects_ctx.py`（任意context対応の一般化抽出器）でYushin Ito
+リプレイをスカウト: **TO_BENCH**(2207決定/972試合)は候補3種のみでほぼ決め打ち、静的
+最頻値0.910に学習モデルが届かず**NO-GO**。**DISCARD**(943決定/786試合、候補19種)は
+静的ベースライン0.220に対し学習val top-1 0.34-0.42と有望、`SEARCH_PRI3`として同一
+統合パターンで実装。**決定ゲート=paired vs v014**（別ビルド、swap_sides）:
+n=200(0.510)→n=600(0.545, z=2.20)→**n=1000: 538-452-10, winrate 0.538, z=2.40**
+——**SEARCH_PRI2自身の最終z(0.76)より明確に強い有意な結果**。**判定: GO**（ユーザー
+提出承認待ち）。詳細: [`daily_reports/20260712.md`](daily_reports/20260712.md) /
+[`workspace/exp047_pri_tobench/SESSION_NOTES.md`](workspace/exp047_pri_tobench/SESSION_NOTES.md)。
+
+<details><summary>exp046: encoderへのクロスターン特徴追加（RL設計プラン3） → NO-GO（クリックで展開）</summary>
+
+リベンジ窓フラグ(v011実績)+PrizeTracker確定プライズbag(exp019実績)をencoderに追加。
+初回学習(pre5, 154万レコード)はeval_raw旧5合計1.980で低かったが**データ量がpre2比1/4
+という交絡**があったため、ENC_V2の新語が既存25語の**末尾**に追加される設計を活かし、
+生成済みレコードの末尾2語を切り落として「同一ゲーム・ENC_V2=0相当」のデータを
+無料で再現(`strip_encv2.py`)。**同一データ量での直接対照**: ENC_V2なし(pre5b)が
+val top-1(0.7875>0.7807)・eval_raw旧5合計(**2.140>1.980**、+0.16)の両方で明確に上回り、
+**交絡なしでENC_V2はこの実装ではむしろ悪化させると確定**。本RLライン15件目の誠実な
+負の結果。詳細: [`daily_reports/20260712.md`](daily_reports/20260712.md) /
+[`workspace/exp046_richenc/SESSION_NOTES.md`](workspace/exp046_richenc/SESSION_NOTES.md)。
+</details>
+
+<details><summary>2026-07-11 時点の進捗（クリックで展開）</summary>
+
+**eligible = {v016-wall (Crustle壁, resubmit), v018-searchpri2}**。v018はfield全マッチ
+改善(+0.085)・paired n=1000でも一貫してプラス(z=0.76、有意ではないが本セッション最安定)
+を根拠に出荷。v018投入でeligible(最新2件)がv017/v018に変わりv016-wallが一時的に
+押し出されたため、同一ビルドで即再提出しeligible={v016-wall, v018}を確定（メタカウンター
+の壁と改良された非exチェーンを同時にeligible化）。
+
+シルバーカット確認（`kaggle competitions leaderboard`）: 4,773チーム中 **silver top238 =
+933.4点**、現在798.3点(1175位)。締切は8/16（Simulation）・9/13（Strategy）で残り約5週間。
+
+### メタ分析→Crustle壁(v016)を再投入、RLはpre3b(v017)へ更新 — 両方提出済み(PENDING)
+`/meta-watch`で対戦相手のデッキを実復元したところ、**現メタの約45%がMarnie's Grimmsnarl ex
+/ Archaludon ex系**（mixed_ex3/mixed_ex4）。Yushin Itoの実データでGrimmsnarl exは
+crustle_control(壁)に0.26で大敗することは確定済み。Crustle壁(v004系)を対今メタ6マッチで
+実測(n=100、0err): **grimmsnarl複製1.000 / dragapult 1.000 / ex_lucario 0.800 /
+archaludon 0.220 / 非ex(v014) 0.080 / ミラー0.410、合計3.51**——v014系と完全に補完的。
+v016-wallとして再投入。RL側もpre3b(専門家吸収済み、eval_raw 2.24>pre2 2.14)をv017-RLとして
+更新（v015-fix4を置き換え）。詳細: [`daily_reports/20260711.md`](daily_reports/20260711.md)。
+
+### exp044: dragapult床(0.17)攻略 — 2機構とも単発では有意差なし
+Yushin旧提出(同型デッキ)は同じdragapultに0.48で勝つ。行動差分（進化ライン狩り+Mist盾）を
+2つのenv-gatedパッチ(DRAG_SNIPE/DRAG_MIST)に実装したが、DRAG_SNIPEはフラット(0.165)、
+DRAG_MISTはn=600でz=0.98と**両方とも有意差なし**——静的スコア定数1個では動かせないと判明。
+詳細: [`workspace/exp044_dragapult/SESSION_NOTES.md`](workspace/exp044_dragapult/SESSION_NOTES.md)。
+
+### exp043 v2: ペアリングバグ修正で「状態依存は学習不可」の結論が覆る → v018として出荷
+07-10発見のリプレイ・ペアリングバグを踏まえTO_HAND抽出を再実装。val top-1が
+**0.526(差なし)→0.861**(静的基準0.704、+0.157≈6.5σ)に改善——v1の否定的結論は
+バグ由来と確定。`SEARCH_PRI2`としてv014チェーンに統合。**field n=200×5は合計2.755
+(v014基準2.67、+0.085、全マッチ無壊滅)**。決定ゲートのpaired vs v014はn=1000で
+**winrate=0.512、z=0.76**——有意水準には未達だがn=200/600/1000を通じ一貫してプラス
+（exp043 v1 SEARCH_PRIのz消失、pre3bのz=-0.82反転とは対照的な安定性）。ユーザー判断で
+**v018-searchpri2として出荷（COMPLETE）**。
+
+### exp045: turn-beam終端の学習評価器（プラン2）v1 → NO-GO（exp033と同型の再発）
+RL設計再考（行動・状態・報酬の3軸棚卸し、ユーザーと合意）の本命として着手。`tb_patch.py`に
+`TB_VALUE=1`ゲートを追加し、turn-beamのタイブレーク(与ダメージ)をexp032/033の学習済み
+価値関数に置換（プライズ差の第一キー・v014の検証付き上書き規律は不変）。field n=200×5:
+**合計2.620(-0.05)**——archaludonが-0.06悪化し他の小幅な改善を打ち消した。exp033
+（価値関数統合が壁/アンチexマッチアップを悪化させる）と同型のパターンが統合構造を
+変えても再発、fieldの時点でNO-GO。詳細: [`workspace/exp045_tbvalue/SESSION_NOTES.md`](workspace/exp045_tbvalue/SESSION_NOTES.md)。
+
+### RL設計の再考（行動・状態・報酬）— 合意済みプラン、3案とも決着（07-12時点）
+報酬=終端±1が「探索が効かない/自己対戦雪だるま」の共通根、として合意した3プラン:
+(1) SEARCH_PRI2(select文脈の学習差し替え) → **出荷(v018)**、(2) turn-beam終端の
+学習評価器(TB_VALUE) → **NO-GO**（exp033同型の再発）、(3) encoder語追加(ENC_V2)
+→ **NO-GO**（交絡なしで確定）。silver主砲はメタ対応(v016壁)のまま。
+SEARCH_PRI2の手法を他のselect文脈へ横展開(exp047)した結果、**SEARCH_PRI3(DISCARD)が
+GO**（paired vs v014 n=1000でz=2.40、SEARCH_PRI2自身より強い有意な結果、詳細は上記
+07-12セクション）——提出はユーザー承認待ち。
+
+</details>
+
+<details><summary>2026-07-11 pre3b(GPU run_pre3.sh)の詳細（クリックで展開）</summary>
+
+### exp041 RL: run_pre3.sh（GPU）完走 — ミラー優位は小標本ノイズと判明、13件目の誠実な負の結果
+07-10のCPU先行フェーズ（実ラダー/専門家コーパス、Grimmsnarl統合）を受け、GPU空き次第の
+2段階学習を実行。
+
+- **pre3a**（安全な吸収）: 合成val top-1 0.8313でPASSも、eval_raw n=50旧5合計が2.060で
+  pre2基準2.14に未達（mirror_revengeが0.576→0.340へ大幅悪化）。grimmsnarlは目標達成(0.660)。
+- **pre3b**（Yushin専門家データ追加）: **専門家ホールドアウトtop-1が0.436→0.549まで改善**
+  （非exミラーが0.402→0.498と最大の伸び）——専門家プレイを忘却なく吸収できる点は実証済み。
+  eval_raw旧5合計は2.240に回復（crustle 0.860で参照超え、mirrorは0.500まで回復）。
+- **決定打: ミラー限定paired vs v014（別ビルド、swap_sides）**: 最初のn=200で
+  winrate(pre3b)=0.525(105-92-3)と方向的な陽性に見えたが、**追加n=400で0.463に反転**。
+  **n=600合算の最終結果: winrate=0.483 (290-297-13)、SE≈0.020、z=-0.82**——優位は
+  消失。ex_lucarioの悪化懸念(0.720→0.580)もn=200再測定で0.700に回復、n=50ノイズと確認。
+  **結論: pre3bはv014に対する実質的な優位を示さず、出荷不可**。本RLライン13件目の
+  誠実な負の結果（教訓: n=200の結果でも再現性確認なしに「方向的」と結論しない）。
+  詳細: [`daily_reports/20260711.md`](daily_reports/20260711.md) /
+  [`workspace/exp041_pilotnet/SESSION_NOTES.md`](workspace/exp041_pilotnet/SESSION_NOTES.md)。
+
+</details>
+
+<details><summary>2026-07-10 時点の進捗（クリックで展開）</summary>
+
+### exp041 RL: silver圏へ向けた計画練り直し（GPU空き待ちのCPU先行フェーズ、07-10）
+v015-fix4がラダーで勝率~0.54と健闘する一方、ローカル評価は合計2.14でv014基準2.67に未達。
+GPUが数時間使えない制約下で、CPUのみで次の一手を準備した。
+
+- **重大発見: Kaggleリプレイのアクション・ペアリングバグ**。`steps[t].action`は
+  **1ステップ前のobsへの応答**であり、同ステップ対応だと範囲外インデックス4.05%・
+  ラベルずれが発生（次ステップ対応で0%・公式行動空間への捕捉率100%を確認）。
+  **exp043のTO_HAND抽出はこのバグを踏んでおり**、v1の「状態依存が学習できない」という
+  結論は確定でなくなった（SEARCH_PRIのNO-GO自体は独立の実対局評価なので不変）。
+- **分布ギャップ診断**（numpy推論・CPUのみ）: pre2 vs 自分(v014)の実ラダー決定はtop-1
+  **0.798**（全アーキタイプで均一、合成val基準0.830とほぼ同水準）——「学習分布≠実戦分布」
+  仮説は決定ラベルレベルでは弱いと判明。一方 pre2 vs **Yushin旧提出**(同型デッキ、LB1097)
+  の決定はtop-1**0.436**（非exミラーが最低0.402）——Yushinの強み(ミラー0.77 vs 我々0.585)
+  の在処と一致し、**教師(v014)を超えうる唯一のBC素材**と判明。
+- **構築した資産**: 自分の実ラダー対局45,447レコード(`ladder_w9.pkl`)、Yushin専門家プレイ
+  56,627レコード(`expert_w8.pkl`)、Grimmsnarl ex（新#1デッキ）をteacher_pool/datagen/eval系
+  に統合し合成データ約90万レコードを生成中、GPU再開時の2段階実行計画(`run_pre3.sh`、
+  決定ゲート=ミラーのpaired vs v014)。詳細: [`daily_reports/20260710.md`](daily_reports/20260710.md) /
+  [`workspace/exp041_pilotnet/SESSION_NOTES.md`](workspace/exp041_pilotnet/SESSION_NOTES.md)。
+
+### トップランカー・スカウティング続報: Yushin Itoが我々と同型デッキから離脱、Grimmsnarl exへ
+Yushin Ito（旧LB#7 1097.2、我々と同一Hop's Trevenant非exデッキ）が**Marnie's Grimmsnarl ex
+にデッキを乗り換えLB#1(1272.8)に急上昇**していたことを発見。全1000リプレイでの確定成績:
+dragapult 0.92(n=26) / lucario_ex 0.80(n=61) / non_ex_attackers(**我々の型**) 0.71(n=251) /
+**crustle_control 0.26(n=153)**——三すくみ（Grimmsnarl ex rush > 非ex攻撃 > 各種ex >
+Crustle壁）が大サンプルで確定。v014をこのデッキの複製に当てると0.60(n=100、我々の生成操縦が
+相手なのでYushin本人との対戦はより厳しい可能性)。analyze_adaptation.py/policy_diff2.pyは
+「対象が我々と同アーキタイプ」という前提がデッキ乗り換えで崩れ使えないことも確認・記録。
+詳細: [`competition/matchups/grimmsnarl.md`](competition/matchups/grimmsnarl.md) /
+[`workspace/exp011_meta_watch/scout_yushin_0710.md`](workspace/exp011_meta_watch/scout_yushin_0710.md)。
+
+### 公開notebook分析: 「BattleCore Compact Agent」— 新規アイデアなし
+07-08分析済みの「PTCG Meta A Stable Submit」と実質同一エージェント（detect_matchup()・
+Hop's Snorlax名指しBoss狙撃・crustle overridesが完全一致）と確認。自称"Arena Validation"も
+自分のA/Bデッキ同士の内輪比較のみでCrustle/Hop/Lucario/Starmieという実際の相手には未検証——
+我々のn=200×5固定プール＋ペア評価の方が厳格。新規採用アイデアなし。
+
+</details>
+
+<details><summary>2026-07-09/10 時点の進捗（クリックで展開）</summary>
 
 ### exp041 RL: v015提出をめぐる4連続ERROR→真因特定→COMPLETE（07-09〜10）
 Phase2/3の生ネット+MCTS（合計2.14、v014基準2.67に未達を承知の上でユーザー承認済み提出）を
@@ -111,6 +271,8 @@ Yushinスカウト由来のTO_HAND優先度バグ修正パッチ。field評価(n
 （探索なしのgust_policy参照）とv014自身（同じフルビーム探索）の差が原因と推定。
 exp042に続く2件目の同型教訓により、`/scout-top`スキルに
 「ペア評価（別ビルド）を必須の最終ゲートとする」を追記。
+
+</details>
 
 <details><summary>2026-07-08 時点の進捗（クリックで展開）</summary>
 

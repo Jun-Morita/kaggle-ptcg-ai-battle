@@ -24,7 +24,11 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.abspath(os.path.join(HERE, "..", ".."))
 CG = os.path.join(ROOT, "data", "sim_sample", "cg")
 DECK = os.path.join(ROOT, "workspace", "exp012_nonex", "charmq_deck.json")
-WEIGHTS_SRC = os.path.join(HERE, "results", "pre2", "weights_pure.pkl")  # numpy-free, oracle-free-capable
+# v017 (2026-07-11): pre3b checkpoint — pre2 + grimmsnarl synthetic + real-ladder
+# corpus + Yushin expert x10. eval_raw old-5 total 2.24 (> pre2's 2.14), grimmsnarl
+# 0.60, expert-holdout top-1 0.549 (vs pre2's 0.436). Paired mirror vs v014 = 0.483
+# (no edge, but not worse); shipped as the ladder RL probe replacing v015-fix4 (pre2).
+WEIGHTS_SRC = os.path.join(HERE, "results", "pre3b", "weights_pure.pkl")  # numpy-free, oracle-free-capable
 OUT = os.path.join(HERE, "build_np")
 
 

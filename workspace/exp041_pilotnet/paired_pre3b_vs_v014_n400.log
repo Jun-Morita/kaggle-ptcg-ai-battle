@@ -1,0 +1,2 @@
+build_pre3b(A) vs build_v014(B), n=400
+  winrate(A)=0.463  (w=185 l=205 d=10)  err=(0,0)  max_move_s=(172.21,28.22)

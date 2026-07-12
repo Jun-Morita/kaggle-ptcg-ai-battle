@@ -61,8 +61,18 @@ POKEMON_IDS = {c.cardId for c in all_card if c.cardType == CardType.POKEMON}
 card_count = max(all_card, key=lambda c: c.cardId).cardId + 1
 attack_count = max(all_attack(), key=lambda a: a.attackId).attackId + 1
 
-num_words_encoder = 25  # +1 vs exp004 original: opp_deck word (see get_encoder_input)
-encoder_size = 24000  # +card_count(1268) margin vs exp004's 22000 for the new opp_deck word
+# ENC_V2 (exp046, 2026-07-11): +2 words appended AFTER the original 25 so every
+# existing word index (incl. pretrain.drop_oppdeck's OPPDECK_WORD=22) is unchanged:
+#   word 25: revenge-window flag (our Pokemon was KO'd since our last decision --
+#            the deck's core mechanic, worth +50 dmg in planning per v011; it is
+#            CROSS-TURN state the net can never derive from a single obs)
+#   word 26: known-prized bag (exp019 PrizeTracker deduction: decklist - visible
+#            - seen-deck = prized; "unknown" flag scalar + bag of prized card ids)
+# Both need a stateful per-game tracker at the caller (datagen_bc / eval_raw).
+# Checkpoints trained without ENC_V2 are architecture-incompatible with it.
+ENC_V2 = int(os.environ.get("ENC_V2", "0"))
+num_words_encoder = 27 if ENC_V2 else 25  # 25 = +1 vs exp004 original: opp_deck word
+encoder_size = 26000 if ENC_V2 else 24000  # +card_count(1268) margin vs exp004's 22000
 decoder_main_feature = 8
 decoder_attack_offset = 14
 decoder_card_offset = decoder_attack_offset + attack_count
@@ -187,7 +197,7 @@ def add_player(sv, ps):
     add_cards(sv, ps.discard, 0.25)
 
 
-def get_encoder_input(obs, your_deck, opp_deck=None):
+def get_encoder_input(obs, your_deck, opp_deck=None, extra=None):
     """`opp_deck` (added for exp040 Stage 4, oracle opponent-archetype probe):
     exp004's original had no opponent-identity feature at all -- the net had
     to infer "what kind of opponent is this" purely from unfolding board
@@ -237,6 +247,18 @@ def get_encoder_input(obs, your_deck, opp_deck=None):
     sv.add_single(1)
     sv.add_single(state.turn / 10)
     sv.add_single(state.firstPlayer == your_index)
+    if ENC_V2:
+        # word 25: revenge-window flag (cross-turn, from the caller's tracker)
+        sv.word_start()
+        sv.add_single(1.0 if (extra is not None and extra.get("window")) else 0.0)
+        # word 26: known-prized bag ("unknown" flag + prized card ids)
+        sv.word_start()
+        prized = extra.get("prized") if extra is not None else None
+        sv.add_single(1.0 if prized is None else 0.0)
+        if prized:
+            for _cid, _cnt in prized.items():
+                sv.add(_cid, 0.25 * _cnt)
+        sv.add_pos(card_count)
     return sv
 
 

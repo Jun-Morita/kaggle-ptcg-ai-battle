@@ -111,3 +111,33 @@ Powerful Handの床/天井ダメージを算出するfloor/ceiling式（Enrichin
   policy_diff的に検証。
 - Snorlaxが名指しされる前提で、Snorlaxの配置優先度（ベンチ前方/後方）を
   archaludon対面でのみ変える価値があるか、n≥200で検証。
+
+## 追記（2026-07-10）: 後継notebook「BattleCore Compact Agent」は実質同一エージェント
+- 出典: `references/raw/public_notebooks/battlecore-compact-agent.ipynb`
+  （score 849.6、更新17h前、この分析時点でのスコアは上記0708版の876.9より低い＝
+  「改良」を謳うパッケージングがラダー上のノイズ以上の実際の強化を伴っていない可能性）。
+- ペイロードはbase64+zlib圧縮された`main.py`をJSON内に埋め込み、SHA-256でハッシュ照合
+  してから展開・ビルドする方式（"integrity-gated"を謳う）。展開して`diff`した結果、
+  **detect_matchup()・HOP_LINE（Snorlax名指しBoss狙撃）・crustle overrides・
+  Alakazam脅威モデルは前版とロジック的に完全一致**——新規の戦略/技術ではなく、
+  同一エージェントのマイナーな堅牢化アップデート（`obs.logs`アクセスの`getattr`化、
+  `choose_options()`のmin/maxCountクランプ強化、フォールバックを
+  `random.sample(...)`→`list(range(max_count))`に変更し**母集団よりmaxCountが
+  大きい場合のクラッシュを修正**）。我々の`_legal_fallback`は既にmin/maxクランプ済みで
+  この種のクラッシュ経路を持たない（確認済み、対応不要）。
+- **新規情報**: 第2の"decorrelated"デッキ（Profile B = Alakazam ex/Dunsparce、
+  Powerful Hand手札依存打点+Rare Candy圧縮+Enhanced Hammerでエネルギー干渉）を
+  同一パッケージ内で提示。ただしAlakazamは既知の脅威（exp016で我々は0.90で対応済み）
+  で新規の脅威ではない。
+- **"Arena Validation"の中身**: 実際に検証されているのは**A(自身) vs B(自身の別デッキ)**
+  のみ（n=1600, wr=0.483＝**Aは実は自分のBデッキに5割未満で負け越し**）と4件の
+  ポリシー改修案（Judge武器化/ex露出制限/ベンチ強化/ミラー狙撃、いずれもvs B/vs A mirrorで
+  0.42-0.48＝全て回帰、不採用）。**Crustle/Hop/Lucario/Starmieという実際の対戦相手
+  （detect_matchup()が判定対象にしているまさにそのアーキタイプ群）に対する検証は一切
+  提示されていない**——作り込まれたマッチアップ別ハードルールの多くが未検証の
+  ヒューリスティックである可能性を示唆。
+- **結論: 採用すべき新規テクニックなし**。我々のn=200×5固定相手プール＋ペア評価
+  （別ビルド）という検証体制は、この公開エージェント自身の検証（狭いA/B內部比較のみ）
+  より既に厳格。強いて言えば「ビルド前にSHA-256で意図しない差分がないか確認する」
+  という統合ステップは`build_submission.py`に軽量追加する価値がなくはないが、
+  既存のsmoke-test運用と比べ優先度は低い。

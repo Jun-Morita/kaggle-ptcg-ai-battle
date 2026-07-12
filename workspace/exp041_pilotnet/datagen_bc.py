@@ -46,6 +46,9 @@ from teacher_pool import build_teacher_pool  # noqa: E402
 from cg.api import to_observation_class  # noqa: E402
 from cg.game import battle_start, battle_finish, battle_select  # noqa: E402
 
+sys.path.insert(0, os.path.join(WS, "exp019_finisher"))
+from prize_tracker import PrizeTracker  # noqa: E402  (ENC_V2 prized-card word)
+
 sys.path.insert(0, os.path.join(WS, "exp035_turnbeam"))
 sys.path.insert(0, os.path.join(WS, "exp023_revenge"))
 import turnbeam_policy as TB  # noqa: E402
@@ -55,8 +58,14 @@ import revenge_policy as RVP  # noqa: E402
 # mirror. "random"/mirror_turnbeam from teacher_pool are excluded: this dataset
 # should reflect competent play on BOTH sides of the matchups we are measured
 # on, and mirror_revenge already covers the mirror cheaply.
+# grimmsnarl added 2026-07-10 (new ladder-#1 deck, beats our archetype 0.71).
+# DATAGEN_ONLY=<name[,name]> env var restricts the mix (e.g. grimmsnarl-only
+# top-up runs that extend the existing 5-matchup corpus without regenerating it).
 OPP_WEIGHTS = {"crustle": 1.0, "ex_lucario": 1.0, "dragapult": 1.0,
-               "archaludon": 1.0, "mirror_revenge": 1.0}
+               "archaludon": 1.0, "mirror_revenge": 1.0, "grimmsnarl": 1.0}
+_only = [s for s in os.environ.get("DATAGEN_ONLY", "").split(",") if s]
+if _only:
+    OPP_WEIGHTS = {k: v for k, v in OPP_WEIGHTS.items() if k in _only}
 CHUNK_GAMES = 200  # pickle-dump cadence
 
 
@@ -77,17 +86,32 @@ def play_and_record(pilot, my_deck, opp_deck, opp_agent, my_seat, stats):
     if sd.errorPlayer >= 0:
         raise ValueError(f"deck error type {sd.errorType}")
     recs = []
+    # ENC_V2 (exp046) per-game trackers: revenge window (opp prize count dropped
+    # since our previous decision => one of our Pokemon was KO'd) + PrizeTracker
+    # (prized-card deduction whenever a search shows the full deck).
+    ptrack = PrizeTracker(my_deck) if tm.ENC_V2 else None
+    rev = {"turn": None, "last_opp": None, "window": False}  # per-TURN, like revenge_policy._rev
     while obs["current"]["result"] < 0:
         if obs["current"]["yourIndex"] == my_seat:
             selected = pilot(obs)
             oc = to_observation_class(obs)
+            extra = None
+            if ptrack is not None:
+                ptrack.update(oc)
+                t = oc.current.turn
+                cur_opp = len(oc.current.players[1 - my_seat].prize)
+                if t != rev["turn"]:
+                    rev["window"] = rev["last_opp"] is not None and cur_opp < rev["last_opp"]
+                    rev["last_opp"] = cur_opp
+                    rev["turn"] = t
+                extra = {"window": rev["window"], "prized": ptrack.prized()}
             cands = tm.enumerate_candidates(oc)
             key = sorted(selected)
             idx = next((i for i, c in enumerate(cands) if c == key), None)
             if idx is None:
                 stats["skip_nomatch"] += 1
             else:
-                sv_e = tm.get_encoder_input(oc, my_deck, opp_deck)
+                sv_e = tm.get_encoder_input(oc, my_deck, opp_deck, extra=extra)
                 sv_d = tm.get_decoder_input(oc, cands)
                 recs.append((sv_e.index, sv_e.value, sv_e.offset,
                              sv_d.index, sv_d.value, sv_d.offset,

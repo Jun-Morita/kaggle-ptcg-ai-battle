@@ -67,7 +67,8 @@ def main():
 
     my_deck = tm.load_deck("charmq")
     pilot_ref = {"crustle": 0.827, "ex_lucario": 0.775, "dragapult": 0.160,
-                 "archaludon": 0.158, "mirror_revenge": 0.576}
+                 "archaludon": 0.158, "mirror_revenge": 0.576,
+                 "grimmsnarl": 0.600}  # v014 vs generic-piloted clone, n=100 (2026-07-10)
 
     factory = make_mcts_agent_factory(args.search_count, oracle_free=args.oracle_free)
     out = {}

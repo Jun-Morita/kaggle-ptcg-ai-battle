@@ -24,6 +24,7 @@ import time
 HERE = os.path.dirname(os.path.abspath(__file__))
 WS = os.path.abspath(os.path.join(HERE, ".."))
 sys.path.insert(0, os.path.join(WS, "exp040_mctsv2"))
+sys.path.insert(0, os.path.join(WS, "exp019_finisher"))  # PrizeTracker (ENC_V2)
 
 import torch  # noqa: E402
 import train_mcts as tm  # noqa: E402
@@ -35,15 +36,34 @@ from cg.game import battle_start, battle_finish, battle_select  # noqa: E402
 def make_raw_agent(model, my_deck, opp_deck, oracle_free=False):
     """argmax(policy head) over the official candidate enumeration; no MCTS.
     oracle_free=True feeds opp_deck=None (ship-relevant condition: exp041's A2
-    re-pretrain trained with opp_deck-word dropout so this should barely move)."""
+    re-pretrain trained with opp_deck-word dropout so this should barely move).
+    Under ENC_V2 (exp046) the closure keeps per-game trackers (revenge window +
+    PrizeTracker) -- a fresh agent is built per game so they reset naturally."""
     fed_opp_deck = None if oracle_free else opp_deck
+    if tm.ENC_V2:
+        from prize_tracker import PrizeTracker
+        ptrack = PrizeTracker(my_deck)
+        rev = {"turn": None, "last_opp": None, "window": False}
+    else:
+        ptrack = None
 
     def agent(obs_dict):
         oc = to_observation_class(obs_dict)
         cands = tm.enumerate_candidates(oc)
+        extra = None
+        if ptrack is not None:
+            ptrack.update(oc)
+            yi = oc.current.yourIndex
+            t = oc.current.turn
+            cur_opp = len(oc.current.players[1 - yi].prize)
+            if t != rev["turn"]:
+                rev["window"] = rev["last_opp"] is not None and cur_opp < rev["last_opp"]
+                rev["last_opp"] = cur_opp
+                rev["turn"] = t
+            extra = {"window": rev["window"], "prized": ptrack.prized()}
         if len(cands) == 1:
             return cands[0]
-        sv_e = tm.get_encoder_input(oc, my_deck, fed_opp_deck)
+        sv_e = tm.get_encoder_input(oc, my_deck, fed_opp_deck, extra=extra)
         sv_d = tm.get_decoder_input(oc, cands)
         _, policy = tm.eval_nn(sv_e, sv_d, model)
         best = max(range(len(cands)), key=lambda i: policy[i])
@@ -97,7 +117,10 @@ def main():
     ap.add_argument("--d-model", type=int, default=128)
     ap.add_argument("--oracle-free", action="store_true",
                     help="feed opp_deck=None (ship-relevant; needs opp_drop-trained model)")
+    ap.add_argument("--only", default="",
+                    help="comma-separated matchup names to evaluate (default: all)")
     args = ap.parse_args()
+    only = {s for s in args.only.split(",") if s}
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model = tm.MyModel(args.d_model, 2, args.d_model * 2, 1, 1).to(device)
@@ -111,11 +134,15 @@ def main():
     # v014's exp035 n=200 harness numbers were crustle .905 / ex .77 /
     # drag .17 / arch .195 / mirror .585 (total 2.67).
     pilot_ref = {"crustle": 0.827, "ex_lucario": 0.775, "dragapult": 0.160,
-                 "archaludon": 0.158, "mirror_revenge": 0.576}
+                 "archaludon": 0.158, "mirror_revenge": 0.576,
+                 # grimmsnarl (new ladder-#1 deck, added 2026-07-10): v014
+                 # turnbeam measured 0.600 vs the generic-piloted clone at
+                 # n=100; datagen smoke was 7/10. Treat 0.60 as the ref.
+                 "grimmsnarl": 0.600}
     out = {}
     t0 = time.time()
     for name, opp_deck, factory, _ in build_teacher_pool(my_deck):
-        if name not in pilot_ref:
+        if name not in pilot_ref or (only and name not in only):
             continue
         af = (lambda m, md, od: make_raw_agent(m, md, od, oracle_free=args.oracle_free))
         w, l, d, e = run_matchup(model, my_deck, opp_deck, factory, args.n, agent_factory=af)

@@ -1,0 +1,29 @@
+== stage a: pre3a (synthetic+grimmsnarl+ladder x5) ==
+resumed from results/pre2/model_ep8.pth
+device=cuda files=17 tag=pre3a
+{"epoch": 0, "loss": 0.1721, "batches": 51900, "sec": 1181, "n_val": 200468, "acc": {"all": 0.8244, "dragapult": 0.8389, "multi": 0.8091, "lucario_ex": 0.8282, "mixed_ex5": 0.8376, "mixed_ex4": 0.8422, "mixed_ex3": 0.8116, "crustle_control": 0.7989, "non_ex_attackers": 0.8378, "ex_beatdown": 0.7222, "mixed_ex1": 0.8085, "ex_lucario": 0.8306, "archaludon": 0.8381, "crustle": 0.8192, "mirror_revenge": 0.8361, "grimmsnarl": 0.7983}, "auc_by_phase": {"q1": 0.7194, "q2": 0.8153, "q3": 0.8659, "q4": 0.9597}, "oracle_free": {"acc": {"all": 0.8253, "dragapult": 0.8401, "multi": 0.8102, "lucario_ex": 0.8301, "mixed_ex5": 0.8632, "mixed_ex4": 0.8501, "mixed_ex3": 0.8029, "crustle_control": 0.8045, "non_ex_attackers": 0.8514, "ex_beatdown": 0.7222, "mixed_ex1": 0.8032, "ex_lucario": 0.8304, "archaludon": 0.837, "crustle": 0.8186, "mirror_revenge": 0.8359, "grimmsnarl": 0.8021}, "auc_by_phase": {"q1": 0.7312, "q2": 0.824, "q3": 0.8713, "q4": 0.9634}}}
+{"epoch": 1, "loss": 0.1697, "batches": 51900, "sec": 1515, "n_val": 200468, "acc": {"all": 0.8313, "dragapult": 0.8409, "multi": 0.8166, "lucario_ex": 0.8263, "mixed_ex5": 0.8547, "mixed_ex4": 0.8541, "mixed_ex3": 0.7971, "crustle_control": 0.8101, "non_ex_attackers": 0.8311, "ex_beatdown": 0.7778, "mixed_ex1": 0.8351, "ex_lucario": 0.8305, "archaludon": 0.8406, "crustle": 0.8252, "mirror_revenge": 0.8371, "grimmsnarl": 0.8193}, "auc_by_phase": {"q1": 0.7629, "q2": 0.8389, "q3": 0.8934, "q4": 0.9671}, "oracle_free": {"acc": {"all": 0.8308, "dragapult": 0.8402, "multi": 0.8161, "lucario_ex": 0.8301, "mixed_ex5": 0.8547, "mixed_ex4": 0.8541, "mixed_ex3": 0.7942, "crustle_control": 0.8045, "non_ex_attackers": 0.8446, "ex_beatdown": 0.7381, "mixed_ex1": 0.8298, "ex_lucario": 0.8302, "archaludon": 0.8401, "crustle": 0.8224, "mirror_revenge": 0.8373, "grimmsnarl": 0.8196}, "auc_by_phase": {"q1": 0.7456, "q2": 0.84, "q3": 0.8939, "q4": 0.9678}}}
+done.
+== stage a gate: eval_raw n=50 oracle-free ==
+crustle         raw=0.780 (39-11-0, err=0) pilot_ref=0.827
+ex_lucario      raw=0.720 (36-14-0, err=0) pilot_ref=0.775
+dragapult       raw=0.120 (6-44-0, err=0) pilot_ref=0.16
+archaludon      raw=0.100 (5-45-0, err=0) pilot_ref=0.158
+mirror_revenge  raw=0.340 (17-32-1, err=0) pilot_ref=0.576
+grimmsnarl      raw=0.660 (33-17-0, err=0) pilot_ref=0.6
+TOTAL raw=2.720 pilot_ref=3.096 (62s)
+== stage b: pre3b (+expert x10) ==
+resumed from results/pre3a/model_ep1.pth
+device=cuda files=27 tag=pre3b
+{"epoch": 0, "loss": 0.1747, "batches": 56129, "sec": 1003, "n_val": 200646, "acc": {"all": 0.7873, "mixed_ex2": 0.5664, "multi": 0.7689, "dragapult": 0.8014, "mixed_ex1": 0.5187, "non_ex_attackers": 0.5379, "mixed_ex5": 0.7273, "mixed_ex3": 0.65, "lucario_ex": 0.7108, "mixed_ex4": 0.6902, "ex_beatdown": 0.655, "crustle_control": 0.6129, "ex_lucario": 0.8257, "archaludon": 0.8384, "crustle": 0.8306, "mirror_revenge": 0.8325, "grimmsnarl": 0.8129}, "auc_by_phase": {"q1": 0.7655, "q2": 0.8177, "q3": 0.8817, "q4": 0.9588}, "oracle_free": {"acc": {"all": 0.7856, "mixed_ex2": 0.5734, "multi": 0.767, "dragapult": 0.801, "mixed_ex1": 0.5262, "non_ex_attackers": 0.5503, "mixed_ex5": 0.7273, "mixed_ex3": 0.6455, "lucario_ex": 0.7096, "mixed_ex4": 0.6843, "ex_beatdown": 0.6628, "crustle_control": 0.6129, "ex_lucario": 0.8253, "archaludon": 0.8317, "crustle": 0.8191, "mirror_revenge": 0.8321, "grimmsnarl": 0.8133}, "auc_by_phase": {"q1": 0.7386, "q2": 0.8157, "q3": 0.88, "q4": 0.9575}}}
+{"epoch": 1, "loss": 0.1716, "batches": 56129, "sec": 1197, "n_val": 200646, "acc": {"all": 0.7976, "mixed_ex2": 0.6014, "multi": 0.7801, "dragapult": 0.8138, "mixed_ex1": 0.5435, "non_ex_attackers": 0.552, "mixed_ex5": 0.7112, "mixed_ex3": 0.6664, "lucario_ex": 0.7353, "mixed_ex4": 0.707, "ex_beatdown": 0.6899, "crustle_control": 0.654, "ex_lucario": 0.8378, "archaludon": 0.8421, "crustle": 0.8385, "mirror_revenge": 0.8445, "grimmsnarl": 0.818}, "auc_by_phase": {"q1": 0.7341, "q2": 0.8049, "q3": 0.8838, "q4": 0.959}, "oracle_free": {"acc": {"all": 0.7979, "mixed_ex2": 0.6084, "multi": 0.7804, "dragapult": 0.8136, "mixed_ex1": 0.5525, "non_ex_attackers": 0.5511, "mixed_ex5": 0.7166, "mixed_ex3": 0.6655, "lucario_ex": 0.739, "mixed_ex4": 0.7109, "ex_beatdown": 0.6822, "crustle_control": 0.6569, "ex_lucario": 0.8378, "archaludon": 0.8424, "crustle": 0.8373, "mirror_revenge": 0.8443, "grimmsnarl": 0.8176}, "auc_by_phase": {"q1": 0.7174, "q2": 0.8092, "q3": 0.8848, "q4": 0.9602}}}
+done.
+== stage b gate: eval_raw n=50 oracle-free ==
+crustle         raw=0.860 (43-7-0, err=0) pilot_ref=0.827
+ex_lucario      raw=0.580 (29-21-0, err=0) pilot_ref=0.775
+dragapult       raw=0.160 (8-42-0, err=0) pilot_ref=0.16
+archaludon      raw=0.140 (7-43-0, err=0) pilot_ref=0.158
+mirror_revenge  raw=0.500 (25-24-1, err=0) pilot_ref=0.576
+grimmsnarl      raw=0.600 (30-20-0, err=0) pilot_ref=0.6
+TOTAL raw=2.840 pilot_ref=3.096 (56s)
+ALL DONE -- next: expert-holdout top-1 via diag_realgap.py, then paired mirror vs v014

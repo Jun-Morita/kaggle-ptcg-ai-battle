@@ -72,4 +72,11 @@ def build_teacher_pool(trainee_deck):
         # losses against competent teachers. Weighted low -- a supplement,
         # not the bulk of training (mirror_revenge/hard-4 stay dominant).
         ("random", list(trainee_deck), lambda deck: _random_agent, 0.5),
+        # grimmsnarl (2026-07-10): the new ladder #1 deck (Yushin Ito switched
+        # to the exp028 "Debauchery" Marnie's Grimmsnarl ex rush and jumped
+        # #7->#1; it beats our archetype 0.71 at n=251 on the ladder). Piloted
+        # by our generic revenge policy, same convention as exp028's eval.
+        ("grimmsnarl",
+         json.load(open(os.path.join(ROOT, "workspace", "exp028_debauchery", "grimmsnarl_deck.json"))),
+         lambda deck: RVP.make_agent(deck), 1.0),
     ]

@@ -39,6 +39,54 @@ _TB_STATS = {"planned": 0, "fired": 0, "errors": 0}
 _tb_rng = _tb_random.Random(20260704)
 _tb_inner = _base_agent
 
+# ===== exp045 TB_VALUE: learned terminal evaluator replaces the damage tiebreak =====
+# When enabled, outcome()'s SECOND key becomes int(1000*V(end-of-turn state)) from
+# exp032/033's 17-feature value MLP (mid-game AUC 0.806) instead of raw damage
+# dealt; the FIRST key (prizes taken this turn, +100 on win) is unchanged, so
+# "take prizes when you can" is preserved and only no-prize-turn planning changes.
+# This targets the exp044-diagnosed blind spot: the damage tiebreak prefers
+# chipping a 320hp Dragapult ex over evolution-line denial / setup quality.
+_TB_VALUE = __TB_VALUE__
+if _TB_VALUE:
+    import numpy as _tb_np
+    _tb_vz = _tb_np.load(__TB_VALUE_NPZ__)
+    _TB_DMG_MIN = __TB_VALUE_MARGIN__     # margin now in value-milliunits
+
+    def _tb_value(cur, my):
+        me, opp = cur.players[my], cur.players[1 - my]
+        def _e(m):
+            e = getattr(m, "energyCards", None)
+            if isinstance(e, list):
+                return len(e)
+            e = getattr(m, "energies", None)
+            return sum(e) if isinstance(e, list) else 0
+        def _ahp(p):
+            a = p.active or []
+            if a and a[0] is not None:
+                mh = getattr(a[0], "maxHp", 0) or 0
+                return (getattr(a[0], "hp", 0) / mh) if mh else 0.0
+            return 0.0
+        def _aene(p):
+            a = p.active or []
+            return _e(a[0]) if a and a[0] is not None else 0
+        def _bene(p):
+            return sum(_e(m) for m in list(p.active or []) + list(p.bench or []) if m is not None)
+        def _st(p):
+            a = p.active or []
+            if not (a and a[0] is not None):
+                return 0
+            return sum(int(bool(getattr(p, k, False))) for k in
+                       ("asleep", "confused", "paralyzed", "poisoned", "burned"))
+        pm, po = len(me.prize), len(opp.prize)
+        f = [po - pm, pm, po, _ahp(me), _ahp(opp), _aene(me), _aene(opp),
+             _bene(me), _bene(opp), len(me.bench or []), len(opp.bench or []),
+             me.handCount, opp.handCount, me.deckCount,
+             cur.turn, int(cur.firstPlayer == my), _st(opp)]
+        z = (_tb_np.asarray(f, dtype=_tb_np.float64) - _tb_vz["mean"]) / _tb_vz["std"]
+        h = _tb_np.maximum(z @ _tb_vz["W0"] + _tb_vz["b0"], 0)
+        h = _tb_np.maximum(h @ _tb_vz["W1"] + _tb_vz["b1"], 0)
+        return float(1 / (1 + _tb_np.exp(-(h @ _tb_vz["W2"] + _tb_vz["b2"])[0])))
+
 
 def _tb_clamp(sel, select):
     n = len(select.option)
@@ -105,7 +153,10 @@ def _tb_beam_once(obs, my):
         if cur is None:
             return (-1, 0)
         pz = opp_prize0 - len(cur.players[1 - my].prize)
-        dmg = max(0, opp_hp0 - _tb_board_hp(cur.players[1 - my]))
+        if _TB_VALUE:
+            dmg = int(1000 * _tb_value(cur, my))
+        else:
+            dmg = max(0, opp_hp0 - _tb_board_hp(cur.players[1 - my]))
         if cur.result == my:
             pz += 100
         elif cur.result != -1:
@@ -214,5 +265,14 @@ def _base_agent(obs_dict):
 
 for _k, _v in _CFG.items():
     _TB = _TB.replace(f"__{_k}__", str(_v))
+
+# exp045 TB_VALUE substitutions (env-gated; TB_VALUE=0 leaves a dead `if 0:` branch
+# whose body is never executed and whose numpy import never runs)
+_TB_VALUE_NPZ = os.path.join(_ROOT, "workspace", "exp032_valuescale",
+                             os.environ.get("TB_VALUE_NPZ", "value_mlp2.npz"))
+_TB = (_TB
+       .replace("__TB_VALUE__", str(int(os.environ.get("TB_VALUE", "0"))))
+       .replace("__TB_VALUE_NPZ__", repr(_TB_VALUE_NPZ))
+       .replace("__TB_VALUE_MARGIN__", str(int(os.environ.get("TB_VALUE_MARGIN", "20")))))
 
 PATCH_SRC = RV.PATCH_SRC + "\n" + _TB
