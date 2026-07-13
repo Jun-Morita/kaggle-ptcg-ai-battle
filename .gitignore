@@ -87,3 +87,15 @@ workspace/exp043_learnpri/build_sp1/
 workspace/exp041_pilotnet/results/
 /episode-*-replay.json
 /episode-*-logs.json
+
+# nvidia-kaggle-skill caches (raw external content)
+data/discussions.db
+data/kernels.db
+data/notebooks/
+
+# exp052 CRN: licensed engine source + patched binaries (redistribution forbidden)
+workspace/exp052_crn/engine_src/
+workspace/exp052_crn/cg/
+
+# exp054 built submission bundle
+workspace/exp054_upperband/build_lo/

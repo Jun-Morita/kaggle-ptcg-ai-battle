@@ -1,0 +1,66 @@
+{
+ "v021_LOmill": {
+  "wr": {
+   "alakazam": 0.89,
+   "alakazam_dun": 0.84,
+   "archaludon": 0.7133333333333334,
+   "cinderace": 0.7866666666666666,
+   "crustle_LO": 0.5,
+   "dragapult": 0.31,
+   "lucario_ex": 0.8066666666666666,
+   "marnie": 0.7766666666666666,
+   "pure_wall": 0.06666666666666667
+  },
+  "our_band": 0.6116333333333334,
+  "silver_band": 0.74858005521049,
+  "derivative": 0.13694672187715662
+ },
+ "v019_sp3": {
+  "wr": {
+   "alakazam": 0.9433333333333334,
+   "alakazam_dun": 0.9533333333333334,
+   "archaludon": 0.12333333333333334,
+   "cinderace": 0.4166666666666667,
+   "crustle_LO": 0.92,
+   "dragapult": 0.15666666666666668,
+   "lucario_ex": 0.7466666666666667,
+   "marnie": 0.83,
+   "pure_wall": 0.91
+  },
+  "our_band": 0.6515266666666667,
+  "silver_band": 0.6423831953071084,
+  "derivative": -0.009143471359558286
+ },
+ "v016_wall": {
+  "wr": {
+   "alakazam": 0.2833333333333333,
+   "alakazam_dun": 0.23333333333333334,
+   "archaludon": 0.20666666666666667,
+   "cinderace": 0.7633333333333333,
+   "crustle_LO": 0.9133333333333333,
+   "dragapult": 1.0,
+   "lucario_ex": 0.83,
+   "marnie": 1.0,
+   "pure_wall": 0.49666666666666665
+  },
+  "our_band": 0.5952,
+  "silver_band": 0.4382979641131815,
+  "derivative": -0.15690203588681845
+ },
+ "v020_arch": {
+  "wr": {
+   "alakazam": 0.84,
+   "alakazam_dun": 0.6733333333333333,
+   "archaludon": 0.5,
+   "cinderace": 0.87,
+   "crustle_LO": 0.31333333333333335,
+   "dragapult": 0.6233333333333333,
+   "lucario_ex": 0.6566666666666666,
+   "marnie": 0.91,
+   "pure_wall": 0.79
+  },
+  "our_band": 0.67994,
+  "silver_band": 0.6677306763285025,
+  "derivative": -0.012209323671497518
+ }
+}

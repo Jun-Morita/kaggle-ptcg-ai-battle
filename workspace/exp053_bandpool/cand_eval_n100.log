@@ -1,0 +1,24 @@
+candidate sweep vs REAL band pool, n=100/matchup
+(already measured in eval_band: v016-wall 0.659, v019 0.655, v020 0.604)
+
+=== cand_LO_mill ===
+  lucario_ex       w=0.31  wr=0.780  (78-22-0) err=(0,0)  4s
+  crustle_LO       w=0.20  wr=0.410  (41-59-0) err=(0,0)  3s
+  mixed_ex3        w=0.11  wr=0.760  (76-24-0) err=(0,0)  4s
+  alakazam         w=0.18  wr=0.880  (88-12-0) err=(0,0)  4s
+  mixed_ex4_arch   w=0.09  wr=0.640  (64-36-0) err=(0,0)  4s
+  dragapult        w=0.07  wr=0.320  (32-68-0) err=(0,0)  6s
+  --> BAND-WEIGHTED WINRATE = 0.646
+
+=== cand_alakazam_pub ===
+  lucario_ex       w=0.31  wr=0.440  (44-56-0) err=(0,0)  4s
+  crustle_LO       w=0.20  wr=0.160  (16-84-0) err=(0,0)  3s
+  mixed_ex3        w=0.11  wr=0.490  (49-51-0) err=(0,0)  3s
+  alakazam         w=0.18  wr=0.660  (66-34-0) err=(0,0)  5s
+  mixed_ex4_arch   w=0.09  wr=0.390  (39-61-0) err=(0,0)  4s
+  dragapult        w=0.07  wr=0.450  (45-55-0) err=(0,0)  5s
+  --> BAND-WEIGHTED WINRATE = 0.408
+
+candidate ranking (vs prior: v016-wall 0.659 / v019 0.655 / v020 0.604):
+  0.646  cand_LO_mill
+  0.408  cand_alakazam_pub

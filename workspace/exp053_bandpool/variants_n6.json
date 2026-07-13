@@ -1,0 +1,47 @@
+{
+ "stock": {
+  "lucario_ex": 0.6666666666666666,
+  "crustle_LO": 0.5,
+  "mixed_ex3": 1.0,
+  "alakazam": 0.6666666666666666,
+  "mixed_ex4_arch": 0.3333333333333333,
+  "dragapult": 0.3333333333333333,
+  "_band_weighted": 0.59
+ },
+ "jumbo4": {
+  "lucario_ex": 0.8333333333333334,
+  "crustle_LO": 0.8333333333333334,
+  "mixed_ex3": 0.8333333333333334,
+  "alakazam": 0.8333333333333334,
+  "mixed_ex4_arch": 0.3333333333333333,
+  "dragapult": 0.16666666666666666,
+  "_band_weighted": 0.7083333333333335
+ },
+ "cape": {
+  "lucario_ex": 0.6666666666666666,
+  "crustle_LO": 0.5,
+  "mixed_ex3": 0.16666666666666666,
+  "alakazam": 1.0,
+  "mixed_ex4_arch": 0.6666666666666666,
+  "dragapult": 0.0,
+  "_band_weighted": 0.565
+ },
+ "both": {
+  "lucario_ex": 0.5,
+  "crustle_LO": 0.6666666666666666,
+  "mixed_ex3": 0.16666666666666666,
+  "alakazam": 1.0,
+  "mixed_ex4_arch": 0.5,
+  "dragapult": 0.16666666666666666,
+  "_band_weighted": 0.5433333333333333
+ },
+ "maxdur": {
+  "lucario_ex": 0.8333333333333334,
+  "crustle_LO": 0.8333333333333334,
+  "mixed_ex3": 0.3333333333333333,
+  "alakazam": 0.8333333333333334,
+  "mixed_ex4_arch": 0.5,
+  "dragapult": 0.16666666666666666,
+  "_band_weighted": 0.6683333333333334
+ }
+}

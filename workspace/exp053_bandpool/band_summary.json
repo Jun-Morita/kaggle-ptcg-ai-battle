@@ -1,0 +1,58 @@
+{
+ "lucario_ex": {
+  "n_games": 17,
+  "real_wr": 0.471,
+  "distinct_lists": 6,
+  "top_list_n": 8,
+  "deck_path": "band_lucario_ex.json"
+ },
+ "crustle_control": {
+  "n_games": 11,
+  "real_wr": 0.364,
+  "distinct_lists": 9,
+  "top_list_n": 2,
+  "deck_path": "band_crustle_control.json"
+ },
+ "mixed_ex3": {
+  "n_games": 6,
+  "real_wr": 0.667,
+  "distinct_lists": 5,
+  "top_list_n": 2,
+  "deck_path": "band_mixed_ex3.json"
+ },
+ "non_ex_attackers": {
+  "n_games": 5,
+  "real_wr": 0.4,
+  "distinct_lists": 4,
+  "top_list_n": 2,
+  "deck_path": "band_non_ex_attackers.json"
+ },
+ "mixed_ex1": {
+  "n_games": 5,
+  "real_wr": 0.4,
+  "distinct_lists": 3,
+  "top_list_n": 2,
+  "deck_path": "band_mixed_ex1.json"
+ },
+ "mixed_ex4": {
+  "n_games": 5,
+  "real_wr": 0.6,
+  "distinct_lists": 4,
+  "top_list_n": 2,
+  "deck_path": "band_mixed_ex4.json"
+ },
+ "dragapult": {
+  "n_games": 4,
+  "real_wr": 0.75,
+  "distinct_lists": 4,
+  "top_list_n": 1,
+  "deck_path": "band_dragapult.json"
+ },
+ "mixed_ex2": {
+  "n_games": 2,
+  "real_wr": 0.5,
+  "distinct_lists": 2,
+  "top_list_n": 1,
+  "deck_path": "band_mixed_ex2.json"
+ }
+}

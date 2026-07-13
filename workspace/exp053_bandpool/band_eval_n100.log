@@ -1,0 +1,33 @@
+band-weighted eval, n=100/matchup
+
+=== build_arch ===
+  lucario_ex       w=0.31  wr=0.680  (68-32-0) err=(0,0)  5s
+  crustle_LO       w=0.20  wr=0.290  (29-71-0) err=(0,0)  4s
+  mixed_ex3        w=0.11  wr=0.900  (90-10-0) err=(0,0)  3s
+  alakazam         w=0.18  wr=0.830  (83-17-0) err=(0,0)  4s
+  mixed_ex4_arch   w=0.09  wr=0.510  (51-49-0) err=(0,0)  4s
+  dragapult        w=0.07  wr=0.580  (58-42-0) err=(0,0)  4s
+  --> BAND-WEIGHTED WINRATE = 0.604
+
+=== build_sp3 ===
+  lucario_ex       w=0.31  wr=0.760  (76-24-0) err=(0,0)  75s
+  crustle_LO       w=0.20  wr=0.910  (91-9-0) err=(0,0)  57s
+  mixed_ex3        w=0.11  wr=0.420  (42-58-0) err=(0,0)  66s
+  alakazam         w=0.18  wr=0.920  (92-8-0) err=(0,0)  60s
+  mixed_ex4_arch   w=0.09  wr=0.160  (16-84-0) err=(0,0)  98s
+  dragapult        w=0.07  wr=0.160  (16-83-1) err=(0,0)  42s
+  --> BAND-WEIGHTED WINRATE = 0.655
+
+=== build_v004 ===
+  lucario_ex       w=0.31  wr=0.820  (82-18-0) err=(0,0)  4s
+  crustle_LO       w=0.20  wr=0.940  (94-6-0) err=(0,0)  4s
+  mixed_ex3        w=0.11  wr=0.780  (78-22-0) err=(0,0)  3s
+  alakazam         w=0.18  wr=0.260  (26-74-0) err=(0,0)  3s
+  mixed_ex4_arch   w=0.09  wr=0.160  (16-84-0) err=(0,0)  2s
+  dragapult        w=0.07  wr=1.000  (100-0-0) err=(0,0)  4s
+  --> BAND-WEIGHTED WINRATE = 0.659
+
+ranking (band-weighted):
+  0.659  build_v004
+  0.655  build_sp3
+  0.604  build_arch

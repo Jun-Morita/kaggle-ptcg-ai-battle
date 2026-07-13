@@ -1,0 +1,20 @@
+{
+ "cand_LO_mill": {
+  "lucario_ex": 1.0,
+  "crustle_LO": 0.6666666666666666,
+  "mixed_ex3": 1.0,
+  "alakazam": 0.8333333333333334,
+  "mixed_ex4_arch": 0.5,
+  "dragapult": 0.16666666666666666,
+  "_band_weighted": 0.7600000000000001
+ },
+ "cand_alakazam_pub": {
+  "lucario_ex": 0.8333333333333334,
+  "crustle_LO": 0.0,
+  "mixed_ex3": 0.8333333333333334,
+  "alakazam": 0.8333333333333334,
+  "mixed_ex4_arch": 0.8333333333333334,
+  "dragapult": 0.3333333333333333,
+  "_band_weighted": 0.5983333333333333
+ }
+}

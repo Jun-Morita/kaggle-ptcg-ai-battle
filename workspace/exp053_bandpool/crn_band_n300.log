@@ -1,0 +1,32 @@
+CRN paired band eval, n=300/matchup, engine=/home/jun/kaggle-ptcg-ai-battle/workspace/exp052_crn
+(non-CRN n=100 said: v016-wall 0.659 vs LO-mill 0.646 -- a statistical tie)
+
+=== v016_wall ===
+  lucario_ex       w=0.31  wr=0.807  (242-58-0) err=(0,0)  11s
+  crustle_LO       w=0.20  wr=0.890  (267-33-0) err=(0,0)  11s
+  mixed_ex3        w=0.11  wr=0.810  (243-57-0) err=(0,0)  10s
+  alakazam         w=0.18  wr=0.240  (72-228-0) err=(0,0)  9s
+  mixed_ex4_arch   w=0.09  wr=0.170  (51-248-1) err=(0,0)  6s
+  dragapult        w=0.07  wr=1.000  (300-0-0) err=(0,0)  14s
+  --> BAND-WEIGHTED = 0.6457
+
+=== LO_mill ===
+  lucario_ex       w=0.31  wr=0.833  (250-50-0) err=(0,0)  12s
+  crustle_LO       w=0.20  wr=0.500  (150-150-0) err=(0,0)  8s
+  mixed_ex3        w=0.11  wr=0.787  (236-64-0) err=(0,0)  13s
+  alakazam         w=0.18  wr=0.873  (262-38-0) err=(0,0)  11s
+  mixed_ex4_arch   w=0.09  wr=0.687  (206-94-0) err=(0,0)  10s
+  dragapult        w=0.07  wr=0.297  (89-211-0) err=(0,0)  16s
+  --> BAND-WEIGHTED = 0.6846
+
+matchup          share    v016      LO  delta(LO-v016)
+lucario_ex        0.31   0.807   0.833          +0.027
+crustle_LO        0.20   0.890   0.500          -0.390
+mixed_ex3         0.11   0.810   0.787          -0.023
+alakazam          0.18   0.240   0.873          +0.633
+mixed_ex4_arch    0.09   0.170   0.687          +0.517
+dragapult         0.07   1.000   0.297          -0.703
+
+band-weighted: v016_wall=0.6457  LO_mill=0.6846
+delta(LO - v016) = +0.0390   SE(conservative) = 0.0141   z = +2.77
+(CRN pairing makes the true SE SMALLER than this conservative estimate)

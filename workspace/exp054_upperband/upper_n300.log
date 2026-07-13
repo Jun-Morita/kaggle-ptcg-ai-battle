@@ -1,0 +1,56 @@
+SILVER-BAND eval, n=300/matchup, CRN=True
+(for contrast, OUR-band weighted: LO-mill 0.692, v019 0.655, v016-wall 0.646, v020 0.604)
+
+pool: alakazam_dunsp 29.5%, archaludon 27.3%, alakazam 12.5%, marnie_munkidori 11.5%, lucario_ex 9.8%, dragapult 5.9%, crustle_LO 3.4%
+
+=== LO_mill ===
+  alakazam_dunsp    w=0.295  wr=0.830  (249-51-0) err=(0,0)  12s
+  archaludon        w=0.273  wr=0.650  (195-105-0) err=(0,0)  10s
+  alakazam          w=0.125  wr=0.917  (275-25-0) err=(0,0)  11s
+  marnie_munkidori  w=0.115  wr=0.737  (221-79-0) err=(0,0)  15s
+  lucario_ex        w=0.098  wr=0.857  (257-43-0) err=(0,0)  11s
+  dragapult         w=0.059  wr=0.343  (103-197-0) err=(0,0)  18s
+  crustle_LO        w=0.034  wr=0.490  (147-153-0) err=(0,0)  8s
+  --> SILVER-BAND WEIGHTED = 0.7432
+
+=== v016_wall ===
+  alakazam_dunsp    w=0.295  wr=0.213  (64-236-0) err=(0,0)  9s
+  archaludon        w=0.273  wr=0.167  (50-250-0) err=(0,0)  6s
+  alakazam          w=0.125  wr=0.280  (84-216-0) err=(0,0)  9s
+  marnie_munkidori  w=0.115  wr=1.000  (300-0-0) err=(0,0)  11s
+  lucario_ex        w=0.098  wr=0.843  (253-47-0) err=(0,0)  11s
+  dragapult         w=0.059  wr=1.000  (300-0-0) err=(0,0)  14s
+  crustle_LO        w=0.034  wr=0.880  (264-36-0) err=(0,0)  11s
+  --> SILVER-BAND WEIGHTED = 0.4305
+
+=== v019_sp3 ===
+  alakazam_dunsp    w=0.295  wr=0.950  (285-15-0) err=(0,0)  160s
+  archaludon        w=0.273  wr=0.150  (45-255-0) err=(0,0)  278s
+  alakazam          w=0.125  wr=0.960  (288-12-0) err=(0,0)  168s
+  marnie_munkidori  w=0.115  wr=0.817  (245-53-2) err=(0,0)  230s
+  lucario_ex        w=0.098  wr=0.740  (222-76-2) err=(0,0)  218s
+  dragapult         w=0.059  wr=0.187  (56-244-0) err=(0,0)  141s
+  crustle_LO        w=0.034  wr=0.930  (279-21-0) err=(0,0)  180s
+  --> SILVER-BAND WEIGHTED = 0.6509
+
+=== v020_arch ===
+  alakazam_dunsp    w=0.295  wr=0.680  (204-96-0) err=(0,0)  14s
+  archaludon        w=0.273  wr=0.500  (150-150-0) err=(0,0)  11s
+  alakazam          w=0.125  wr=0.813  (244-56-0) err=(0,0)  12s
+  marnie_munkidori  w=0.115  wr=0.910  (273-27-0) err=(0,0)  13s
+  lucario_ex        w=0.098  wr=0.700  (210-90-0) err=(0,0)  13s
+  dragapult         w=0.059  wr=0.607  (182-118-0) err=(0,0)  13s
+  crustle_LO        w=0.034  wr=0.337  (101-199-0) err=(0,0)  10s
+  --> SILVER-BAND WEIGHTED = 0.6598
+
+ranking (silver-band weighted):
+  0.7432  LO_mill
+  0.6598  v020_arch
+  0.6509  v019_sp3
+  0.4305  v016_wall
+
+Elo: settled ~ mean_opp + 400*log10(p/(1-p)); silver band mean_opp ~= 930
+  LO_mill    p=0.743 -> settles ~1115
+  v020_arch  p=0.660 -> settles ~1045
+  v019_sp3   p=0.651 -> settles ~1038
+  v016_wall  p=0.430 -> settles ~881

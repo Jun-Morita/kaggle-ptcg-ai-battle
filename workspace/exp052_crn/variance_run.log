@@ -1,0 +1,17 @@
+CRN variance-reduction measurement: 6 repeats x n=30 games (A=SEARCH_PRI3 candidate, B=v014 baseline)
+  [no-CRN]  repeat 0: winrate(A)=0.600 (w=18 l=11 d=1) err=(0,0)
+  [no-CRN]  repeat 1: winrate(A)=0.400 (w=12 l=17 d=1) err=(0,0)
+  [no-CRN]  repeat 2: winrate(A)=0.367 (w=11 l=19 d=0) err=(0,0)
+  [no-CRN]  repeat 3: winrate(A)=0.600 (w=18 l=12 d=0) err=(0,0)
+  [no-CRN]  repeat 4: winrate(A)=0.400 (w=12 l=18 d=0) err=(0,0)
+  [no-CRN]  repeat 5: winrate(A)=0.400 (w=12 l=18 d=0) err=(0,0)
+  [CRN]     repeat 0: winrate(A)=0.500 (w=15 l=13 d=2) err=(0,0)
+  [CRN]     repeat 1: winrate(A)=0.567 (w=17 l=13 d=0) err=(0,0)
+  [CRN]     repeat 2: winrate(A)=0.500 (w=15 l=13 d=2) err=(0,0)
+  [CRN]     repeat 3: winrate(A)=0.433 (w=13 l=17 d=0) err=(0,0)
+  [CRN]     repeat 4: winrate(A)=0.433 (w=13 l=17 d=0) err=(0,0)
+  [CRN]     repeat 5: winrate(A)=0.500 (w=15 l=15 d=0) err=(0,0)
+
+no-CRN: mean=0.4611 sd=0.0989 values=[0.6, 0.4, 0.367, 0.6, 0.4, 0.4] (394s)
+CRN:    mean=0.4889 sd=0.0458 values=[0.5, 0.567, 0.5, 0.433, 0.433, 0.5] (348s)
+variance ratio (no-CRN/CRN) = 4.66x   |  std-dev ratio = 2.16x

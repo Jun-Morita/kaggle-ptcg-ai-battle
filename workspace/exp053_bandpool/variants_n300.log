@@ -1,0 +1,56 @@
+CRN deck-ratio sweep on LO-mill, n=300/matchup
+baselines under this protocol (n=300): stock LO 0.685, v016-wall 0.646
+
+=== stock ===
+  lucario_ex       w=0.31  wr=0.827  (248-52-0) err=(0,0)  12s
+  crustle_LO       w=0.20  wr=0.500  (150-150-0) err=(0,0)  9s
+  mixed_ex3        w=0.11  wr=0.787  (236-64-0) err=(0,0)  13s
+  alakazam         w=0.18  wr=0.910  (273-27-0) err=(0,0)  12s
+  mixed_ex4_arch   w=0.09  wr=0.693  (208-92-0) err=(0,0)  10s
+  dragapult        w=0.07  wr=0.333  (100-200-0) err=(0,0)  17s
+  --> BAND-WEIGHTED = 0.6923
+
+=== jumbo4 ===
+  lucario_ex       w=0.31  wr=0.827  (248-52-0) err=(0,0)  11s
+  crustle_LO       w=0.20  wr=0.453  (136-164-0) err=(0,0)  8s
+  mixed_ex3        w=0.11  wr=0.727  (218-82-0) err=(0,0)  13s
+  alakazam         w=0.18  wr=0.823  (247-53-0) err=(0,0)  11s
+  mixed_ex4_arch   w=0.09  wr=0.620  (186-114-0) err=(0,0)  10s
+  dragapult        w=0.07  wr=0.240  (72-228-0) err=(0,0)  18s
+  --> BAND-WEIGHTED = 0.6477
+
+=== cape ===
+  lucario_ex       w=0.31  wr=0.807  (242-58-0) err=(0,0)  12s
+  crustle_LO       w=0.20  wr=0.527  (158-142-0) err=(0,0)  9s
+  mixed_ex3        w=0.11  wr=0.383  (115-185-0) err=(0,0)  15s
+  alakazam         w=0.18  wr=0.900  (270-30-0) err=(0,0)  13s
+  mixed_ex4_arch   w=0.09  wr=0.643  (193-107-0) err=(0,0)  11s
+  dragapult        w=0.07  wr=0.290  (87-213-0) err=(0,0)  18s
+  --> BAND-WEIGHTED = 0.6378
+
+=== both ===
+  lucario_ex       w=0.31  wr=0.803  (241-59-0) err=(0,0)  11s
+  crustle_LO       w=0.20  wr=0.480  (144-156-0) err=(0,0)  9s
+  mixed_ex3        w=0.11  wr=0.350  (105-195-0) err=(0,0)  14s
+  alakazam         w=0.18  wr=0.863  (259-41-0) err=(0,0)  11s
+  mixed_ex4_arch   w=0.09  wr=0.633  (190-110-0) err=(0,0)  10s
+  dragapult        w=0.07  wr=0.253  (76-224-0) err=(0,0)  18s
+  --> BAND-WEIGHTED = 0.6137
+
+=== maxdur ===
+  lucario_ex       w=0.31  wr=0.783  (235-65-0) err=(0,0)  12s
+  crustle_LO       w=0.20  wr=0.397  (119-181-0) err=(0,0)  8s
+  mixed_ex3        w=0.11  wr=0.327  (98-202-0) err=(0,0)  15s
+  alakazam         w=0.18  wr=0.813  (244-56-0) err=(0,0)  12s
+  mixed_ex4_arch   w=0.09  wr=0.530  (159-141-0) err=(0,0)  11s
+  dragapult        w=0.07  wr=0.147  (44-256-0) err=(0,0)  18s
+  --> BAND-WEIGHTED = 0.5625
+
+variant    lucario_e crustle_L mixed_ex3  alakazam mixed_ex4 dragapult     BAND  vs stock
+stock          0.827     0.500     0.787     0.910     0.693     0.333   0.6923          
+jumbo4         0.827     0.453     0.727     0.823     0.620     0.240   0.6477 -0.045 (z=-3.04)
+cape           0.807     0.527     0.383     0.900     0.643     0.290   0.6378 -0.055 (z=-3.71)
+both           0.803     0.480     0.350     0.863     0.633     0.253   0.6137 -0.079 (z=-5.31)
+maxdur         0.783     0.397     0.327     0.813     0.530     0.147   0.5625 -0.130 (z=-8.67)
+
+(SE is conservative: it ignores the positive correlation CRN induces)

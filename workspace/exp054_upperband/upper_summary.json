@@ -1,0 +1,82 @@
+{
+ "non_ex_attackers": {
+  "share": 0.2851,
+  "games": 205,
+  "owner_wr": 0.702,
+  "distinct_lists": 62,
+  "top_list_n": 47,
+  "deck": "up_non_ex_attackers.json"
+ },
+ "mixed_ex4": {
+  "share": 0.2643,
+  "games": 190,
+  "owner_wr": 0.253,
+  "distinct_lists": 47,
+  "top_list_n": 63,
+  "deck": "up_mixed_ex4.json"
+ },
+ "mixed_ex1": {
+  "share": 0.121,
+  "games": 87,
+  "owner_wr": 0.598,
+  "distinct_lists": 49,
+  "top_list_n": 7,
+  "deck": "up_mixed_ex1.json"
+ },
+ "mixed_ex3": {
+  "share": 0.1113,
+  "games": 80,
+  "owner_wr": 0.412,
+  "distinct_lists": 23,
+  "top_list_n": 17,
+  "deck": "up_mixed_ex3.json"
+ },
+ "lucario_ex": {
+  "share": 0.0946,
+  "games": 68,
+  "owner_wr": 0.632,
+  "distinct_lists": 27,
+  "top_list_n": 15,
+  "deck": "up_lucario_ex.json"
+ },
+ "dragapult": {
+  "share": 0.057,
+  "games": 41,
+  "owner_wr": 0.634,
+  "distinct_lists": 9,
+  "top_list_n": 30,
+  "deck": "up_dragapult.json"
+ },
+ "crustle_control": {
+  "share": 0.0334,
+  "games": 24,
+  "owner_wr": 0.917,
+  "distinct_lists": 10,
+  "top_list_n": 9,
+  "deck": "up_crustle_control.json"
+ },
+ "mixed_ex5": {
+  "share": 0.0125,
+  "games": 9,
+  "owner_wr": 0.556,
+  "distinct_lists": 2,
+  "top_list_n": 8,
+  "deck": "up_mixed_ex5.json"
+ },
+ "ex_beatdown": {
+  "share": 0.0111,
+  "games": 8,
+  "owner_wr": 0.75,
+  "distinct_lists": 8,
+  "top_list_n": 1,
+  "deck": "up_ex_beatdown.json"
+ },
+ "mixed_ex2": {
+  "share": 0.0097,
+  "games": 7,
+  "owner_wr": 0.571,
+  "distinct_lists": 5,
+  "top_list_n": 3,
+  "deck": "up_mixed_ex2.json"
+ }
+}

@@ -1,0 +1,29 @@
+{
+ "build_arch": {
+  "lucario_ex": 0.68,
+  "crustle_LO": 0.29,
+  "mixed_ex3": 0.9,
+  "alakazam": 0.83,
+  "mixed_ex4_arch": 0.51,
+  "dragapult": 0.58,
+  "_band_weighted": 0.6036999999999999
+ },
+ "build_sp3": {
+  "lucario_ex": 0.76,
+  "crustle_LO": 0.91,
+  "mixed_ex3": 0.42,
+  "alakazam": 0.92,
+  "mixed_ex4_arch": 0.16,
+  "dragapult": 0.16,
+  "_band_weighted": 0.655
+ },
+ "build_v004": {
+  "lucario_ex": 0.82,
+  "crustle_LO": 0.94,
+  "mixed_ex3": 0.78,
+  "alakazam": 0.26,
+  "mixed_ex4_arch": 0.16,
+  "dragapult": 1.0,
+  "_band_weighted": 0.6592
+ }
+}

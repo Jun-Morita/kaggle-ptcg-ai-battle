@@ -1,0 +1,42 @@
+{
+ "LO_mill": {
+  "alakazam_dunsp": 0.6666666666666666,
+  "archaludon": 0.8333333333333334,
+  "alakazam": 1.0,
+  "marnie_munkidori": 1.0,
+  "lucario_ex": 0.6666666666666666,
+  "dragapult": 0.3333333333333333,
+  "crustle_LO": 0.8333333333333334,
+  "_upper_weighted": 0.7782953761214632
+ },
+ "v016_wall": {
+  "alakazam_dunsp": 0.0,
+  "archaludon": 0.0,
+  "alakazam": 0.16666666666666666,
+  "marnie_munkidori": 1.0,
+  "lucario_ex": 1.0,
+  "dragapult": 1.0,
+  "crustle_LO": 1.0,
+  "_upper_weighted": 0.3272946859903382
+ },
+ "v019_sp3": {
+  "alakazam_dunsp": 0.8333333333333334,
+  "archaludon": 0.16666666666666666,
+  "alakazam": 1.0,
+  "marnie_munkidori": 0.8333333333333334,
+  "lucario_ex": 0.6666666666666666,
+  "dragapult": 0.16666666666666666,
+  "crustle_LO": 0.6666666666666666,
+  "_upper_weighted": 0.6105935127674259
+ },
+ "v020_arch": {
+  "alakazam_dunsp": 0.3333333333333333,
+  "archaludon": 0.8333333333333334,
+  "alakazam": 0.8333333333333334,
+  "marnie_munkidori": 0.8333333333333334,
+  "lucario_ex": 0.5,
+  "dragapult": 0.8333333333333334,
+  "crustle_LO": 0.0,
+  "_upper_weighted": 0.624568668046929
+ }
+}

@@ -1,0 +1,59 @@
+BOTH-BAND eval, n=300/matchup, CRN=True
+crustle bucket SPLIT: our band 82% pure-wall / 18% LO; silver 65/35
+
+=== v021_LOmill ===
+  alakazam       wr=0.890  (267-33-0) err=(0,0)  13s
+  alakazam_dun   wr=0.840  (252-48-0) err=(0,0)  14s
+  archaludon     wr=0.713  (214-86-0) err=(0,0)  11s
+  cinderace      wr=0.787  (236-64-0) err=(0,0)  15s
+  crustle_LO     wr=0.500  (150-150-0) err=(0,0)  10s
+  dragapult      wr=0.310  (93-207-0) err=(0,0)  20s
+  lucario_ex     wr=0.807  (242-58-0) err=(0,0)  12s
+  marnie         wr=0.777  (233-66-1) err=(0,0)  17s
+  pure_wall      wr=0.067  (20-280-0) err=(0,0)  12s
+  --> OUR band 0.6116 | SILVER band 0.7486 | altitude derivative +0.1369
+
+=== v019_sp3 ===
+  alakazam       wr=0.943  (283-17-0) err=(0,0)  193s
+  alakazam_dun   wr=0.953  (286-14-0) err=(0,0)  186s
+  archaludon     wr=0.123  (37-263-0) err=(0,0)  327s
+  cinderace      wr=0.417  (125-175-0) err=(0,0)  230s
+  crustle_LO     wr=0.920  (276-24-0) err=(0,0)  195s
+  dragapult      wr=0.157  (47-252-1) err=(0,0)  166s
+  lucario_ex     wr=0.747  (224-75-1) err=(0,0)  230s
+  marnie         wr=0.830  (249-50-1) err=(0,0)  256s
+  pure_wall      wr=0.910  (273-27-0) err=(0,0)  148s
+  --> OUR band 0.6515 | SILVER band 0.6424 | altitude derivative -0.0091
+
+=== v016_wall ===
+  alakazam       wr=0.283  (85-215-0) err=(0,0)  10s
+  alakazam_dun   wr=0.233  (70-230-0) err=(0,0)  10s
+  archaludon     wr=0.207  (62-238-0) err=(0,0)  6s
+  cinderace      wr=0.763  (229-71-0) err=(0,0)  10s
+  crustle_LO     wr=0.913  (274-26-0) err=(0,0)  12s
+  dragapult      wr=1.000  (300-0-0) err=(0,0)  16s
+  lucario_ex     wr=0.830  (249-50-1) err=(0,0)  12s
+  marnie         wr=1.000  (300-0-0) err=(0,0)  13s
+  pure_wall      wr=0.497  (149-149-2) err=(0,0)  7s
+  --> OUR band 0.5952 | SILVER band 0.4383 | altitude derivative -0.1569
+
+=== v020_arch ===
+  alakazam       wr=0.840  (252-48-0) err=(0,0)  15s
+  alakazam_dun   wr=0.673  (202-98-0) err=(0,0)  16s
+  archaludon     wr=0.500  (150-150-0) err=(0,0)  14s
+  cinderace      wr=0.870  (261-39-0) err=(0,0)  9s
+  crustle_LO     wr=0.313  (94-206-0) err=(0,0)  11s
+  dragapult      wr=0.623  (187-113-0) err=(0,0)  15s
+  lucario_ex     wr=0.657  (197-103-0) err=(0,0)  15s
+  marnie         wr=0.910  (273-27-0) err=(0,0)  16s
+  pure_wall      wr=0.790  (237-62-1) err=(0,0)  6s
+  --> OUR band 0.6799 | SILVER band 0.6677 | altitude derivative -0.0122
+
+candidate       OUR band    SILVER   d(alt)
+v021_LOmill       0.6116    0.7486  +0.1369
+v020_arch         0.6799    0.6677  -0.0122
+v019_sp3          0.6515    0.6424  -0.0091
+v016_wall         0.5952    0.4383  -0.1569
+
+A positive altitude derivative means the agent gets STRONGER as it climbs
+(that, not the current-band score, is what sets the Elo fixed point).
