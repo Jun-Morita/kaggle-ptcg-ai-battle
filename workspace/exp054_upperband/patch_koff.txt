@@ -1,0 +1,10 @@
+my_deck = read_deck_csv()
+
+# exp054-B KO_OFF patch: disable the ko_mode race arithmetic entirely.
+# Measured (n=300/matchup, CRN, 9-opponent both-band pool): silver band
+# 0.734 -> 0.792 (+0.057), our band +0.020; archaludon 0.697 -> 0.843,
+# marnie 0.753 -> 0.887, no matchup regressed beyond noise. The original
+# should_ko_mode ignores opponent healing (Jumbo Ice Cream / Hero's Cape),
+# so it abandons the protected mill plan for prize races it loses.
+def should_ko_mode(me, opponent, state):
+    return False

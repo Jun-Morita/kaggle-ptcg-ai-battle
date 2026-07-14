@@ -97,5 +97,6 @@ data/notebooks/
 workspace/exp052_crn/engine_src/
 workspace/exp052_crn/cg/
 
-# exp054 built submission bundle
+# exp054 built submission bundles
 workspace/exp054_upperband/build_lo/
+workspace/exp054_upperband/build_koff/

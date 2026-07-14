@@ -1,0 +1,32 @@
+{
+ "stock": {
+  "wr": {
+   "alakazam": 0.8766666666666667,
+   "alakazam_dun": 0.8,
+   "archaludon": 0.6966666666666667,
+   "cinderace": 0.78,
+   "crustle_LO": 0.5,
+   "dragapult": 0.34,
+   "lucario_ex": 0.84,
+   "marnie": 0.7533333333333333,
+   "pure_wall": 0.12
+  },
+  "our_band": 0.62818,
+  "silver_band": 0.7341052449965494
+ },
+ "ko_OFF": {
+  "wr": {
+   "alakazam": 0.87,
+   "alakazam_dun": 0.8066666666666666,
+   "archaludon": 0.8433333333333334,
+   "cinderace": 0.79,
+   "crustle_LO": 0.55,
+   "dragapult": 0.36333333333333334,
+   "lucario_ex": 0.8133333333333334,
+   "marnie": 0.8866666666666667,
+   "pure_wall": 0.19
+  },
+  "our_band": 0.6479266666666667,
+  "silver_band": 0.7915472739820566
+ }
+}
