@@ -41,7 +41,14 @@ rival's reached by traversing episodes.
 
 ## Notes
 - Needs Kaggle API auth + the cabt engine; run via `uv run`.
-- The generic `lucario_v2` policy has piloted foreign decks well (Crustle v004, non-ex
-  v006) — try it first; add a dedicated policy patch only if the mirror/a matchup needs it.
+- **Pilot choice (updated 07-14): if a PUBLIC DEDICATED pilot exists for the archetype,
+  prefer it over generic-piloting** — the two current-era wins (v020 Archaludon, v021/v023
+  LO) both shipped a public notebook's own pilot (+ our crash wrapper + targeted patch),
+  while generic-piloting a foreign deck caps far below the dedicated pilot (deck⊗pilot,
+  5+ confirmations). The generic `lucario_v2` route (Crustle v004, non-ex v006) is the
+  fallback when no dedicated pilot exists.
+- Also reusable: `exp053_bandpool/extract_band_decks.py` (per-archetype REAL decklists
+  from any cached replay set — how the band pools are built), and scanning all caches for
+  a deck's signature card ids to find same-deck players (exp054-C).
 - A copied deck is only as good as its pilot — validate with `/build-submit`'s smoke test
   before trusting it.

@@ -26,9 +26,34 @@ One command for the operational loop: *check the meta → if it rotated, counter
 3. **Interpret & decide:**
    - **No rotation (< 15% share change):** hold / monitor. Note our W-L per archetype
      (are our eligible agents still favored vs the field?).
-   - **Rotation detected:** identify the rising archetype and whether our agents beat
-     it. The meta is a rock-paper-scissors (ex-beatdown → anti-ex wall → non-ex
-     attackers → …) that converges; see [[meta-and-leaderboard]].
+   - **Rotation detected — first ask: temporal rotation, or ALTITUDE?** (learned 07-14)
+     The opponent mix changes with OUR rating: a submission that climbs 700→940 sees a
+     different band (e.g. crustle 20%→0%, archaludon 9%→45%) with zero temporal rotation.
+     If our rating moved a lot between snapshots, read the "rotation" as band change and
+     compare against the matching band pool (exp053/054), not the previous snapshot.
+   - **Real rotation:** identify the rising archetype and whether our agents beat it.
+     The meta is a rock-paper-scissors (ex-beatdown → anti-ex wall → non-ex attackers →…);
+     see [[meta-and-leaderboard]].
+
+3b. **Contingency triggers (for the LO line, v021+; set 07-14).** Check these shares at
+   OUR altitude every run; below threshold = hold:
+   - **non-ex aggro (e.g. Team Rocket's Spidops) > 10-15%** (was 4%) — LO's structural
+     weakness class: non-ex attackers bypass BOTH Crustle Safeguard and Neutralization
+     Zone (each blocks only ex attacks) and win the prize race.
+   - **crustle/LO bucket > 20%** (was ~7%) — mirror saturation / anti-LO rising.
+   - **Starmie-type any clear rise** (was ~0%) — flagged wall/LO killer (pilkwang).
+   Ready fallback if triggered: v020 Archaludon (silver-band 0.668, built+validated).
+   Counter-deck pre-building was measured and declined (dragapult 0.567 / wall 0.438
+   silver-band as solo candidates vs v023's 0.792).
+
+3c. **Reroll check (best-of-2 ops; set 07-14).** LB = max of the 2 eligible submissions'
+   INDEPENDENT ratings (complementarity is impossible), and byte-identical agents settle
+   up to ~400 pts apart (disc712621). So: keep TWO copies of the strongest build eligible;
+   whenever one copy has ≥~30-50 games and sits clearly below the other (≥100 pts), propose
+   resubmitting the strongest build into that slot to redraw its rating. Repeat until the
+   final-submission target (8/2). Medal-cut recheck when top compresses:
+   `kaggle competitions leaderboard pokemon-tcg-ai-battle --download` → silver = score at
+   rank ceil(0.05·N), bronze at ceil(0.10·N).
 
 4. **(Optional) scout the top** to see what new top decks look like:
    ```

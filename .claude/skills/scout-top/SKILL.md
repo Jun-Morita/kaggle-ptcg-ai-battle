@@ -11,6 +11,25 @@ produced the v009 discipline patch. Feeds `/build-submit` (test + ship the tweak
 
 Loop: `/meta-watch` (what) → **`/scout-top`** (how + our gap) → patch → `/build-submit` (test+ship).
 
+## READ FIRST (07-14): which method fits the situation
+
+- **Our agent is a tuned 3rd-party pilot (current: the LO pilot, v021+)?** Decision-diff
+  mimicry against top players has failed ~every time ("decision-match ≠ strength",
+  exp042/048, bench-min NO-GO 07-14). The method that actually produced a shipped win
+  (KO_OFF, +0.057 silver-band) is **instrument + counterfactual, no top player needed**:
+  wrap the pilot's mode predicates with counters, FORCE them on/off on shared CRN seeds
+  (`workspace/exp054_upperband/probe_arch.py`), and gate through the pilot-patch pipeline
+  in `/build-submit`. Scout replays are for finding WHICH matchup to probe, not for
+  copying decisions.
+- **Same-deck players above us on the ladder?** Find them by scanning cached replays for
+  the deck's signature cards, cross-ref the full LB — this measures the deck's real
+  ceiling directly (07-14: 3 players with our exact 60/60 LO list sat IN silver, 923-983,
+  killing the "deck ceiling" worry without any patch). Decision-diff vs them:
+  `workspace/exp054_upperband/diff_silver_lo.py` (needs silver_lo_players.json-style
+  game index). Treat divergences as PROBE CANDIDATES to counterfactual-test, never as
+  rules to copy verbatim (their bench-minimization regressed when copied naively).
+- **Our own legacy chain (v014/turnbeam era)?** The original steps below apply as written.
+
 ## Steps
 
 1. **Ensure the top player's replays are cached** (gitignored under

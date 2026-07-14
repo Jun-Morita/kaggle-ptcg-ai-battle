@@ -8,6 +8,35 @@ description: Build a PTCG Simulation submission (.tar.gz) from a deck + policy, 
 Codifies the CLAUDE.md submission checklist end-to-end. Pairs with `/extract-deck`
 (copy a deck) and `/meta-watch` (decide what to counter).
 
+## Current strongest build (07-14, v023 line) — start here for LO rebuilds/rerolls
+
+```
+uv run python scripts/build_submission.py \
+  --deck workspace/exp054_upperband/lo_deck.json \
+  --policy workspace/exp053_bandpool/lo_opp/main.py \
+  --patch workspace/exp054_upperband/patch_koff.txt \
+  --out workspace/exp054_upperband/build_koff --smoke 30
+```
+(patch_koff.txt = `my_deck = read_deck_csv()` + the KO_OFF `should_ko_mode -> False`
+override; tail redefinition works because main.py calls the predicate by global name.)
+A byte-identical reroll needs NO rebuild — resubmit the existing
+`build_koff/submission.tar.gz`. Gate results on record: silver-band 0.792 / our-band
+0.648 (n=300 CRN), smoke 0 err, bare-exec replica 92 acts 0 err.
+
+## Pilot-patch gate (standard pipeline, established exp054-B)
+
+Any change to a tuned pilot must pass, in order:
+1. **Instrument + counterfactual probe** (probe_arch.py pattern): measure the predicate's
+   firing rate, then FORCE it on/off on shared CRN seeds. No counterfactual win = NO-GO
+   (structural-void rule; probe_wall precedent).
+2. **Both-band side-effect eval** (eval_ko_off.py pattern): n=300/matchup, CRN, all 9
+   opponents, BOTH band weightings. Require: target matchup up with z≳3, no regression
+   beyond noise, silver-band weighted up. (Trustworthy signals = ranking + deltas, NOT
+   absolute Elo — pool opponents use our proxy pilots.)
+3. **Built-artifact independent recheck** (n=200 CRN vs the 2 most-affected opponents) —
+   confirms the patch survives the ship path.
+4. Smoke + bare-exec replica (below), then user approval.
+
 ## Steps
 
 1. **Gather inputs:**
@@ -16,7 +45,7 @@ Codifies the CLAUDE.md submission checklist end-to-end. Pairs with `/extract-dec
      which has piloted foreign decks well — Crustle, non-ex).
    - `--patch` (optional) : a `.py` exposing `PATCH_SRC` (text appended after the class
      to override methods, e.g. `workspace/exp012_nonex/nonex_policy.py` for the non-ex
-     attack model) — use when the deck needs dedicated piloting (mirror, etc.).
+     attack model) — or a `.txt` of raw source appended to main.py (patch_koff.txt style).
 
 2. **Build + validate + smoke-test** (one command):
    ```
@@ -65,8 +94,11 @@ Codifies the CLAUDE.md submission checklist end-to-end. Pairs with `/extract-dec
    traceback is far faster than another round of hypothesis-and-resubmit.
 
 4. **Decide the eligible pair.** Submitting makes this the newest; **eligible = latest 2
-   by time**. Confirm which existing submission gets evicted and that the resulting pair
-   is the intended hedge. Check current state: `kaggle competitions submissions pokemon-tcg-ai-battle`.
+   by time**. Confirm which existing submission gets evicted. **LB = max of the pair's
+   INDEPENDENT ratings — matchup complementarity between the two slots is IMPOSSIBLE**
+   (established 07-13), so "hedge pairs" are meaningless; the correct pair is two copies
+   of the strongest single agent (reroll ops — see /meta-watch step 3c), or strongest +
+   next candidate under live A/B. Check state: `kaggle competitions submissions pokemon-tcg-ai-battle`.
 
 5. **Get explicit user approval** (real Kaggle uploads need it — CLAUDE.md). Then submit:
    ```
