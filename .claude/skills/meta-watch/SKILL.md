@@ -46,12 +46,18 @@ One command for the operational loop: *check the meta → if it rotated, counter
    Counter-deck pre-building was measured and declined (dragapult 0.567 / wall 0.438
    silver-band as solo candidates vs v023's 0.792).
 
-3c. **Reroll check (best-of-2 ops; set 07-14).** LB = max of the 2 eligible submissions'
-   INDEPENDENT ratings (complementarity is impossible), and byte-identical agents settle
-   up to ~400 pts apart (disc712621). So: keep TWO copies of the strongest build eligible;
-   whenever one copy has ≥~30-50 games and sits clearly below the other (≥100 pts), propose
-   resubmitting the strongest build into that slot to redraw its rating. Repeat until the
-   final-submission target (8/2). Medal-cut recheck when top compresses:
+3c. **Reroll check (best-of-2 ops; set 07-14, CONSTRAINT found 07-15).** LB = max of the
+   2 eligible submissions' INDEPENDENT ratings (complementarity is impossible), and
+   byte-identical agents settle up to ~400 pts apart (disc712621; our own live demo:
+   identical koff builds at 927 vs 709). Keep TWO copies of the strongest build eligible;
+   when a slot settled clearly below the other (≥100 pts, ≥~30-50 games), reroll it by
+   resubmitting the strongest build. **HARD CONSTRAINT: a new submission always evicts
+   the OLDER eligible slot (latest-2-by-time), so you can only ever reroll the older one.
+   If the older slot currently holds the HIGH rating, submitting ANYTHING sacrifices it —
+   do not submit; wait until the newer slot overtakes the older.** Repeat until the
+   final-submission target (8/2). Also: the silver cut DRIFTS UP over time (+4 pts in 2
+   days as teams grow) — aim for margin above the cut, not touching it.
+   Medal-cut recheck when top compresses:
    `kaggle competitions leaderboard pokemon-tcg-ai-battle --download` → silver = score at
    rank ceil(0.05·N), bronze at ceil(0.10·N).
 
