@@ -1,0 +1,21 @@
+{
+ "STOCK(sanity)": 0.48333333333333334,
+ "hammer_target=0": 0.5333333333333333,
+ "hammer_targetx2": 0.5333333333333333,
+ "hammer_any=0": 0.43333333333333335,
+ "hammer_anyx2": 0.45,
+ "xerosic=0": 0.31666666666666665,
+ "xerosicx2": 0.4166666666666667,
+ "cape_alak=0": 0.45,
+ "cape_alakx2": 0.4666666666666667,
+ "play_bench_penalty=0": 0.5333333333333333,
+ "play_bench_penaltyx2": 0.4166666666666667,
+ "boss_kill=0": 0.5,
+ "boss_killx2": 0.5666666666666667,
+ "attack_powerful=0": 0.5166666666666667,
+ "attack_powerfulx2": 0.4666666666666667,
+ "dawn=0": 0.48333333333333334,
+ "dawnx2": 0.4666666666666667,
+ "mine_counter=0": 0.5,
+ "mine_counterx2": 0.5666666666666667
+}

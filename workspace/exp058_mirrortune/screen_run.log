@@ -1,0 +1,22 @@
+defaults: {'hammer_target': 6500, 'hammer_any': 6993, 'xerosic': 3250, 'cape_alak': 9800, 'play_bench_penalty': 3923, 'boss_kill': 2262, 'attack_powerful': 655, 'dawn': 3100, 'mine_counter': 18495}
+  STOCK(sanity)            wr=0.483 (29-31-0) err=(0,0)
+  hammer_target=0          wr=0.533 (32-28-0) err=(0,0)
+  hammer_targetx2          wr=0.533 (32-28-0) err=(0,0)
+  hammer_any=0             wr=0.433 (26-34-0) err=(0,0)
+  hammer_anyx2             wr=0.450 (27-33-0) err=(0,0)
+  xerosic=0                wr=0.317 (19-41-0) err=(0,0)
+  xerosicx2                wr=0.417 (25-35-0) err=(0,0)
+  cape_alak=0              wr=0.450 (27-33-0) err=(0,0)
+  cape_alakx2              wr=0.467 (28-32-0) err=(0,0)
+  play_bench_penalty=0     wr=0.533 (32-28-0) err=(0,0)
+  play_bench_penaltyx2     wr=0.417 (25-35-0) err=(0,0)
+  boss_kill=0              wr=0.500 (30-30-0) err=(0,0)
+  boss_killx2              wr=0.567 (34-26-0) err=(0,0)
+  attack_powerful=0        wr=0.517 (31-29-0) err=(0,0)
+  attack_powerfulx2        wr=0.467 (28-32-0) err=(0,0)
+  dawn=0                   wr=0.483 (29-31-0) err=(0,0)
+  dawnx2                   wr=0.467 (28-32-0) err=(0,0)
+  mine_counter=0           wr=0.500 (30-30-0) err=(0,0)
+  mine_counterx2           wr=0.567 (34-26-0) err=(0,0)
+
+top arms: [('boss_killx2', 0.5666666666666667), ('mine_counterx2', 0.5666666666666667), ('hammer_target=0', 0.5333333333333333), ('hammer_targetx2', 0.5333333333333333), ('play_bench_penalty=0', 0.5333333333333333)]
