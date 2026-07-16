@@ -84,13 +84,37 @@ uv run python run_gauntlet.py 20      # random vs random
 - `agents.py` … ベースラインエージェント
 - 結果は `results/` に JSON で保存（`.gitignore` 対象）
 
-## 進捗（2026-07-14 時点）
+## 進捗（2026-07-16 時点）
 
-**eligible = {v022 (v021複製, 645.2), v023-lomill-koff (942.3)}**。
-**v023は現在silver圏内（202位/5007チーム、silver cut=927.3・bronze=873.1・gold=1078.0）**。
+**eligible = {v024 (koffミル複製, 737.4収束中), v025-pub-alakazam (910.7, 84試合0.643で急上昇中)}**。
+silver cut **930.2**（上昇ドリフト中 +4pt/2日）・bronze 871.2・5059チーム。
 締切8/16（Simulation）・9/13（Strategy）、最終提出目標8/2。
 
-### 現在の主軸: イダイナキバLO（Great Tusk山札破壊）＋KO_OFFパッチ = v023
+### 現在の主軸: v025 = 公開1034.6 search-augmented Alakazam（07-15採用・提出）
+
+- 公開notebook（tientrum）の旧チェックポイントで、**本人提出が実ラダー収束値1034.6**（07-05）
+  ——プールより強い証拠。安全レビュー済・出典明記・クラッシュ安全ラッパー。
+- 補正プール（n=200 CRN）: 自帯域**0.800**／silver帯**0.854**（v023: 0.648/0.792）。
+  純壁0.910（LOキラーを狩る側）・archaludon 0.865。**弱点: Alakazamミラー（実戦0.35）・
+  crustle_LO 0.375・dragapult 0.36**。
+- **我々のゲートを通過した初の探索持ち**: 調律済み重み表＋2-ply信念サンプリングbounded search
+  （「探索は効かない」通説への限定的反例。レプリカmax_act 0.32s）。
+- 初動84試合: archaludon 0.86（局所0.865とぴったり）・lucario 0.81・全体0.643。
+- 提出時にv023（927-937、旧枠）を意図的に犠牲（ユーザー承認、「新規提出は古い枠を押し出す」制約）。
+- 保険枝=v024（KO_OFFミル）。LOの不動点~925-950へ収束中。
+
+### 07-15の主な決着（詳細は daily_reports/20260715.md）
+- **exp055 TR Spidops再現 NO-GO**（床ゲート2/4不通過。ただしTRメタの正解=v020と判明）
+- **exp056 学習タイブレーカー NO-GO**（17件目。公開コード系統が場を占めるため
+  同型上位者は教師にならない——タイ破りまで我々と同一だった）
+- **exp054-E** 対Alakazam乖離分解（半分はプール構成→修正、残りは場の私的改変→-0.2ヘアカット）
+- 運用制約発見: **新規提出は常に古い方のeligible枠を押し出す**（skillに追記）
+
+<details><summary>07-14時点の進捗: イダイナキバLO＋KO_OFF = v023（クリックで展開）</summary>
+
+**当時のeligible = {v022 (v021複製), v023-lomill-koff (942.3)}**、v023は一時silver圏内（202位）。
+
+### 当時の主軸: イダイナキバLO（Great Tusk山札破壊）＋KO_OFFパッチ = v023
 
 1. **silver帯の初実測（exp054）**: silver境界(LB948.8)のtomatomatoの719リプレイから相手プールを
    抽出。silver帯は**Alakazam系40.6%+Archaludon26.4%=67%**の別世界（自帯域はlucario31%/crustle20%）。
@@ -110,6 +134,8 @@ uv run python run_gauntlet.py 20      # random vs random
    素通り）。純壁0.12-0.19、TR Spidops 0-3が実例。発動条件: 非exアグロ>10-15%（現4%）/
    crustle・LO系>20%（現~7%）/ Starmie上昇（現~0%）→ 即応駒はv020 Archaludon（silver 0.668）。
    カウンターデッキ育成は実測の上で見送り（dragapult 0.567/壁0.438 << v023 0.792）。
+
+</details>
 
 <details><summary>07-13の基盤刷新: 帯域プール + 較正済みEloモデル + CRN（クリックで展開）</summary>
 
