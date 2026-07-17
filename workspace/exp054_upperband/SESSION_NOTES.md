@@ -265,3 +265,22 @@ Enhanced Hammer×3-4・Telepath Psychic Energy×4・Hilda/Dawn×4）。旧代理
   ラッパー）に切り替えるべき。
 - 対Alakazamの改善レバーは依然薄い（Xerosicは既に核心テック、比率実験は棄却済み）が、
   以後のアイデアを**正直な代理(0.68セル)でゲートできる**ようになったのが収穫。
+
+## exp054-F: Starmie穴の定量化（07-17, probe_starmie.py, n=200 CRN）
+
+ライブでkoffがMega Starmie使いに0-3（mixed_ex3 3-9、シェア14→20%）を受け、
+Star-mineの実60枚（sub 54689534、104/104試合同一リスト）を複製して床代理プローブ。
+
+| 我々のビルド | vs starmie_real（床RVPパイロット） |
+|---|---:|
+| koff (v023/v026/v027) | 0.720 (144-56) |
+| v020 archaludon | **0.895** (179-21) |
+| pub1034 (v025) | 0.790 (158-42) |
+
+読み（床代理は片側読みの原則）:
+- 床相手に0.720なのにライブ0-3 → **Starmieの脅威はリストでなくパイロット**
+  （Ignition Energy/Mega Signal/Salvatoreの加速シークエンス）。deck⊗pilot則の再確認。
+  ローカルでは警報レベルの構造的不利は検出されず＝koff線のプラトー劣化の確証なし。
+- ライブの3-9は実パイロット差＋n=12の広いCI の複合。シェア20%が続くかを監視継続。
+- **v020は床Starmieに0.895と最も厚いマージン** → mixed_ex3（Starmie/Grimmsnarl/Iono）が
+  さらに増えた場合のコンティンジェンシー駒はv020で妥当（既存トリガー表と整合）。
