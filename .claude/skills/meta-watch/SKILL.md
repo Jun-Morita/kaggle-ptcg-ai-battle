@@ -55,8 +55,19 @@ One command for the operational loop: *check the meta → if it rotated, counter
    the OLDER eligible slot (latest-2-by-time), so you can only ever reroll the older one.
    If the older slot currently holds the HIGH rating, submitting ANYTHING sacrifices it —
    do not submit; wait until the newer slot overtakes the older.** Repeat until the
-   final-submission target (8/2). Also: the silver cut DRIFTS UP over time (+4 pts in 2
-   days as teams grow) — aim for margin above the cut, not touching it.
+   final-submission target (8/2). Also: the silver cut DRIFTS over time (930.2→919.4
+   over 07-15→07-17; direction varies with team influx) — aim for margin above the cut,
+   not touching it.
+   **Matchmaker mechanics are now OFFICIAL (staff, disc726690 — full notes in
+   references/knowledge/matchmaker_mechanics_0717.md): scheduling priority = sigma +
+   staleness, SCALED by rating (up to ~8x vs mu600) and new submissions heavily
+   prioritized; opponents sampled from a Gaussian window around own rating (band meta
+   confirmed). Consequence: a ticket's draw quality LOCKS IN early (path-dependent
+   loop: early wins at high sigma → 8x more games → fast sigma shrink at the high
+   rating). JUDGE REROLLS AT DAY 1-2 (<~800 = lagging, redraw when the eviction
+   constraint allows) instead of waiting 2-3 days. Also: the FINAL evaluation phase
+   keeps generating episodes (sigma-reduction goal) — lucky-high slots may partially
+   wash out, so for the FINAL pair prefer true build strength over a lucky draw.**
    Medal-cut recheck when top compresses:
    `kaggle competitions leaderboard pokemon-tcg-ai-battle --download` → silver = score at
    rank ceil(0.05·N), bronze at ceil(0.10·N).
