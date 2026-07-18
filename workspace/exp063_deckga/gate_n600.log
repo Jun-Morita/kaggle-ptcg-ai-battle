@@ -1,0 +1,4 @@
+candidate 0.7394 errs 0
+  per: {'alakazam_dun': 0.753, 'archaludon': 0.738, 'alakazam': 0.842, 'marnie': 0.897, 'lucario_ex': 0.833, 'dragapult': 0.194, 'pure_wall': 0.214, 'crustle_LO': 0.75}
+stock 0.786 errs 0
+  per: {'alakazam_dun': 0.798, 'archaludon': 0.835, 'alakazam': 0.921, 'marnie': 0.838, 'lucario_ex': 0.8, 'dragapult': 0.278, 'pure_wall': 0.5, 'crustle_LO': 0.375}
