@@ -37,12 +37,17 @@ One command for the operational loop: *check the meta → if it rotated, counter
 
 3b. **Contingency triggers (for the LO line, v021+; set 07-14).** Check these shares at
    OUR altitude every run; below threshold = hold:
-   - **non-ex aggro (e.g. Team Rocket's Spidops) > 10-15%** (was 4%) — LO's structural
+   - **non-ex aggro (e.g. Team Rocket's Spidops) > 20-25%** (raised 07-19 by exp062;
+     was 10-15%, and 11% was REACHED on 07-19 with koff 0/6 live) — LO's structural
      weakness class: non-ex attackers bypass BOTH Crustle Safeguard and Neutralization
-     Zone (each blocks only ex attacks) and win the prize race.
+     Zone (each blocks only ex attacks) and win the prize race. Below the raised
+     threshold the v020 swap is EV-NEGATIVE: v020 fixes the TR lane (floor 0.955) but
+     bleeds the 53% mainstream (archaludon mirror 0.500 / alakazam_dun 0.610, silver
+     weighted 0.634 vs koff 0.786; each +10% Spidops share closes ~0.09 of that gap).
    - **crustle/LO bucket > 20%** (was ~7%) — mirror saturation / anti-LO rising.
    - **Starmie-type any clear rise** (was ~0%) — flagged wall/LO killer (pilkwang).
-   Ready fallback if triggered: v020 Archaludon (silver-band 0.668, built+validated).
+   Ready fallback if triggered: v020 Archaludon — REBUILD with the updated cg first
+     (disc727094 engine fix, 07-17; old build bundles the pre-fix engine).
    Counter-deck pre-building was measured and declined (dragapult 0.567 / wall 0.438
    silver-band as solo candidates vs v023's 0.792).
 

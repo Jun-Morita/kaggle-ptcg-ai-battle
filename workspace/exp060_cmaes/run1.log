@@ -14,3 +14,29 @@ gen  12  best=0.560  pop=0.493  center=0.553  sanity=0.467  errs=0  (SE~0.041)  
 gen  13  best=0.587  pop=0.542  center=0.513  sanity=0.513  errs=0  (SE~0.041)  2561s
 gen  14  best=0.560  pop=0.511  center=0.560  sanity=0.493  errs=0  (SE~0.041)  2541s
 gen  15  best=0.553  pop=0.479  center=0.493  sanity=0.547  errs=0  (SE~0.041)  2472s
+resumed at gen 16
+resumed at gen 16
+gen  16  best=0.580  pop=0.516  center=0.587  sanity=0.520  errs=0  (SE~0.041)  3002s
+gen  17  best=0.547  pop=0.508  center=0.553  sanity=0.527  errs=0  (SE~0.041)  2894s
+gen  18  best=0.580  pop=0.528  center=0.547  sanity=0.493  errs=0  (SE~0.041)  3410s
+gen  19  best=0.580  pop=0.543  center=0.533  sanity=0.487  errs=0  (SE~0.041)  3865s
+gen  20  best=0.560  pop=0.523  center=0.527  sanity=0.480  errs=0  (SE~0.041)  3727s
+gen  21  best=0.547  pop=0.513  center=0.580  sanity=0.500  errs=0  (SE~0.041)  3608s
+gen  22  best=0.593  pop=0.519  center=0.567  sanity=0.493  errs=0  (SE~0.041)  3723s
+gen  23  best=0.587  pop=0.522  center=0.540  sanity=0.480  errs=0  (SE~0.041)  3826s
+gen  24  best=0.567  pop=0.518  center=0.593  sanity=0.493  errs=0  (SE~0.041)  3605s
+gen  25  best=0.573  pop=0.529  center=0.473  sanity=0.547  errs=0  (SE~0.041)  3147s
+gen  26  best=0.540  pop=0.501  center=0.573  sanity=0.507  errs=0  (SE~0.041)  2806s
+gen  27  best=0.573  pop=0.508  center=0.547  sanity=0.507  errs=0  (SE~0.041)  2533s
+gen  28  best=0.553  pop=0.505  center=0.493  sanity=0.467  errs=0  (SE~0.041)  2589s
+gen  29  best=0.587  pop=0.513  center=0.573  sanity=0.513  errs=0  (SE~0.041)  2639s
+gen  30  best=0.567  pop=0.525  center=0.527  sanity=0.500  errs=0  (SE~0.041)  2757s
+gen  31  best=0.573  pop=0.507  center=0.533  sanity=0.547  errs=0  (SE~0.041)  2457s
+gen  32  best=0.560  pop=0.508  center=0.580  sanity=0.533  errs=0  (SE~0.041)  2703s
+gen  33  best=0.573  pop=0.512  center=0.553  sanity=0.480  errs=0  (SE~0.041)  2672s
+gen  34  best=0.580  pop=0.529  center=0.600  sanity=0.500  errs=0  (SE~0.041)  2615s
+gen  35  best=0.593  pop=0.544  center=0.540  sanity=0.500  errs=0  (SE~0.041)  2716s
+gen  36  best=0.573  pop=0.519  center=0.587  sanity=0.540  errs=0  (SE~0.041)  2416s
+gen  37  best=0.587  pop=0.539  center=0.620  sanity=0.520  errs=0  (SE~0.041)  2763s
+gen  38  best=0.593  pop=0.539  center=0.560  sanity=0.480  errs=0  (SE~0.041)  2690s
+gen  39  best=0.587  pop=0.519  center=0.540  sanity=0.487  errs=0  (SE~0.041)  2796s

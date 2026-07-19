@@ -27,3 +27,11 @@
 ## 我々への含意
 - koffの逆風候補はSpidops（Safeguard/NZが効かない非ex主体）。**次回/meta-watchで
   自帯域のSpidopsシェアを必ず確認**。>15%なら対抗札の検討（v020はfloor-TRを0.95で轢く実測あり）。
+
+## 追記（07-19、既読スレ再チェックで発見）
+- **disc717697著者回答（07-15）**: pure RL silver到達者いわく「Not alphazero style, but yes RL」
+  （公式RLスターターは terrible とも）→ **フィールド唯一のRL成功例は非AlphaZero系＝方策勾配系
+  の示唆。exp064のPPO選択と整合**する外部証拠。
+- **disc724362へのntumlnoob反論（07-14, rank161）**: タイミング解析の「トップはほぼルールベース」
+  分類に対し「かなりの数は実際はRL/RL+search」と指摘。タイミング署名は高速推論RLと
+  ルールベースを区別できない——**Strategyレポートで同解析を引く際は限界を併記**。
