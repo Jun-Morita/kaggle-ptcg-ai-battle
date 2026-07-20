@@ -1,0 +1,11 @@
+[verify] search_begin calls: ON=69  OFF=0
+  alakazam_dun     w=0.285  ON 0.950  OFF 0.915  delta +0.035   (271s/12s)
+  archaludon       w=0.264  ON 0.835  OFF 0.810  delta +0.025   (280s/10s)
+  alakazam         w=0.121  ON 0.910  OFF 0.890  delta +0.020   (322s/13s)
+  marnie           w=0.111  ON 0.900  OFF 0.920  delta -0.020   (343s/12s)
+  lucario_ex       w=0.095  ON 0.875  OFF 0.825  delta +0.050   (346s/11s)
+  dragapult        w=0.057  ON 0.425  OFF 0.415  delta +0.010   (257s/11s)
+  pure_wall        w=0.021  ON 0.945  OFF 0.890  delta +0.055   (136s/6s)
+  crustle_LO       w=0.012  ON 0.385  OFF 0.320  delta +0.065   (199s/8s)
+
+SILVER weighted: search ON 0.8626  OFF 0.8377  LEVER = +0.0249
