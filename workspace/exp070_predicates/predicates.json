@@ -1,0 +1,482 @@
+{
+ "alakazam_dun": {
+  "n": 20,
+  "wins": 17,
+  "W": {
+   "active_tusk_ready": {
+    "calls": 728,
+    "fired": 22
+   },
+   "opponent_has_ex_or_ex_line_pressure": {
+    "calls": 370,
+    "fired": 230
+   },
+   "should_wall_mode": {
+    "calls": 711,
+    "fired": 152
+   },
+   "should_ko_mode": {
+    "calls": 711,
+    "fired": 0
+   },
+   "can_bench_more": {
+    "calls": 242,
+    "fired": 242
+   },
+   "facing_lucario_strong": {
+    "calls": 859,
+    "fired": 0
+   }
+  },
+  "L": {
+   "active_tusk_ready": {
+    "calls": 102,
+    "fired": 0
+   },
+   "opponent_has_ex_or_ex_line_pressure": {
+    "calls": 68,
+    "fired": 54
+   },
+   "should_wall_mode": {
+    "calls": 99,
+    "fired": 29
+   },
+   "should_ko_mode": {
+    "calls": 99,
+    "fired": 0
+   },
+   "can_bench_more": {
+    "calls": 31,
+    "fired": 31
+   },
+   "facing_lucario_strong": {
+    "calls": 117,
+    "fired": 0
+   }
+  }
+ },
+ "alakazam": {
+  "n": 20,
+  "wins": 18,
+  "W": {
+   "active_tusk_ready": {
+    "calls": 824,
+    "fired": 59
+   },
+   "opponent_has_ex_or_ex_line_pressure": {
+    "calls": 392,
+    "fired": 282
+   },
+   "should_wall_mode": {
+    "calls": 807,
+    "fired": 208
+   },
+   "should_ko_mode": {
+    "calls": 807,
+    "fired": 0
+   },
+   "facing_lucario_strong": {
+    "calls": 677,
+    "fired": 0
+   },
+   "can_bench_more": {
+    "calls": 383,
+    "fired": 383
+   },
+   "opponent_can_attack_soon": {
+    "calls": 44,
+    "fired": 18
+   }
+  },
+  "L": {
+   "active_tusk_ready": {
+    "calls": 62,
+    "fired": 1
+   },
+   "opponent_has_ex_or_ex_line_pressure": {
+    "calls": 45,
+    "fired": 41
+   },
+   "should_wall_mode": {
+    "calls": 62,
+    "fired": 30
+   },
+   "should_ko_mode": {
+    "calls": 62,
+    "fired": 0
+   },
+   "facing_lucario_strong": {
+    "calls": 38,
+    "fired": 0
+   },
+   "can_bench_more": {
+    "calls": 4,
+    "fired": 4
+   }
+  }
+ },
+ "marnie": {
+  "n": 20,
+  "wins": 17,
+  "W": {
+   "active_tusk_ready": {
+    "calls": 1053,
+    "fired": 253
+   },
+   "opponent_has_ex_or_ex_line_pressure": {
+    "calls": 514,
+    "fired": 476
+   },
+   "should_wall_mode": {
+    "calls": 1037,
+    "fired": 375
+   },
+   "should_ko_mode": {
+    "calls": 1037,
+    "fired": 0
+   },
+   "can_bench_more": {
+    "calls": 750,
+    "fired": 750
+   },
+   "facing_lucario_strong": {
+    "calls": 652,
+    "fired": 0
+   },
+   "opponent_can_attack_soon": {
+    "calls": 97,
+    "fired": 84
+   }
+  },
+  "L": {
+   "active_tusk_ready": {
+    "calls": 211,
+    "fired": 19
+   },
+   "opponent_has_ex_or_ex_line_pressure": {
+    "calls": 106,
+    "fired": 102
+   },
+   "should_wall_mode": {
+    "calls": 208,
+    "fired": 83
+   },
+   "should_ko_mode": {
+    "calls": 208,
+    "fired": 0
+   },
+   "facing_lucario_strong": {
+    "calls": 142,
+    "fired": 0
+   },
+   "can_bench_more": {
+    "calls": 78,
+    "fired": 78
+   },
+   "opponent_can_attack_soon": {
+    "calls": 17,
+    "fired": 9
+   }
+  }
+ },
+ "pure_wall": {
+  "n": 20,
+  "wins": 7,
+  "W": {
+   "active_tusk_ready": {
+    "calls": 483,
+    "fired": 84
+   },
+   "opponent_has_ex_or_ex_line_pressure": {
+    "calls": 312,
+    "fired": 0
+   },
+   "should_wall_mode": {
+    "calls": 465,
+    "fired": 0
+   },
+   "should_ko_mode": {
+    "calls": 465,
+    "fired": 0
+   },
+   "can_bench_more": {
+    "calls": 357,
+    "fired": 357
+   },
+   "facing_lucario_strong": {
+    "calls": 448,
+    "fired": 0
+   }
+  },
+  "L": {
+   "active_tusk_ready": {
+    "calls": 868,
+    "fired": 67
+   },
+   "opponent_has_ex_or_ex_line_pressure": {
+    "calls": 519,
+    "fired": 0
+   },
+   "should_wall_mode": {
+    "calls": 852,
+    "fired": 0
+   },
+   "should_ko_mode": {
+    "calls": 852,
+    "fired": 0
+   },
+   "can_bench_more": {
+    "calls": 540,
+    "fired": 540
+   },
+   "facing_lucario_strong": {
+    "calls": 1027,
+    "fired": 0
+   }
+  }
+ },
+ "crustle_LO": {
+  "n": 20,
+  "wins": 12,
+  "W": {
+   "active_tusk_ready": {
+    "calls": 599,
+    "fired": 238
+   },
+   "opponent_has_ex_or_ex_line_pressure": {
+    "calls": 343,
+    "fired": 0
+   },
+   "should_wall_mode": {
+    "calls": 585,
+    "fired": 0
+   },
+   "should_ko_mode": {
+    "calls": 585,
+    "fired": 0
+   },
+   "can_bench_more": {
+    "calls": 563,
+    "fired": 563
+   },
+   "facing_lucario_strong": {
+    "calls": 257,
+    "fired": 0
+   }
+  },
+  "L": {
+   "active_tusk_ready": {
+    "calls": 425,
+    "fired": 76
+   },
+   "opponent_has_ex_or_ex_line_pressure": {
+    "calls": 154,
+    "fired": 0
+   },
+   "should_wall_mode": {
+    "calls": 419,
+    "fired": 0
+   },
+   "should_ko_mode": {
+    "calls": 419,
+    "fired": 0
+   },
+   "can_bench_more": {
+    "calls": 292,
+    "fired": 292
+   },
+   "facing_lucario_strong": {
+    "calls": 269,
+    "fired": 0
+   }
+  }
+ },
+ "archaludon": {
+  "n": 20,
+  "wins": 16,
+  "W": {
+   "active_tusk_ready": {
+    "calls": 806,
+    "fired": 195
+   },
+   "opponent_has_ex_or_ex_line_pressure": {
+    "calls": 420,
+    "fired": 339
+   },
+   "should_wall_mode": {
+    "calls": 788,
+    "fired": 274
+   },
+   "should_ko_mode": {
+    "calls": 788,
+    "fired": 0
+   },
+   "facing_lucario_strong": {
+    "calls": 537,
+    "fired": 0
+   },
+   "can_bench_more": {
+    "calls": 621,
+    "fired": 621
+   },
+   "opponent_can_attack_soon": {
+    "calls": 16,
+    "fired": 6
+   }
+  },
+  "L": {
+   "active_tusk_ready": {
+    "calls": 150,
+    "fired": 19
+   },
+   "opponent_has_ex_or_ex_line_pressure": {
+    "calls": 94,
+    "fired": 69
+   },
+   "should_wall_mode": {
+    "calls": 147,
+    "fired": 66
+   },
+   "should_ko_mode": {
+    "calls": 147,
+    "fired": 0
+   },
+   "can_bench_more": {
+    "calls": 84,
+    "fired": 84
+   },
+   "facing_lucario_strong": {
+    "calls": 116,
+    "fired": 0
+   }
+  }
+ },
+ "lucario_ex": {
+  "n": 20,
+  "wins": 17,
+  "W": {
+   "active_tusk_ready": {
+    "calls": 812,
+    "fired": 70
+   },
+   "opponent_has_ex_or_ex_line_pressure": {
+    "calls": 401,
+    "fired": 318
+   },
+   "should_wall_mode": {
+    "calls": 794,
+    "fired": 203
+   },
+   "should_ko_mode": {
+    "calls": 794,
+    "fired": 0
+   },
+   "facing_lucario_strong": {
+    "calls": 729,
+    "fired": 729
+   },
+   "can_bench_more": {
+    "calls": 229,
+    "fired": 229
+   },
+   "opponent_can_attack_soon": {
+    "calls": 93,
+    "fired": 93
+   }
+  },
+  "L": {
+   "active_tusk_ready": {
+    "calls": 47,
+    "fired": 9
+   },
+   "opponent_has_ex_or_ex_line_pressure": {
+    "calls": 49,
+    "fired": 45
+   },
+   "should_wall_mode": {
+    "calls": 46,
+    "fired": 29
+   },
+   "should_ko_mode": {
+    "calls": 46,
+    "fired": 0
+   },
+   "facing_lucario_strong": {
+    "calls": 23,
+    "fired": 23
+   },
+   "can_bench_more": {
+    "calls": 9,
+    "fired": 9
+   },
+   "opponent_can_attack_soon": {
+    "calls": 15,
+    "fired": 15
+   }
+  }
+ },
+ "dragapult": {
+  "n": 20,
+  "wins": 10,
+  "W": {
+   "active_tusk_ready": {
+    "calls": 629,
+    "fired": 45
+   },
+   "opponent_has_ex_or_ex_line_pressure": {
+    "calls": 264,
+    "fired": 227
+   },
+   "should_wall_mode": {
+    "calls": 615,
+    "fired": 190
+   },
+   "should_ko_mode": {
+    "calls": 615,
+    "fired": 0
+   },
+   "can_bench_more": {
+    "calls": 226,
+    "fired": 226
+   },
+   "facing_lucario_strong": {
+    "calls": 443,
+    "fired": 0
+   },
+   "opponent_can_attack_soon": {
+    "calls": 110,
+    "fired": 92
+   }
+  },
+  "L": {
+   "active_tusk_ready": {
+    "calls": 519,
+    "fired": 7
+   },
+   "opponent_has_ex_or_ex_line_pressure": {
+    "calls": 312,
+    "fired": 284
+   },
+   "should_wall_mode": {
+    "calls": 509,
+    "fired": 234
+   },
+   "should_ko_mode": {
+    "calls": 509,
+    "fired": 0
+   },
+   "facing_lucario_strong": {
+    "calls": 347,
+    "fired": 0
+   },
+   "can_bench_more": {
+    "calls": 147,
+    "fired": 147
+   },
+   "opponent_can_attack_soon": {
+    "calls": 155,
+    "fired": 123
+   }
+  }
+ }
+}

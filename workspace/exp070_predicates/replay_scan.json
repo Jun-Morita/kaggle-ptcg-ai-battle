@@ -1,0 +1,112 @@
+{
+ "games": {
+  "W": 169,
+  "L": 134
+ },
+ "predicates": {
+  "should_wall_mode": {
+   "fire_W": 16.848783926683115,
+   "fire_L": 24.42075996292864,
+   "turns_per_game": 16.485148514851485,
+   "W": {
+    "turns": 2837,
+    "fired": 478
+   },
+   "L": {
+    "turns": 2158,
+    "fired": 527
+   }
+  },
+  "should_ko_mode": {
+   "fire_W": 0.0,
+   "fire_L": 0.0,
+   "turns_per_game": 16.485148514851485,
+   "W": {
+    "turns": 2837,
+    "fired": 0
+   },
+   "L": {
+    "turns": 2158,
+    "fired": 0
+   }
+  },
+  "opponent_has_ex_or_ex_line_pressure": {
+   "fire_W": 74.16284807895664,
+   "fire_L": 72.38183503243744,
+   "turns_per_game": 16.485148514851485,
+   "W": {
+    "turns": 2837,
+    "fired": 2104
+   },
+   "L": {
+    "turns": 2158,
+    "fired": 1562
+   }
+  },
+  "opponent_can_attack_soon": {
+   "fire_W": 77.1589707437434,
+   "fire_L": 83.17886932344764,
+   "turns_per_game": 16.485148514851485,
+   "W": {
+    "turns": 2837,
+    "fired": 2189
+   },
+   "L": {
+    "turns": 2158,
+    "fired": 1795
+   }
+  },
+  "facing_lucario_strong": {
+   "fire_W": 9.27035600986958,
+   "fire_L": 8.619091751621871,
+   "turns_per_game": 16.485148514851485,
+   "W": {
+    "turns": 2837,
+    "fired": 263
+   },
+   "L": {
+    "turns": 2158,
+    "fired": 186
+   }
+  },
+  "active_tusk_ready": {
+   "fire_W": 0.986958054282693,
+   "fire_L": 0.9267840593141798,
+   "turns_per_game": 16.485148514851485,
+   "W": {
+    "turns": 2837,
+    "fired": 28
+   },
+   "L": {
+    "turns": 2158,
+    "fired": 20
+   }
+  },
+  "can_bench_more": {
+   "fire_W": 63.6587945012337,
+   "fire_L": 64.13345690454125,
+   "turns_per_game": 16.485148514851485,
+   "W": {
+    "turns": 2837,
+    "fired": 1806
+   },
+   "L": {
+    "turns": 2158,
+    "fired": 1384
+   }
+  },
+  "opponent_has_trappable_bench": {
+   "fire_W": 70.74374339090589,
+   "fire_L": 76.83039851714551,
+   "turns_per_game": 16.485148514851485,
+   "W": {
+    "turns": 2837,
+    "fired": 2007
+   },
+   "L": {
+    "turns": 2158,
+    "fired": 1658
+   }
+  }
+ }
+}

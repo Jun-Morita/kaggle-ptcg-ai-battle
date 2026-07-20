@@ -1,0 +1,2652 @@
+[
+ {
+  "won": true,
+  "first_ex": null,
+  "first_fire": null,
+  "turns": 33,
+  "ex_ids": []
+ },
+ {
+  "won": false,
+  "first_ex": null,
+  "first_fire": null,
+  "turns": 32,
+  "ex_ids": []
+ },
+ {
+  "won": true,
+  "first_ex": 18,
+  "first_fire": 2,
+  "turns": 46,
+  "ex_ids": [
+   381
+  ]
+ },
+ {
+  "won": false,
+  "first_ex": 4,
+  "first_fire": 2,
+  "turns": 14,
+  "ex_ids": [
+   140
+  ]
+ },
+ {
+  "won": false,
+  "first_ex": 7,
+  "first_fire": 1,
+  "turns": 29,
+  "ex_ids": [
+   648
+  ]
+ },
+ {
+  "won": true,
+  "first_ex": 5,
+  "first_fire": 3,
+  "turns": 16,
+  "ex_ids": [
+   678
+  ]
+ },
+ {
+  "won": false,
+  "first_ex": 6,
+  "first_fire": 1,
+  "turns": 37,
+  "ex_ids": [
+   121,
+   140,
+   1071
+  ]
+ },
+ {
+  "won": false,
+  "first_ex": null,
+  "first_fire": null,
+  "turns": 34,
+  "ex_ids": []
+ },
+ {
+  "won": false,
+  "first_ex": null,
+  "first_fire": null,
+  "turns": 31,
+  "ex_ids": []
+ },
+ {
+  "won": false,
+  "first_ex": 5,
+  "first_fire": 1,
+  "turns": 49,
+  "ex_ids": [
+   723
+  ]
+ },
+ {
+  "won": false,
+  "first_ex": 2,
+  "first_fire": 2,
+  "turns": 48,
+  "ex_ids": [
+   756
+  ]
+ },
+ {
+  "won": true,
+  "first_ex": 4,
+  "first_fire": 1,
+  "turns": 29,
+  "ex_ids": [
+   723
+  ]
+ },
+ {
+  "won": true,
+  "first_ex": 4,
+  "first_fire": 2,
+  "turns": 22,
+  "ex_ids": [
+   121,
+   140,
+   1071
+  ]
+ },
+ {
+  "won": true,
+  "first_ex": 5,
+  "first_fire": 1,
+  "turns": 39,
+  "ex_ids": [
+   723
+  ]
+ },
+ {
+  "won": true,
+  "first_ex": 4,
+  "first_fire": 2,
+  "turns": 36,
+  "ex_ids": [
+   1031
+  ]
+ },
+ {
+  "won": false,
+  "first_ex": null,
+  "first_fire": 4,
+  "turns": 20,
+  "ex_ids": []
+ },
+ {
+  "won": false,
+  "first_ex": 17,
+  "first_fire": 2,
+  "turns": 30,
+  "ex_ids": [
+   678
+  ]
+ },
+ {
+  "won": true,
+  "first_ex": 5,
+  "first_fire": 1,
+  "turns": 17,
+  "ex_ids": [
+   306,
+   678
+  ]
+ },
+ {
+  "won": true,
+  "first_ex": 4,
+  "first_fire": 2,
+  "turns": 12,
+  "ex_ids": [
+   678
+  ]
+ },
+ {
+  "won": true,
+  "first_ex": 2,
+  "first_fire": 2,
+  "turns": 20,
+  "ex_ids": [
+   756
+  ]
+ },
+ {
+  "won": false,
+  "first_ex": 12,
+  "first_fire": 2,
+  "turns": 22,
+  "ex_ids": [
+   678
+  ]
+ },
+ {
+  "won": false,
+  "first_ex": 5,
+  "first_fire": 1,
+  "turns": 25,
+  "ex_ids": [
+   1031
+  ]
+ },
+ {
+  "won": true,
+  "first_ex": 4,
+  "first_fire": 3,
+  "turns": 11,
+  "ex_ids": [
+   678
+  ]
+ },
+ {
+  "won": false,
+  "first_ex": 6,
+  "first_fire": 3,
+  "turns": 6,
+  "ex_ids": [
+   678
+  ]
+ },
+ {
+  "won": false,
+  "first_ex": 1,
+  "first_fire": 1,
+  "turns": 39,
+  "ex_ids": [
+   140,
+   648
+  ]
+ },
+ {
+  "won": true,
+  "first_ex": 5,
+  "first_fire": 1,
+  "turns": 27,
+  "ex_ids": [
+   1031
+  ]
+ },
+ {
+  "won": true,
+  "first_ex": 4,
+  "first_fire": 1,
+  "turns": 39,
+  "ex_ids": [
+   678
+  ]
+ },
+ {
+  "won": false,
+  "first_ex": 1,
+  "first_fire": 1,
+  "turns": 23,
+  "ex_ids": [
+   24
+  ]
+ },
+ {
+  "won": false,
+  "first_ex": 5,
+  "first_fire": 2,
+  "turns": 14,
+  "ex_ids": [
+   678
+  ]
+ },
+ {
+  "won": false,
+  "first_ex": null,
+  "first_fire": 6,
+  "turns": 14,
+  "ex_ids": []
+ },
+ {
+  "won": true,
+  "first_ex": 5,
+  "first_fire": 2,
+  "turns": 41,
+  "ex_ids": [
+   678
+  ]
+ },
+ {
+  "won": true,
+  "first_ex": 2,
+  "first_fire": 2,
+  "turns": 14,
+  "ex_ids": [
+   154,
+   723
+  ]
+ },
+ {
+  "won": false,
+  "first_ex": 5,
+  "first_fire": 1,
+  "turns": 41,
+  "ex_ids": [
+   861,
+   1031
+  ]
+ },
+ {
+  "won": false,
+  "first_ex": 5,
+  "first_fire": 1,
+  "turns": 13,
+  "ex_ids": [
+   678
+  ]
+ },
+ {
+  "won": false,
+  "first_ex": 9,
+  "first_fire": 8,
+  "turns": 20,
+  "ex_ids": [
+   678
+  ]
+ },
+ {
+  "won": true,
+  "first_ex": null,
+  "first_fire": null,
+  "turns": 35,
+  "ex_ids": []
+ },
+ {
+  "won": true,
+  "first_ex": 12,
+  "first_fire": 2,
+  "turns": 20,
+  "ex_ids": [
+   723
+  ]
+ },
+ {
+  "won": false,
+  "first_ex": 7,
+  "first_fire": 2,
+  "turns": 32,
+  "ex_ids": [
+   648
+  ]
+ },
+ {
+  "won": false,
+  "first_ex": null,
+  "first_fire": null,
+  "turns": 23,
+  "ex_ids": []
+ },
+ {
+  "won": false,
+  "first_ex": 7,
+  "first_fire": 20,
+  "turns": 41,
+  "ex_ids": [
+   723
+  ]
+ },
+ {
+  "won": true,
+  "first_ex": 10,
+  "first_fire": 2,
+  "turns": 18,
+  "ex_ids": [
+   861,
+   1031
+  ]
+ },
+ {
+  "won": true,
+  "first_ex": 4,
+  "first_fire": 4,
+  "turns": 32,
+  "ex_ids": [
+   37
+  ]
+ },
+ {
+  "won": true,
+  "first_ex": 2,
+  "first_fire": 2,
+  "turns": 26,
+  "ex_ids": [
+   96,
+   108,
+   184,
+   272,
+   756
+  ]
+ },
+ {
+  "won": true,
+  "first_ex": 3,
+  "first_fire": 3,
+  "turns": 37,
+  "ex_ids": [
+   756
+  ]
+ },
+ {
+  "won": true,
+  "first_ex": null,
+  "first_fire": null,
+  "turns": 55,
+  "ex_ids": []
+ },
+ {
+  "won": false,
+  "first_ex": null,
+  "first_fire": null,
+  "turns": 54,
+  "ex_ids": []
+ },
+ {
+  "won": true,
+  "first_ex": null,
+  "first_fire": 6,
+  "turns": 17,
+  "ex_ids": []
+ },
+ {
+  "won": true,
+  "first_ex": 3,
+  "first_fire": 1,
+  "turns": 19,
+  "ex_ids": [
+   678
+  ]
+ },
+ {
+  "won": true,
+  "first_ex": 7,
+  "first_fire": 3,
+  "turns": 37,
+  "ex_ids": [
+   190
+  ]
+ },
+ {
+  "won": true,
+  "first_ex": 14,
+  "first_fire": 2,
+  "turns": 23,
+  "ex_ids": [
+   190
+  ]
+ },
+ {
+  "won": true,
+  "first_ex": 7,
+  "first_fire": 1,
+  "turns": 17,
+  "ex_ids": [
+   121,
+   140,
+   1071
+  ]
+ },
+ {
+  "won": true,
+  "first_ex": 9,
+  "first_fire": 1,
+  "turns": 33,
+  "ex_ids": [
+   190
+  ]
+ },
+ {
+  "won": true,
+  "first_ex": 11,
+  "first_fire": 1,
+  "turns": 23,
+  "ex_ids": [
+   140
+  ]
+ },
+ {
+  "won": false,
+  "first_ex": 6,
+  "first_fire": 1,
+  "turns": 37,
+  "ex_ids": [
+   121,
+   140,
+   1071
+  ]
+ },
+ {
+  "won": true,
+  "first_ex": 13,
+  "first_fire": 1,
+  "turns": 15,
+  "ex_ids": [
+   140
+  ]
+ },
+ {
+  "won": false,
+  "first_ex": null,
+  "first_fire": 6,
+  "turns": 16,
+  "ex_ids": []
+ },
+ {
+  "won": true,
+  "first_ex": 19,
+  "first_fire": 6,
+  "turns": 39,
+  "ex_ids": [
+   140
+  ]
+ },
+ {
+  "won": false,
+  "first_ex": null,
+  "first_fire": 2,
+  "turns": 2,
+  "ex_ids": []
+ },
+ {
+  "won": false,
+  "first_ex": 5,
+  "first_fire": 1,
+  "turns": 25,
+  "ex_ids": [
+   121
+  ]
+ },
+ {
+  "won": false,
+  "first_ex": 5,
+  "first_fire": 3,
+  "turns": 27,
+  "ex_ids": [
+   828
+  ]
+ },
+ {
+  "won": false,
+  "first_ex": 4,
+  "first_fire": 2,
+  "turns": 24,
+  "ex_ids": [
+   140
+  ]
+ },
+ {
+  "won": true,
+  "first_ex": 9,
+  "first_fire": 3,
+  "turns": 17,
+  "ex_ids": [
+   190
+  ]
+ },
+ {
+  "won": false,
+  "first_ex": null,
+  "first_fire": 4,
+  "turns": 13,
+  "ex_ids": []
+ },
+ {
+  "won": false,
+  "first_ex": 4,
+  "first_fire": 3,
+  "turns": 13,
+  "ex_ids": [
+   269
+  ]
+ },
+ {
+  "won": true,
+  "first_ex": 13,
+  "first_fire": 1,
+  "turns": 29,
+  "ex_ids": [
+   648
+  ]
+ },
+ {
+  "won": true,
+  "first_ex": 5,
+  "first_fire": 1,
+  "turns": 33,
+  "ex_ids": [
+   1031
+  ]
+ },
+ {
+  "won": true,
+  "first_ex": 6,
+  "first_fire": 2,
+  "turns": 34,
+  "ex_ids": [
+   381
+  ]
+ },
+ {
+  "won": true,
+  "first_ex": 9,
+  "first_fire": 1,
+  "turns": 19,
+  "ex_ids": [
+   190
+  ]
+ },
+ {
+  "won": false,
+  "first_ex": 4,
+  "first_fire": 2,
+  "turns": 18,
+  "ex_ids": [
+   678
+  ]
+ },
+ {
+  "won": true,
+  "first_ex": 4,
+  "first_fire": 2,
+  "turns": 28,
+  "ex_ids": [
+   184,
+   272,
+   747
+  ]
+ },
+ {
+  "won": false,
+  "first_ex": 17,
+  "first_fire": 3,
+  "turns": 21,
+  "ex_ids": [
+   190
+  ]
+ },
+ {
+  "won": false,
+  "first_ex": null,
+  "first_fire": 1,
+  "turns": 17,
+  "ex_ids": []
+ },
+ {
+  "won": true,
+  "first_ex": 7,
+  "first_fire": 1,
+  "turns": 27,
+  "ex_ids": [
+   190
+  ]
+ },
+ {
+  "won": true,
+  "first_ex": 3,
+  "first_fire": null,
+  "turns": 25,
+  "ex_ids": [
+   44,
+   140,
+   184,
+   272,
+   299
+  ]
+ },
+ {
+  "won": false,
+  "first_ex": null,
+  "first_fire": 3,
+  "turns": 12,
+  "ex_ids": []
+ },
+ {
+  "won": false,
+  "first_ex": 2,
+  "first_fire": 2,
+  "turns": 16,
+  "ex_ids": [
+   140
+  ]
+ },
+ {
+  "won": true,
+  "first_ex": 7,
+  "first_fire": 1,
+  "turns": 25,
+  "ex_ids": [
+   648
+  ]
+ },
+ {
+  "won": true,
+  "first_ex": 11,
+  "first_fire": 1,
+  "turns": 25,
+  "ex_ids": [
+   190
+  ]
+ },
+ {
+  "won": false,
+  "first_ex": null,
+  "first_fire": null,
+  "turns": 33,
+  "ex_ids": []
+ },
+ {
+  "won": true,
+  "first_ex": null,
+  "first_fire": 2,
+  "turns": 2,
+  "ex_ids": []
+ },
+ {
+  "won": false,
+  "first_ex": 6,
+  "first_fire": 2,
+  "turns": 31,
+  "ex_ids": [
+   678
+  ]
+ },
+ {
+  "won": true,
+  "first_ex": 9,
+  "first_fire": 3,
+  "turns": 25,
+  "ex_ids": [
+   140
+  ]
+ },
+ {
+  "won": false,
+  "first_ex": 21,
+  "first_fire": 1,
+  "turns": 59,
+  "ex_ids": [
+   190
+  ]
+ },
+ {
+  "won": true,
+  "first_ex": 5,
+  "first_fire": 1,
+  "turns": 17,
+  "ex_ids": [
+   190
+  ]
+ },
+ {
+  "won": true,
+  "first_ex": 16,
+  "first_fire": 5,
+  "turns": 31,
+  "ex_ids": [
+   117,
+   184,
+   747
+  ]
+ },
+ {
+  "won": false,
+  "first_ex": 1,
+  "first_fire": 1,
+  "turns": 13,
+  "ex_ids": [
+   431
+  ]
+ },
+ {
+  "won": true,
+  "first_ex": 3,
+  "first_fire": 3,
+  "turns": 27,
+  "ex_ids": [
+   190
+  ]
+ },
+ {
+  "won": false,
+  "first_ex": 3,
+  "first_fire": 1,
+  "turns": 31,
+  "ex_ids": [
+   121,
+   184,
+   849
+  ]
+ },
+ {
+  "won": true,
+  "first_ex": 2,
+  "first_fire": 2,
+  "turns": 24,
+  "ex_ids": [
+   140
+  ]
+ },
+ {
+  "won": true,
+  "first_ex": 3,
+  "first_fire": 1,
+  "turns": 33,
+  "ex_ids": [
+   121,
+   140,
+   184,
+   1071
+  ]
+ },
+ {
+  "won": false,
+  "first_ex": null,
+  "first_fire": 3,
+  "turns": 35,
+  "ex_ids": []
+ },
+ {
+  "won": false,
+  "first_ex": null,
+  "first_fire": 4,
+  "turns": 14,
+  "ex_ids": []
+ },
+ {
+  "won": false,
+  "first_ex": null,
+  "first_fire": 1,
+  "turns": 3,
+  "ex_ids": []
+ },
+ {
+  "won": true,
+  "first_ex": 4,
+  "first_fire": 2,
+  "turns": 18,
+  "ex_ids": [
+   678
+  ]
+ },
+ {
+  "won": false,
+  "first_ex": null,
+  "first_fire": 1,
+  "turns": 5,
+  "ex_ids": []
+ },
+ {
+  "won": true,
+  "first_ex": 9,
+  "first_fire": null,
+  "turns": 43,
+  "ex_ids": [
+   756
+  ]
+ },
+ {
+  "won": true,
+  "first_ex": null,
+  "first_fire": 4,
+  "turns": 17,
+  "ex_ids": []
+ },
+ {
+  "won": true,
+  "first_ex": 13,
+  "first_fire": 1,
+  "turns": 33,
+  "ex_ids": [
+   190
+  ]
+ },
+ {
+  "won": false,
+  "first_ex": null,
+  "first_fire": 2,
+  "turns": 16,
+  "ex_ids": []
+ },
+ {
+  "won": false,
+  "first_ex": 6,
+  "first_fire": 5,
+  "turns": 15,
+  "ex_ids": [
+   269
+  ]
+ },
+ {
+  "won": true,
+  "first_ex": 5,
+  "first_fire": 1,
+  "turns": 25,
+  "ex_ids": [
+   678
+  ]
+ },
+ {
+  "won": false,
+  "first_ex": null,
+  "first_fire": 1,
+  "turns": 19,
+  "ex_ids": []
+ },
+ {
+  "won": true,
+  "first_ex": 3,
+  "first_fire": 1,
+  "turns": 19,
+  "ex_ids": [
+   140
+  ]
+ },
+ {
+  "won": true,
+  "first_ex": null,
+  "first_fire": null,
+  "turns": 55,
+  "ex_ids": []
+ },
+ {
+  "won": false,
+  "first_ex": null,
+  "first_fire": null,
+  "turns": 54,
+  "ex_ids": []
+ },
+ {
+  "won": true,
+  "first_ex": null,
+  "first_fire": 6,
+  "turns": 17,
+  "ex_ids": []
+ },
+ {
+  "won": true,
+  "first_ex": 3,
+  "first_fire": 1,
+  "turns": 19,
+  "ex_ids": [
+   678
+  ]
+ },
+ {
+  "won": true,
+  "first_ex": 7,
+  "first_fire": 3,
+  "turns": 37,
+  "ex_ids": [
+   190
+  ]
+ },
+ {
+  "won": true,
+  "first_ex": 14,
+  "first_fire": 2,
+  "turns": 23,
+  "ex_ids": [
+   190
+  ]
+ },
+ {
+  "won": true,
+  "first_ex": 7,
+  "first_fire": 1,
+  "turns": 17,
+  "ex_ids": [
+   121,
+   140,
+   1071
+  ]
+ },
+ {
+  "won": true,
+  "first_ex": 9,
+  "first_fire": 1,
+  "turns": 33,
+  "ex_ids": [
+   190
+  ]
+ },
+ {
+  "won": true,
+  "first_ex": 11,
+  "first_fire": 1,
+  "turns": 23,
+  "ex_ids": [
+   140
+  ]
+ },
+ {
+  "won": false,
+  "first_ex": 6,
+  "first_fire": 1,
+  "turns": 37,
+  "ex_ids": [
+   121,
+   140,
+   1071
+  ]
+ },
+ {
+  "won": true,
+  "first_ex": 13,
+  "first_fire": 1,
+  "turns": 15,
+  "ex_ids": [
+   140
+  ]
+ },
+ {
+  "won": false,
+  "first_ex": null,
+  "first_fire": 6,
+  "turns": 16,
+  "ex_ids": []
+ },
+ {
+  "won": true,
+  "first_ex": 19,
+  "first_fire": 6,
+  "turns": 39,
+  "ex_ids": [
+   140
+  ]
+ },
+ {
+  "won": false,
+  "first_ex": null,
+  "first_fire": 2,
+  "turns": 2,
+  "ex_ids": []
+ },
+ {
+  "won": false,
+  "first_ex": 5,
+  "first_fire": 1,
+  "turns": 25,
+  "ex_ids": [
+   121
+  ]
+ },
+ {
+  "won": false,
+  "first_ex": 5,
+  "first_fire": 3,
+  "turns": 27,
+  "ex_ids": [
+   828
+  ]
+ },
+ {
+  "won": false,
+  "first_ex": 4,
+  "first_fire": 2,
+  "turns": 24,
+  "ex_ids": [
+   140
+  ]
+ },
+ {
+  "won": true,
+  "first_ex": 9,
+  "first_fire": 3,
+  "turns": 17,
+  "ex_ids": [
+   190
+  ]
+ },
+ {
+  "won": false,
+  "first_ex": null,
+  "first_fire": 4,
+  "turns": 13,
+  "ex_ids": []
+ },
+ {
+  "won": false,
+  "first_ex": 4,
+  "first_fire": 3,
+  "turns": 13,
+  "ex_ids": [
+   269
+  ]
+ },
+ {
+  "won": true,
+  "first_ex": 13,
+  "first_fire": 1,
+  "turns": 29,
+  "ex_ids": [
+   648
+  ]
+ },
+ {
+  "won": true,
+  "first_ex": 5,
+  "first_fire": 1,
+  "turns": 33,
+  "ex_ids": [
+   1031
+  ]
+ },
+ {
+  "won": true,
+  "first_ex": 6,
+  "first_fire": 2,
+  "turns": 34,
+  "ex_ids": [
+   381
+  ]
+ },
+ {
+  "won": true,
+  "first_ex": 9,
+  "first_fire": 1,
+  "turns": 19,
+  "ex_ids": [
+   190
+  ]
+ },
+ {
+  "won": false,
+  "first_ex": 4,
+  "first_fire": 2,
+  "turns": 18,
+  "ex_ids": [
+   678
+  ]
+ },
+ {
+  "won": true,
+  "first_ex": 4,
+  "first_fire": 2,
+  "turns": 28,
+  "ex_ids": [
+   184,
+   272,
+   747
+  ]
+ },
+ {
+  "won": false,
+  "first_ex": 17,
+  "first_fire": 3,
+  "turns": 21,
+  "ex_ids": [
+   190
+  ]
+ },
+ {
+  "won": false,
+  "first_ex": null,
+  "first_fire": 1,
+  "turns": 17,
+  "ex_ids": []
+ },
+ {
+  "won": true,
+  "first_ex": 7,
+  "first_fire": 1,
+  "turns": 27,
+  "ex_ids": [
+   190
+  ]
+ },
+ {
+  "won": true,
+  "first_ex": 3,
+  "first_fire": null,
+  "turns": 25,
+  "ex_ids": [
+   44,
+   140,
+   184,
+   272,
+   299
+  ]
+ },
+ {
+  "won": false,
+  "first_ex": null,
+  "first_fire": 3,
+  "turns": 12,
+  "ex_ids": []
+ },
+ {
+  "won": false,
+  "first_ex": 2,
+  "first_fire": 2,
+  "turns": 16,
+  "ex_ids": [
+   140
+  ]
+ },
+ {
+  "won": true,
+  "first_ex": 7,
+  "first_fire": 1,
+  "turns": 25,
+  "ex_ids": [
+   648
+  ]
+ },
+ {
+  "won": true,
+  "first_ex": 11,
+  "first_fire": 1,
+  "turns": 25,
+  "ex_ids": [
+   190
+  ]
+ },
+ {
+  "won": false,
+  "first_ex": null,
+  "first_fire": null,
+  "turns": 33,
+  "ex_ids": []
+ },
+ {
+  "won": true,
+  "first_ex": null,
+  "first_fire": 2,
+  "turns": 2,
+  "ex_ids": []
+ },
+ {
+  "won": false,
+  "first_ex": 6,
+  "first_fire": 2,
+  "turns": 31,
+  "ex_ids": [
+   678
+  ]
+ },
+ {
+  "won": true,
+  "first_ex": 9,
+  "first_fire": 3,
+  "turns": 25,
+  "ex_ids": [
+   140
+  ]
+ },
+ {
+  "won": false,
+  "first_ex": 21,
+  "first_fire": 1,
+  "turns": 59,
+  "ex_ids": [
+   190
+  ]
+ },
+ {
+  "won": true,
+  "first_ex": 5,
+  "first_fire": 1,
+  "turns": 17,
+  "ex_ids": [
+   190
+  ]
+ },
+ {
+  "won": true,
+  "first_ex": 16,
+  "first_fire": 5,
+  "turns": 31,
+  "ex_ids": [
+   117,
+   184,
+   747
+  ]
+ },
+ {
+  "won": false,
+  "first_ex": 1,
+  "first_fire": 1,
+  "turns": 13,
+  "ex_ids": [
+   431
+  ]
+ },
+ {
+  "won": true,
+  "first_ex": 3,
+  "first_fire": 3,
+  "turns": 27,
+  "ex_ids": [
+   190
+  ]
+ },
+ {
+  "won": false,
+  "first_ex": 3,
+  "first_fire": 1,
+  "turns": 31,
+  "ex_ids": [
+   121,
+   184,
+   849
+  ]
+ },
+ {
+  "won": true,
+  "first_ex": 2,
+  "first_fire": 2,
+  "turns": 24,
+  "ex_ids": [
+   140
+  ]
+ },
+ {
+  "won": true,
+  "first_ex": 3,
+  "first_fire": 1,
+  "turns": 33,
+  "ex_ids": [
+   121,
+   140,
+   184,
+   1071
+  ]
+ },
+ {
+  "won": false,
+  "first_ex": null,
+  "first_fire": 3,
+  "turns": 35,
+  "ex_ids": []
+ },
+ {
+  "won": false,
+  "first_ex": null,
+  "first_fire": 4,
+  "turns": 14,
+  "ex_ids": []
+ },
+ {
+  "won": false,
+  "first_ex": null,
+  "first_fire": 1,
+  "turns": 3,
+  "ex_ids": []
+ },
+ {
+  "won": true,
+  "first_ex": 4,
+  "first_fire": 2,
+  "turns": 18,
+  "ex_ids": [
+   678
+  ]
+ },
+ {
+  "won": false,
+  "first_ex": null,
+  "first_fire": 1,
+  "turns": 5,
+  "ex_ids": []
+ },
+ {
+  "won": true,
+  "first_ex": 9,
+  "first_fire": null,
+  "turns": 43,
+  "ex_ids": [
+   756
+  ]
+ },
+ {
+  "won": true,
+  "first_ex": null,
+  "first_fire": 4,
+  "turns": 17,
+  "ex_ids": []
+ },
+ {
+  "won": true,
+  "first_ex": 13,
+  "first_fire": 1,
+  "turns": 33,
+  "ex_ids": [
+   190
+  ]
+ },
+ {
+  "won": false,
+  "first_ex": null,
+  "first_fire": 2,
+  "turns": 16,
+  "ex_ids": []
+ },
+ {
+  "won": false,
+  "first_ex": 6,
+  "first_fire": 5,
+  "turns": 15,
+  "ex_ids": [
+   269
+  ]
+ },
+ {
+  "won": true,
+  "first_ex": 5,
+  "first_fire": 1,
+  "turns": 25,
+  "ex_ids": [
+   678
+  ]
+ },
+ {
+  "won": false,
+  "first_ex": null,
+  "first_fire": 1,
+  "turns": 19,
+  "ex_ids": []
+ },
+ {
+  "won": true,
+  "first_ex": 3,
+  "first_fire": 1,
+  "turns": 19,
+  "ex_ids": [
+   140
+  ]
+ },
+ {
+  "won": true,
+  "first_ex": 5,
+  "first_fire": 4,
+  "turns": 14,
+  "ex_ids": [
+   140
+  ]
+ },
+ {
+  "won": true,
+  "first_ex": null,
+  "first_fire": 3,
+  "turns": 26,
+  "ex_ids": []
+ },
+ {
+  "won": false,
+  "first_ex": 4,
+  "first_fire": 2,
+  "turns": 15,
+  "ex_ids": [
+   861,
+   1031
+  ]
+ },
+ {
+  "won": false,
+  "first_ex": 1,
+  "first_fire": 1,
+  "turns": 31,
+  "ex_ids": [
+   756
+  ]
+ },
+ {
+  "won": true,
+  "first_ex": 5,
+  "first_fire": 2,
+  "turns": 20,
+  "ex_ids": [
+   140
+  ]
+ },
+ {
+  "won": true,
+  "first_ex": 5,
+  "first_fire": 3,
+  "turns": 19,
+  "ex_ids": [
+   190
+  ]
+ },
+ {
+  "won": false,
+  "first_ex": 13,
+  "first_fire": 29,
+  "turns": 30,
+  "ex_ids": [
+   756
+  ]
+ },
+ {
+  "won": true,
+  "first_ex": 19,
+  "first_fire": 3,
+  "turns": 43,
+  "ex_ids": [
+   140
+  ]
+ },
+ {
+  "won": true,
+  "first_ex": 7,
+  "first_fire": 3,
+  "turns": 23,
+  "ex_ids": [
+   140
+  ]
+ },
+ {
+  "won": true,
+  "first_ex": 5,
+  "first_fire": 1,
+  "turns": 23,
+  "ex_ids": [
+   190
+  ]
+ },
+ {
+  "won": true,
+  "first_ex": 1,
+  "first_fire": 1,
+  "turns": 47,
+  "ex_ids": [
+   756
+  ]
+ },
+ {
+  "won": true,
+  "first_ex": null,
+  "first_fire": 5,
+  "turns": 25,
+  "ex_ids": []
+ },
+ {
+  "won": false,
+  "first_ex": 2,
+  "first_fire": 2,
+  "turns": 12,
+  "ex_ids": [
+   140
+  ]
+ },
+ {
+  "won": true,
+  "first_ex": null,
+  "first_fire": 2,
+  "turns": 36,
+  "ex_ids": []
+ },
+ {
+  "won": true,
+  "first_ex": 2,
+  "first_fire": 2,
+  "turns": 44,
+  "ex_ids": [
+   121,
+   140,
+   184
+  ]
+ },
+ {
+  "won": false,
+  "first_ex": 2,
+  "first_fire": 2,
+  "turns": 45,
+  "ex_ids": [
+   117
+  ]
+ },
+ {
+  "won": false,
+  "first_ex": null,
+  "first_fire": 2,
+  "turns": 4,
+  "ex_ids": []
+ },
+ {
+  "won": false,
+  "first_ex": null,
+  "first_fire": 3,
+  "turns": 3,
+  "ex_ids": []
+ },
+ {
+  "won": false,
+  "first_ex": 5,
+  "first_fire": 1,
+  "turns": 23,
+  "ex_ids": [
+   861
+  ]
+ },
+ {
+  "won": false,
+  "first_ex": 2,
+  "first_fire": 2,
+  "turns": 24,
+  "ex_ids": [
+   140
+  ]
+ },
+ {
+  "won": true,
+  "first_ex": 5,
+  "first_fire": 2,
+  "turns": 38,
+  "ex_ids": [
+   648
+  ]
+ },
+ {
+  "won": true,
+  "first_ex": 13,
+  "first_fire": 1,
+  "turns": 23,
+  "ex_ids": [
+   190
+  ]
+ },
+ {
+  "won": true,
+  "first_ex": 15,
+  "first_fire": 1,
+  "turns": 41,
+  "ex_ids": [
+   190
+  ]
+ },
+ {
+  "won": true,
+  "first_ex": 9,
+  "first_fire": 3,
+  "turns": 23,
+  "ex_ids": [
+   678
+  ]
+ },
+ {
+  "won": true,
+  "first_ex": 6,
+  "first_fire": 2,
+  "turns": 34,
+  "ex_ids": [
+   381
+  ]
+ },
+ {
+  "won": true,
+  "first_ex": 3,
+  "first_fire": 1,
+  "turns": 29,
+  "ex_ids": [
+   190
+  ]
+ },
+ {
+  "won": true,
+  "first_ex": 4,
+  "first_fire": 3,
+  "turns": 37,
+  "ex_ids": [
+   190
+  ]
+ },
+ {
+  "won": true,
+  "first_ex": null,
+  "first_fire": 1,
+  "turns": 19,
+  "ex_ids": []
+ },
+ {
+  "won": false,
+  "first_ex": 4,
+  "first_fire": 2,
+  "turns": 10,
+  "ex_ids": [
+   140
+  ]
+ },
+ {
+  "won": true,
+  "first_ex": 18,
+  "first_fire": 2,
+  "turns": 20,
+  "ex_ids": [
+   140
+  ]
+ },
+ {
+  "won": true,
+  "first_ex": 5,
+  "first_fire": 1,
+  "turns": 23,
+  "ex_ids": [
+   648
+  ]
+ },
+ {
+  "won": true,
+  "first_ex": 3,
+  "first_fire": 1,
+  "turns": 51,
+  "ex_ids": [
+   861,
+   1031
+  ]
+ },
+ {
+  "won": false,
+  "first_ex": 2,
+  "first_fire": 2,
+  "turns": 12,
+  "ex_ids": [
+   140
+  ]
+ },
+ {
+  "won": false,
+  "first_ex": 2,
+  "first_fire": 2,
+  "turns": 16,
+  "ex_ids": [
+   648
+  ]
+ },
+ {
+  "won": true,
+  "first_ex": null,
+  "first_fire": null,
+  "turns": 55,
+  "ex_ids": []
+ },
+ {
+  "won": false,
+  "first_ex": null,
+  "first_fire": null,
+  "turns": 54,
+  "ex_ids": []
+ },
+ {
+  "won": true,
+  "first_ex": null,
+  "first_fire": 6,
+  "turns": 17,
+  "ex_ids": []
+ },
+ {
+  "won": true,
+  "first_ex": 3,
+  "first_fire": 1,
+  "turns": 19,
+  "ex_ids": [
+   678
+  ]
+ },
+ {
+  "won": true,
+  "first_ex": 7,
+  "first_fire": 3,
+  "turns": 37,
+  "ex_ids": [
+   190
+  ]
+ },
+ {
+  "won": true,
+  "first_ex": 14,
+  "first_fire": 2,
+  "turns": 23,
+  "ex_ids": [
+   190
+  ]
+ },
+ {
+  "won": true,
+  "first_ex": 7,
+  "first_fire": 1,
+  "turns": 17,
+  "ex_ids": [
+   121,
+   140,
+   1071
+  ]
+ },
+ {
+  "won": true,
+  "first_ex": 9,
+  "first_fire": 1,
+  "turns": 33,
+  "ex_ids": [
+   190
+  ]
+ },
+ {
+  "won": true,
+  "first_ex": 11,
+  "first_fire": 1,
+  "turns": 23,
+  "ex_ids": [
+   140
+  ]
+ },
+ {
+  "won": false,
+  "first_ex": 6,
+  "first_fire": 1,
+  "turns": 37,
+  "ex_ids": [
+   121,
+   140,
+   1071
+  ]
+ },
+ {
+  "won": true,
+  "first_ex": 13,
+  "first_fire": 1,
+  "turns": 15,
+  "ex_ids": [
+   140
+  ]
+ },
+ {
+  "won": false,
+  "first_ex": null,
+  "first_fire": 6,
+  "turns": 16,
+  "ex_ids": []
+ },
+ {
+  "won": true,
+  "first_ex": 19,
+  "first_fire": 6,
+  "turns": 39,
+  "ex_ids": [
+   140
+  ]
+ },
+ {
+  "won": false,
+  "first_ex": null,
+  "first_fire": 2,
+  "turns": 2,
+  "ex_ids": []
+ },
+ {
+  "won": false,
+  "first_ex": 5,
+  "first_fire": 1,
+  "turns": 25,
+  "ex_ids": [
+   121
+  ]
+ },
+ {
+  "won": false,
+  "first_ex": 5,
+  "first_fire": 3,
+  "turns": 27,
+  "ex_ids": [
+   828
+  ]
+ },
+ {
+  "won": false,
+  "first_ex": 4,
+  "first_fire": 2,
+  "turns": 24,
+  "ex_ids": [
+   140
+  ]
+ },
+ {
+  "won": true,
+  "first_ex": 9,
+  "first_fire": 3,
+  "turns": 17,
+  "ex_ids": [
+   190
+  ]
+ },
+ {
+  "won": false,
+  "first_ex": null,
+  "first_fire": 4,
+  "turns": 13,
+  "ex_ids": []
+ },
+ {
+  "won": false,
+  "first_ex": 4,
+  "first_fire": 3,
+  "turns": 13,
+  "ex_ids": [
+   269
+  ]
+ },
+ {
+  "won": true,
+  "first_ex": 13,
+  "first_fire": 1,
+  "turns": 29,
+  "ex_ids": [
+   648
+  ]
+ },
+ {
+  "won": true,
+  "first_ex": 5,
+  "first_fire": 1,
+  "turns": 33,
+  "ex_ids": [
+   1031
+  ]
+ },
+ {
+  "won": true,
+  "first_ex": 6,
+  "first_fire": 2,
+  "turns": 34,
+  "ex_ids": [
+   381
+  ]
+ },
+ {
+  "won": true,
+  "first_ex": 9,
+  "first_fire": 1,
+  "turns": 19,
+  "ex_ids": [
+   190
+  ]
+ },
+ {
+  "won": false,
+  "first_ex": 4,
+  "first_fire": 2,
+  "turns": 18,
+  "ex_ids": [
+   678
+  ]
+ },
+ {
+  "won": true,
+  "first_ex": 4,
+  "first_fire": 2,
+  "turns": 28,
+  "ex_ids": [
+   184,
+   272,
+   747
+  ]
+ },
+ {
+  "won": false,
+  "first_ex": 17,
+  "first_fire": 3,
+  "turns": 21,
+  "ex_ids": [
+   190
+  ]
+ },
+ {
+  "won": false,
+  "first_ex": null,
+  "first_fire": 1,
+  "turns": 17,
+  "ex_ids": []
+ },
+ {
+  "won": true,
+  "first_ex": 7,
+  "first_fire": 1,
+  "turns": 27,
+  "ex_ids": [
+   190
+  ]
+ },
+ {
+  "won": true,
+  "first_ex": 3,
+  "first_fire": null,
+  "turns": 25,
+  "ex_ids": [
+   44,
+   140,
+   184,
+   272,
+   299
+  ]
+ },
+ {
+  "won": false,
+  "first_ex": null,
+  "first_fire": 3,
+  "turns": 12,
+  "ex_ids": []
+ },
+ {
+  "won": false,
+  "first_ex": 2,
+  "first_fire": 2,
+  "turns": 16,
+  "ex_ids": [
+   140
+  ]
+ },
+ {
+  "won": true,
+  "first_ex": 7,
+  "first_fire": 1,
+  "turns": 25,
+  "ex_ids": [
+   648
+  ]
+ },
+ {
+  "won": true,
+  "first_ex": 11,
+  "first_fire": 1,
+  "turns": 25,
+  "ex_ids": [
+   190
+  ]
+ },
+ {
+  "won": false,
+  "first_ex": null,
+  "first_fire": null,
+  "turns": 33,
+  "ex_ids": []
+ },
+ {
+  "won": true,
+  "first_ex": null,
+  "first_fire": 2,
+  "turns": 2,
+  "ex_ids": []
+ },
+ {
+  "won": false,
+  "first_ex": 6,
+  "first_fire": 2,
+  "turns": 31,
+  "ex_ids": [
+   678
+  ]
+ },
+ {
+  "won": true,
+  "first_ex": 9,
+  "first_fire": 3,
+  "turns": 25,
+  "ex_ids": [
+   140
+  ]
+ },
+ {
+  "won": false,
+  "first_ex": 21,
+  "first_fire": 1,
+  "turns": 59,
+  "ex_ids": [
+   190
+  ]
+ },
+ {
+  "won": true,
+  "first_ex": 5,
+  "first_fire": 1,
+  "turns": 17,
+  "ex_ids": [
+   190
+  ]
+ },
+ {
+  "won": true,
+  "first_ex": 16,
+  "first_fire": 5,
+  "turns": 31,
+  "ex_ids": [
+   117,
+   184,
+   747
+  ]
+ },
+ {
+  "won": false,
+  "first_ex": 1,
+  "first_fire": 1,
+  "turns": 13,
+  "ex_ids": [
+   431
+  ]
+ },
+ {
+  "won": true,
+  "first_ex": 3,
+  "first_fire": 3,
+  "turns": 27,
+  "ex_ids": [
+   190
+  ]
+ },
+ {
+  "won": false,
+  "first_ex": 3,
+  "first_fire": 1,
+  "turns": 31,
+  "ex_ids": [
+   121,
+   184,
+   849
+  ]
+ },
+ {
+  "won": true,
+  "first_ex": 2,
+  "first_fire": 2,
+  "turns": 24,
+  "ex_ids": [
+   140
+  ]
+ },
+ {
+  "won": true,
+  "first_ex": 3,
+  "first_fire": 1,
+  "turns": 33,
+  "ex_ids": [
+   121,
+   140,
+   184,
+   1071
+  ]
+ },
+ {
+  "won": false,
+  "first_ex": null,
+  "first_fire": 3,
+  "turns": 35,
+  "ex_ids": []
+ },
+ {
+  "won": false,
+  "first_ex": null,
+  "first_fire": 4,
+  "turns": 14,
+  "ex_ids": []
+ },
+ {
+  "won": false,
+  "first_ex": null,
+  "first_fire": 1,
+  "turns": 3,
+  "ex_ids": []
+ },
+ {
+  "won": true,
+  "first_ex": 4,
+  "first_fire": 2,
+  "turns": 18,
+  "ex_ids": [
+   678
+  ]
+ },
+ {
+  "won": false,
+  "first_ex": null,
+  "first_fire": 1,
+  "turns": 5,
+  "ex_ids": []
+ },
+ {
+  "won": true,
+  "first_ex": 9,
+  "first_fire": null,
+  "turns": 43,
+  "ex_ids": [
+   756
+  ]
+ },
+ {
+  "won": true,
+  "first_ex": null,
+  "first_fire": 4,
+  "turns": 17,
+  "ex_ids": []
+ },
+ {
+  "won": true,
+  "first_ex": 13,
+  "first_fire": 1,
+  "turns": 33,
+  "ex_ids": [
+   190
+  ]
+ },
+ {
+  "won": false,
+  "first_ex": null,
+  "first_fire": 2,
+  "turns": 16,
+  "ex_ids": []
+ },
+ {
+  "won": false,
+  "first_ex": 6,
+  "first_fire": 5,
+  "turns": 15,
+  "ex_ids": [
+   269
+  ]
+ },
+ {
+  "won": true,
+  "first_ex": 5,
+  "first_fire": 1,
+  "turns": 25,
+  "ex_ids": [
+   678
+  ]
+ },
+ {
+  "won": false,
+  "first_ex": null,
+  "first_fire": 1,
+  "turns": 19,
+  "ex_ids": []
+ },
+ {
+  "won": true,
+  "first_ex": 3,
+  "first_fire": 1,
+  "turns": 19,
+  "ex_ids": [
+   140
+  ]
+ },
+ {
+  "won": true,
+  "first_ex": 5,
+  "first_fire": 4,
+  "turns": 14,
+  "ex_ids": [
+   140
+  ]
+ },
+ {
+  "won": true,
+  "first_ex": null,
+  "first_fire": 3,
+  "turns": 26,
+  "ex_ids": []
+ },
+ {
+  "won": false,
+  "first_ex": 4,
+  "first_fire": 2,
+  "turns": 15,
+  "ex_ids": [
+   861,
+   1031
+  ]
+ },
+ {
+  "won": false,
+  "first_ex": 1,
+  "first_fire": 1,
+  "turns": 31,
+  "ex_ids": [
+   756
+  ]
+ },
+ {
+  "won": true,
+  "first_ex": 5,
+  "first_fire": 2,
+  "turns": 20,
+  "ex_ids": [
+   140
+  ]
+ },
+ {
+  "won": true,
+  "first_ex": 5,
+  "first_fire": 3,
+  "turns": 19,
+  "ex_ids": [
+   190
+  ]
+ },
+ {
+  "won": false,
+  "first_ex": 13,
+  "first_fire": 29,
+  "turns": 30,
+  "ex_ids": [
+   756
+  ]
+ },
+ {
+  "won": true,
+  "first_ex": 19,
+  "first_fire": 3,
+  "turns": 43,
+  "ex_ids": [
+   140
+  ]
+ },
+ {
+  "won": true,
+  "first_ex": 7,
+  "first_fire": 3,
+  "turns": 23,
+  "ex_ids": [
+   140
+  ]
+ },
+ {
+  "won": true,
+  "first_ex": 5,
+  "first_fire": 1,
+  "turns": 23,
+  "ex_ids": [
+   190
+  ]
+ },
+ {
+  "won": true,
+  "first_ex": 1,
+  "first_fire": 1,
+  "turns": 47,
+  "ex_ids": [
+   756
+  ]
+ },
+ {
+  "won": true,
+  "first_ex": null,
+  "first_fire": 5,
+  "turns": 25,
+  "ex_ids": []
+ },
+ {
+  "won": false,
+  "first_ex": 2,
+  "first_fire": 2,
+  "turns": 12,
+  "ex_ids": [
+   140
+  ]
+ },
+ {
+  "won": true,
+  "first_ex": null,
+  "first_fire": 2,
+  "turns": 36,
+  "ex_ids": []
+ },
+ {
+  "won": true,
+  "first_ex": 2,
+  "first_fire": 2,
+  "turns": 44,
+  "ex_ids": [
+   121,
+   140,
+   184
+  ]
+ },
+ {
+  "won": false,
+  "first_ex": 2,
+  "first_fire": 2,
+  "turns": 45,
+  "ex_ids": [
+   117
+  ]
+ },
+ {
+  "won": false,
+  "first_ex": null,
+  "first_fire": 2,
+  "turns": 4,
+  "ex_ids": []
+ },
+ {
+  "won": false,
+  "first_ex": null,
+  "first_fire": 3,
+  "turns": 3,
+  "ex_ids": []
+ },
+ {
+  "won": false,
+  "first_ex": 5,
+  "first_fire": 1,
+  "turns": 23,
+  "ex_ids": [
+   861
+  ]
+ },
+ {
+  "won": false,
+  "first_ex": 2,
+  "first_fire": 2,
+  "turns": 24,
+  "ex_ids": [
+   140
+  ]
+ },
+ {
+  "won": true,
+  "first_ex": 5,
+  "first_fire": 2,
+  "turns": 38,
+  "ex_ids": [
+   648
+  ]
+ },
+ {
+  "won": true,
+  "first_ex": 13,
+  "first_fire": 1,
+  "turns": 23,
+  "ex_ids": [
+   190
+  ]
+ },
+ {
+  "won": true,
+  "first_ex": 15,
+  "first_fire": 1,
+  "turns": 41,
+  "ex_ids": [
+   190
+  ]
+ },
+ {
+  "won": true,
+  "first_ex": 9,
+  "first_fire": 3,
+  "turns": 23,
+  "ex_ids": [
+   678
+  ]
+ },
+ {
+  "won": true,
+  "first_ex": 6,
+  "first_fire": 2,
+  "turns": 34,
+  "ex_ids": [
+   381
+  ]
+ },
+ {
+  "won": true,
+  "first_ex": 3,
+  "first_fire": 1,
+  "turns": 29,
+  "ex_ids": [
+   190
+  ]
+ },
+ {
+  "won": true,
+  "first_ex": 4,
+  "first_fire": 3,
+  "turns": 37,
+  "ex_ids": [
+   190
+  ]
+ },
+ {
+  "won": true,
+  "first_ex": null,
+  "first_fire": 1,
+  "turns": 19,
+  "ex_ids": []
+ },
+ {
+  "won": false,
+  "first_ex": 4,
+  "first_fire": 2,
+  "turns": 10,
+  "ex_ids": [
+   140
+  ]
+ },
+ {
+  "won": true,
+  "first_ex": 18,
+  "first_fire": 2,
+  "turns": 20,
+  "ex_ids": [
+   140
+  ]
+ },
+ {
+  "won": true,
+  "first_ex": 5,
+  "first_fire": 1,
+  "turns": 23,
+  "ex_ids": [
+   648
+  ]
+ },
+ {
+  "won": true,
+  "first_ex": 3,
+  "first_fire": 1,
+  "turns": 51,
+  "ex_ids": [
+   861,
+   1031
+  ]
+ },
+ {
+  "won": false,
+  "first_ex": 2,
+  "first_fire": 2,
+  "turns": 12,
+  "ex_ids": [
+   140
+  ]
+ },
+ {
+  "won": false,
+  "first_ex": 2,
+  "first_fire": 2,
+  "turns": 16,
+  "ex_ids": [
+   648
+  ]
+ },
+ {
+  "won": false,
+  "first_ex": 4,
+  "first_fire": 2,
+  "turns": 6,
+  "ex_ids": [
+   861,
+   1031
+  ]
+ },
+ {
+  "won": false,
+  "first_ex": null,
+  "first_fire": 3,
+  "turns": 17,
+  "ex_ids": []
+ },
+ {
+  "won": true,
+  "first_ex": 5,
+  "first_fire": 1,
+  "turns": 33,
+  "ex_ids": [
+   648
+  ]
+ },
+ {
+  "won": false,
+  "first_ex": null,
+  "first_fire": 2,
+  "turns": 4,
+  "ex_ids": []
+ },
+ {
+  "won": false,
+  "first_ex": 5,
+  "first_fire": 4,
+  "turns": 15,
+  "ex_ids": [
+   117,
+   648
+  ]
+ },
+ {
+  "won": true,
+  "first_ex": 12,
+  "first_fire": 2,
+  "turns": 14,
+  "ex_ids": [
+   140
+  ]
+ },
+ {
+  "won": false,
+  "first_ex": 3,
+  "first_fire": 1,
+  "turns": 17,
+  "ex_ids": [
+   121,
+   184
+  ]
+ },
+ {
+  "won": false,
+  "first_ex": 16,
+  "first_fire": 12,
+  "turns": 50,
+  "ex_ids": [
+   648
+  ]
+ },
+ {
+  "won": true,
+  "first_ex": 29,
+  "first_fire": 2,
+  "turns": 39,
+  "ex_ids": [
+   190
+  ]
+ },
+ {
+  "won": false,
+  "first_ex": 5,
+  "first_fire": 1,
+  "turns": 23,
+  "ex_ids": [
+   140
+  ]
+ },
+ {
+  "won": false,
+  "first_ex": null,
+  "first_fire": 3,
+  "turns": 12,
+  "ex_ids": []
+ },
+ {
+  "won": true,
+  "first_ex": 22,
+  "first_fire": 22,
+  "turns": 30,
+  "ex_ids": [
+   756
+  ]
+ },
+ {
+  "won": true,
+  "first_ex": null,
+  "first_fire": 5,
+  "turns": 25,
+  "ex_ids": []
+ },
+ {
+  "won": false,
+  "first_ex": null,
+  "first_fire": 1,
+  "turns": 15,
+  "ex_ids": []
+ }
+]

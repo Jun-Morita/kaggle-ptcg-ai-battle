@@ -1,0 +1,88 @@
+
+=== alakazam_dun  (17W-3L)  weight 0.289 ===
+  predicate                                fire% W   fire% L   calls/g
+  should_wall_mode                            21.4      29.3      40.5
+  should_ko_mode                               0.0       0.0      40.5  <== NEVER FIRES
+  opponent_can_attack_soon                     nan       nan       0.0
+  facing_lucario_strong                        0.0       0.0      48.8  <== NEVER FIRES
+  active_is_ready_crustle                      nan       nan       0.0
+  active_tusk_ready                            3.0       0.0      41.5
+  can_bench_more                             100.0     100.0      13.7
+  opponent_has_ex_or_ex_line_pressure         62.2      79.4      21.9  <== W/L SPLIT
+
+=== alakazam  (18W-2L)  weight 0.124 ===
+  predicate                                fire% W   fire% L   calls/g
+  should_wall_mode                            25.8      48.4      43.5  <== W/L SPLIT
+  should_ko_mode                               0.0       0.0      43.5  <== NEVER FIRES
+  opponent_can_attack_soon                    40.9       nan       2.2
+  facing_lucario_strong                        0.0       0.0      35.8  <== NEVER FIRES
+  active_is_ready_crustle                      nan       nan       0.0
+  active_tusk_ready                            7.2       1.6      44.3
+  can_bench_more                             100.0     100.0      19.4
+  opponent_has_ex_or_ex_line_pressure         71.9      91.1      21.9  <== W/L SPLIT
+
+=== marnie  (17W-3L)  weight 0.160 ===
+  predicate                                fire% W   fire% L   calls/g
+  should_wall_mode                            36.2      39.9      62.2
+  should_ko_mode                               0.0       0.0      62.2  <== NEVER FIRES
+  opponent_can_attack_soon                    86.6      52.9       5.7  <== W/L SPLIT
+  facing_lucario_strong                        0.0       0.0      39.7  <== NEVER FIRES
+  active_is_ready_crustle                      nan       nan       0.0
+  active_tusk_ready                           24.0       9.0      63.2  <== W/L SPLIT
+  can_bench_more                             100.0     100.0      41.4
+  opponent_has_ex_or_ex_line_pressure         92.6      96.2      31.0
+
+=== pure_wall  (7W-13L)  weight 0.060 ===
+  predicate                                fire% W   fire% L   calls/g
+  should_wall_mode                             0.0       0.0      65.8  <== NEVER FIRES
+  should_ko_mode                               0.0       0.0      65.8  <== NEVER FIRES
+  opponent_can_attack_soon                     nan       nan       0.0
+  facing_lucario_strong                        0.0       0.0      73.8  <== NEVER FIRES
+  active_is_ready_crustle                      nan       nan       0.0
+  active_tusk_ready                           17.4       7.7      67.5
+  can_bench_more                             100.0     100.0      44.9
+  opponent_has_ex_or_ex_line_pressure          0.0       0.0      41.5  <== NEVER FIRES
+
+=== crustle_LO  (12W-8L)  weight 0.033 ===
+  predicate                                fire% W   fire% L   calls/g
+  should_wall_mode                             0.0       0.0      50.2  <== NEVER FIRES
+  should_ko_mode                               0.0       0.0      50.2  <== NEVER FIRES
+  opponent_can_attack_soon                     nan       nan       0.0
+  facing_lucario_strong                        0.0       0.0      26.3  <== NEVER FIRES
+  active_is_ready_crustle                      nan       nan       0.0
+  active_tusk_ready                           39.7      17.9      51.2  <== W/L SPLIT
+  can_bench_more                             100.0     100.0      42.8
+  opponent_has_ex_or_ex_line_pressure          0.0       0.0      24.9  <== NEVER FIRES
+
+=== archaludon  (16W-4L)  weight 0.073 ===
+  predicate                                fire% W   fire% L   calls/g
+  should_wall_mode                            34.8      44.9      46.8
+  should_ko_mode                               0.0       0.0      46.8  <== NEVER FIRES
+  opponent_can_attack_soon                    37.5       nan       0.8
+  facing_lucario_strong                        0.0       0.0      32.6  <== NEVER FIRES
+  active_is_ready_crustle                      nan       nan       0.0
+  active_tusk_ready                           24.2      12.7      47.8
+  can_bench_more                             100.0     100.0      35.2
+  opponent_has_ex_or_ex_line_pressure         80.7      73.4      25.7
+
+=== lucario_ex  (17W-3L)  weight 0.067 ===
+  predicate                                fire% W   fire% L   calls/g
+  should_wall_mode                            25.6      63.0      42.0  <== W/L SPLIT
+  should_ko_mode                               0.0       0.0      42.0  <== NEVER FIRES
+  opponent_can_attack_soon                   100.0     100.0       5.4
+  facing_lucario_strong                      100.0     100.0      37.6
+  active_is_ready_crustle                      nan       nan       0.0
+  active_tusk_ready                            8.6      19.1      43.0
+  can_bench_more                             100.0     100.0      11.9
+  opponent_has_ex_or_ex_line_pressure         79.3      91.8      22.5  <== W/L SPLIT
+
+=== dragapult  (10W-10L)  weight 0.027 ===
+  predicate                                fire% W   fire% L   calls/g
+  should_wall_mode                            30.9      46.0      56.2  <== W/L SPLIT
+  should_ko_mode                               0.0       0.0      56.2  <== NEVER FIRES
+  opponent_can_attack_soon                    83.6      79.4      13.2
+  facing_lucario_strong                        0.0       0.0      39.5  <== NEVER FIRES
+  active_is_ready_crustle                      nan       nan       0.0
+  active_tusk_ready                            7.2       1.3      57.4
+  can_bench_more                             100.0     100.0      18.6
+  opponent_has_ex_or_ex_line_pressure         86.0      91.0      28.8

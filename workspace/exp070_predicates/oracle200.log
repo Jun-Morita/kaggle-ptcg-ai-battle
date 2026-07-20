@@ -1,0 +1,11 @@
+  alakazam_dun     w=0.289 trueEx=False  base 0.815  oracle 0.825  delta +0.010
+  marnie           w=0.160 trueEx=True   base 0.890  oracle 0.875  delta -0.015
+  alakazam         w=0.124 trueEx=True   base 0.855  oracle 0.845  delta -0.010
+  archaludon       w=0.073 trueEx=True   base 0.880  oracle 0.815  delta -0.065
+  lucario_ex       w=0.067 trueEx=True   base 0.810  oracle 0.775  delta -0.035
+  pure_wall        w=0.060 trueEx=True   base 0.225  oracle 0.205  delta -0.020
+  crustle_LO       w=0.033 trueEx=False  base 0.545  oracle 0.640  delta +0.095
+  dragapult        w=0.027 trueEx=True   base 0.330  oracle 0.320  delta -0.010
+
+SILVER(V2)  base 0.7716   ORACLE 0.7641   CEILING -0.0075
+(this is the upper bound for ANY opponent-deck classifier acting through this predicate)
