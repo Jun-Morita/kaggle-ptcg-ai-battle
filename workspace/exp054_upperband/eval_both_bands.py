@@ -90,7 +90,7 @@ OUR_BAND = {           # from v020's own ladder replays (700-770)
     "archaludon": 0.090,
     "dragapult": 0.070,
 }
-SILVER_BAND = {        # from tomatomato's replays (LB 948.8, the 933 cut)
+SILVER_BAND_V1 = {     # from tomatomato's replays (LB 948.8, the 933 cut), 07-13
     "alakazam_dun": 0.285,
     "archaludon": 0.264,
     "alakazam": 0.121,
@@ -100,6 +100,42 @@ SILVER_BAND = {        # from tomatomato's replays (LB 948.8, the 933 cut)
     "pure_wall": 0.033 * 0.65,
     "crustle_LO": 0.033 * 0.35,
 }
+
+# --- exp069 calibration (07-20) -------------------------------------------
+# V1 came from ONE player's replay set on 07-13 and was never revisited. It is
+# badly miscalibrated against the 900-999 band as independently measured by
+# myso1987 (07-19, 150/150 teams classified = 100% retrieval coverage):
+#   archaludon  0.264 -> 0.073  (3.6x OVERweighted)
+#   walls       0.033 -> 0.093  (2.8x UNDERweighted)
+#   marnie      0.111 -> 0.160
+#   Alakazam    0.406 -> 0.413  (this one was right)
+# Consequence of the error: it ranked archaludon as 20.6% of our losses and the
+# walls as 8.5%, when the truth is 5.7% and 30.8% -- it mis-aimed exp067 at
+# dragapult (18.0% claimed, 8.6% actual) and it is what justified dismissing the
+# wall hole in 07-13 as "~2% of the band, does not move the fixed point".
+#
+# Splits kept from our own measurements: Alakazam 70/30 dun-vs-plain (V1 ratio),
+# wall bucket 65/35 pure-vs-LO (exp054 inspect_walls, silver band 15/24).
+#
+# NOT modelled by our pool, ~10.6% of the band: Cynthia Garchomp 3.3%,
+# Team Rocket Mewtwo 3.3%, Mega Starmie 2.7%, Mega Kangaskhan 1.3%. Scores are
+# renormalised over the modelled set, i.e. we ASSUME our winrate vs the missing
+# archetypes equals our weighted average. Known bias: this is probably
+# OPTIMISTIC for Team Rocket Mewtwo -- a real TR pilot beat our v023-LO 3-0
+# (exp055), so treat scores as a slight over-estimate until proxies exist.
+SILVER_BAND_V2 = {     # myso1987 07-19, band 900-999, 100% coverage
+    "alakazam_dun": 0.413 * 0.70,
+    "alakazam": 0.413 * 0.30,
+    "marnie": 0.160,
+    "pure_wall": 0.093 * 0.65,
+    "crustle_LO": 0.093 * 0.35,
+    "archaludon": 0.073,
+    "lucario_ex": 0.067,
+    "dragapult": 0.027,
+}
+
+# Default for all new work. Set PTCG_BAND_V1=1 to reproduce pre-07-20 numbers.
+SILVER_BAND = SILVER_BAND_V1 if os.environ.get("PTCG_BAND_V1") else SILVER_BAND_V2
 
 
 def candidates():
