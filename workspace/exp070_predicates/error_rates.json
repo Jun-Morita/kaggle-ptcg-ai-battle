@@ -1,0 +1,20 @@
+{
+ "stats": {
+  "ready_crustle": {
+   "n": 4995,
+   "disagree": 2425,
+   "ship_true": 2425,
+   "ref_true": 0
+  },
+  "opponent_can_attack_soon": {
+   "n": 4677,
+   "disagree": 3,
+   "ship_true": 3984,
+   "ref_true": 3981
+  }
+ },
+ "bench": {
+  "fires": 1780,
+  "bench_only": 735
+ }
+}

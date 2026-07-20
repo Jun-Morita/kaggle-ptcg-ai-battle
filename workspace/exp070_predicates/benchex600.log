@@ -1,0 +1,12 @@
+  alakazam_dun     w=0.289  base 0.803  strict 0.822 (+0.018)  err=0/0
+  marnie           w=0.160  base 0.830  strict 0.833 (+0.003)  err=0/0
+  alakazam         w=0.124  base 0.877  strict 0.880 (+0.003)  err=0/0
+  archaludon       w=0.073  base 0.860  strict 0.832 (-0.028)  err=0/0
+  lucario_ex       w=0.067  base 0.820  strict 0.828 (+0.008)  err=0/0
+  pure_wall        w=0.060  base 0.198  strict 0.197 (-0.002)  err=0/0
+  crustle_LO       w=0.033  base 0.572  strict 0.588 (+0.017)  err=0/0
+  dragapult        w=0.027  base 0.323  strict 0.355 (+0.032)  err=0/0
+
+SILVER(V2) base         0.7572   delta vs base +0.0000
+SILVER(V2) bench_strict 0.7644   delta vs base +0.0072
+bar (calibrated koff) = 0.7661
