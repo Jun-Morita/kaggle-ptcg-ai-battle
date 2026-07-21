@@ -1,0 +1,12 @@
+  alakazam_dun     w=0.289  base 0.800  bundle 0.800 (+0.000)  b3 0.880 (+0.080)  err=0/0/0
+  marnie           w=0.160  base 0.900  bundle 0.900 (+0.000)  b3 0.900 (+0.000)  err=0/0/0
+  alakazam         w=0.124  base 0.835  bundle 0.835 (+0.000)  b3 0.850 (+0.015)  err=0/0/0
+  archaludon       w=0.073  base 0.850  bundle 0.850 (+0.000)  b3 0.850 (+0.000)  err=0/0/0
+  lucario_ex       w=0.067  base 0.780  bundle 0.780 (+0.000)  b3 0.780 (+0.000)  err=0/0/0
+  pure_wall        w=0.060  base 0.225  bundle 0.225 (+0.000)  b3 0.225 (+0.000)  err=0/0/0
+  crustle_LO       w=0.033  base 0.610  bundle 0.610 (+0.000)  b3 0.610 (+0.000)  err=0/0/0
+  dragapult        w=0.027  base 0.345  bundle 0.345 (+0.000)  b3 0.345 (+0.000)  err=0/0/0
+
+SILVER(V2) base       0.7633   delta vs base +0.0000
+SILVER(V2) bundle     0.7633   delta vs base +0.0000
+SILVER(V2) bundle3    0.7933   delta vs base +0.0300

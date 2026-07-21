@@ -1,0 +1,58 @@
+{
+ "alakazam_dun": {
+  "base": 0.65,
+  "no_dun": 0.75,
+  "fix_only_wins": 2,
+  "base_only_wins": 0,
+  "err": 0
+ },
+ "marnie": {
+  "base": 0.8,
+  "no_dun": 0.8,
+  "fix_only_wins": 0,
+  "base_only_wins": 0,
+  "err": 0
+ },
+ "alakazam": {
+  "base": 0.65,
+  "no_dun": 0.55,
+  "fix_only_wins": 0,
+  "base_only_wins": 2,
+  "err": 0
+ },
+ "archaludon": {
+  "base": 0.7,
+  "no_dun": 0.7,
+  "fix_only_wins": 0,
+  "base_only_wins": 0,
+  "err": 0
+ },
+ "lucario_ex": {
+  "base": 0.9,
+  "no_dun": 0.9,
+  "fix_only_wins": 0,
+  "base_only_wins": 0,
+  "err": 0
+ },
+ "pure_wall": {
+  "base": 0.3,
+  "no_dun": 0.3,
+  "fix_only_wins": 0,
+  "base_only_wins": 0,
+  "err": 0
+ },
+ "crustle_LO": {
+  "base": 0.6,
+  "no_dun": 0.6,
+  "fix_only_wins": 0,
+  "base_only_wins": 0,
+  "err": 0
+ },
+ "dragapult": {
+  "base": 0.4,
+  "no_dun": 0.4,
+  "fix_only_wins": 0,
+  "base_only_wins": 0,
+  "err": 0
+ }
+}

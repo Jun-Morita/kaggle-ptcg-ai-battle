@@ -1,0 +1,11 @@
+  alakazam_dun     w=0.289 base 0.810 no_dun 0.847 (+0.037)  discordant: fix+52 base+30  err=0
+  marnie           w=0.160 base 0.912 no_dun 0.912 (+0.000)  discordant: fix+0 base+0  err=0
+  alakazam         w=0.124 base 0.890 no_dun 0.893 (+0.003)  discordant: fix+22 base+20  err=0
+  archaludon       w=0.073 base 0.822 no_dun 0.822 (+0.000)  discordant: fix+0 base+0  err=0
+  lucario_ex       w=0.067 base 0.785 no_dun 0.785 (+0.000)  discordant: fix+0 base+0  err=0
+  pure_wall        w=0.060 base 0.205 no_dun 0.205 (+0.000)  discordant: fix+0 base+0  err=0
+  crustle_LO       w=0.033 base 0.570 no_dun 0.570 (+0.000)  discordant: fix+0 base+0  err=0
+  dragapult        w=0.027 base 0.287 no_dun 0.287 (+0.000)  discordant: fix+0 base+0  err=0
+
+SILVER(V2)  base 0.7702   no_dun 0.7834   delta +0.0132
+McNemar over ALL discordant games: fix-wins 74, base-wins 50, n_disc 124  ->  z = +2.16
