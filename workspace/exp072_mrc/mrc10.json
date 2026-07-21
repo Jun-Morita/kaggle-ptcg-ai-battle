@@ -1,0 +1,15 @@
+{
+ "band": {
+  "alakazam_dun": 0.9,
+  "marnie": 0.7,
+  "alakazam": 0.9,
+  "archaludon": 0.9,
+  "lucario_ex": 0.8,
+  "pure_wall": 0.0,
+  "crustle_LO": 0.5,
+  "dragapult": 0.3
+ },
+ "band_weighted": 0.7531512605042016,
+ "mirror_vs_koff": 0.3,
+ "errors": 0
+}

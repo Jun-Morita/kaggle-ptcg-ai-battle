@@ -134,8 +134,35 @@ SILVER_BAND_V2 = {     # myso1987 07-19, band 900-999, 100% coverage
     "dragapult": 0.027,
 }
 
-# Default for all new work. Set PTCG_BAND_V1=1 to reproduce pre-07-20 numbers.
-SILVER_BAND = SILVER_BAND_V1 if os.environ.get("PTCG_BAND_V1") else SILVER_BAND_V2
+# --- exp072 calibration (07-21): fix the wall / mirror split -------------------
+# V2 kept V1's assumption that the "crustle bucket" splits 65/35 into pure-wall vs
+# the LO (Great Tusk + Crustle) variant. myso1987's classifier actually separates
+# them: "Crustle Wall" (walls WITHOUT Great Tusk) is its own class at 9.33% of the
+# 900-999 band, while "Great Tusk / Crustle" -- which is OUR OWN archetype, i.e.
+# the mirror -- is a distinct priority-1 class that does NOT appear in either
+# band's top 10, so it is under 1.33%.
+#
+# The error mattered in the direction that flatters us: pure_wall is our WORST
+# matchup (0.205) and was under-weighted 1.5x, while the mirror was over-weighted
+# ~2.5x. Correcting it drops every build ~0.017 but preserves all relative
+# comparisons (v030's gain over koff: +0.0132 -> +0.0130).
+#
+# Mirror-share watch (exp072): if a public notebook sharing our exact 60 cards
+# spreads, crustle_LO's weight rises and our score falls ~0.042 per 17pt of share.
+# Trigger for re-measuring: LO share >10% in our band. Note the currently
+# circulating public build LOSES the mirror to us 0.412 (n=600), so its spread is
+# a tailwind, not a threat -- the risk is a STRONGER LO pilot spreading instead.
+SILVER_BAND_V3 = dict(SILVER_BAND_V2)
+SILVER_BAND_V3["pure_wall"] = 0.0933    # myso "Crustle Wall" (no Great Tusk)
+SILVER_BAND_V3["crustle_LO"] = 0.0120   # myso "Great Tusk / Crustle" = our mirror, <1.33%
+
+# Default for all new work. PTCG_BAND_V1/V2=1 reproduce the older numbers.
+if os.environ.get("PTCG_BAND_V1"):
+    SILVER_BAND = SILVER_BAND_V1
+elif os.environ.get("PTCG_BAND_V2"):
+    SILVER_BAND = SILVER_BAND_V2
+else:
+    SILVER_BAND = SILVER_BAND_V3
 
 
 def candidates():

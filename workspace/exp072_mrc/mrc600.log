@@ -1,0 +1,14 @@
+=== A. band gate (n=600/matchup, true CRN) -- bar = koff 0.7661 ===
+  alakazam_dun     w=0.289 wr=0.790 err=(0,0) 26s
+  marnie           w=0.160 wr=0.718 err=(0,0) 31s
+  alakazam         w=0.124 wr=0.885 err=(0,0) 25s
+  archaludon       w=0.073 wr=0.658 err=(0,0) 21s
+  lucario_ex       w=0.067 wr=0.847 err=(0,0) 23s
+  pure_wall        w=0.060 wr=0.097 err=(0,0) 23s
+  crustle_LO       w=0.033 wr=0.500 err=(0,0) 17s
+  dragapult        w=0.027 wr=0.345 err=(0,0) 36s
+  SILVER(V2) weighted: 0.7073   (koff bar 0.7661)   total errors 0
+
+=== B. mirror head-to-head vs our koff, identical 60 cards (n=600) ===
+  their pilot vs koff: 0.412 (247-353-0)  err=(0,0)
+  >0.5 means their pilot is stronger on the SAME deck
