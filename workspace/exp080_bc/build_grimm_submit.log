@@ -1,0 +1,13 @@
+deck=/home/jun/kaggle-ptcg-ai-battle/workspace/exp080_bc/grimmsnarl_deck.json
+weights=/home/jun/kaggle-ptcg-ai-battle/workspace/exp041_pilotnet/results/pre_grimm5/weights_pure.pkl
+out=/home/jun/kaggle-ptcg-ai-battle/workspace/exp080_bc/build_grimm
+
+built /home/jun/kaggle-ptcg-ai-battle/workspace/exp080_bc/build_grimm/submission.tar.gz | top-level=['deck.csv', 'main.py'] | files=9 | size=47.9MB
+module load (incl. npnet.npz read) took 0.1s
+
+=== smoke test (built artifact, n=20/matchup, search_count=16) ===
+  vs lucario_v2(ex) wr=0.300 (6-14) err0=0 err1=0
+  vs Crustle        wr=0.000 (0-20) err0=0 err1=0
+  vs dragapult      wr=0.200 (4-16) err0=0 err1=0
+total 457s for 120 games (3.80s/game)
+SMOKE OK (0 errors).

@@ -1,0 +1,10 @@
+MIRROR sweep vs pub1034 stock, pilot held fixed. n=400, SE~0.025
+real-ladder reference: v025 stock scored 0.333 in the live mirror
+
+our list            wr vs stock          record   err
+stock (control)           0.495     (198-202-0)   (0,0)
+E real-silver             0.490     (196-204-0)   (0,0)
+C most-common             0.485     (194-206-0)   (0,0)
+B hammer-hp60             0.492     (197-203-0)   (0,0)
+
+control landed at 0.495 (true value 0.500) -> instrument bias -0.005; read every row against the control, not against 0.5.

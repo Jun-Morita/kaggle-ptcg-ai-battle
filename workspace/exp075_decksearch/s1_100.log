@@ -1,0 +1,9 @@
+exp075 S1 screen, n=100/gate. SE~0.050 unpaired; read big gaps only.
+
+candidate        mirror     koff     wall   err
+A_pub_stock       0.400    0.360    0.880   0
+B_hammer          0.500    0.400    0.920   0
+C_nonex_freq      0.510    0.400    0.980   0
+D_dipplin         0.470    0.350    0.880   0
+
+gate refs: koff-vs-pub_stock from exp074 was ~0.60 our side (i.e. a candidate needs koff>0.5 here to beat our current deck).

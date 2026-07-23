@@ -1,0 +1,49 @@
+{
+ "per_matchup": {
+  "alakazam_dun": {
+   "mill": 4,
+   "turns": 14,
+   "boost_rate": 0.2
+  },
+  "marnie": {
+   "mill": 16,
+   "turns": 17.25,
+   "boost_rate": 0.13043478260869565
+  },
+  "alakazam": {
+   "mill": 0,
+   "turns": 9.75,
+   "boost_rate": 0.0
+  },
+  "pure_wall": {
+   "mill": 21.25,
+   "turns": 20.5,
+   "boost_rate": 0.32558139534883723
+  },
+  "archaludon": {
+   "mill": 13.5,
+   "turns": 18.25,
+   "boost_rate": 0.26666666666666666
+  },
+  "lucario_ex": {
+   "mill": 3,
+   "turns": 13,
+   "boost_rate": 0.3333333333333333
+  },
+  "dragapult": {
+   "mill": 5.25,
+   "turns": 16.25,
+   "boost_rate": 0.13333333333333333
+  },
+  "crustle_LO": {
+   "mill": 25.75,
+   "turns": 22.25,
+   "boost_rate": 0.1282051282051282
+  }
+ },
+ "events": {
+  "Land Collapse|1": 175,
+  "Land Collapse|4": 44,
+  "Land Collapse|2": 2
+ }
+}

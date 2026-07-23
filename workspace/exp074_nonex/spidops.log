@@ -1,0 +1,28 @@
+Spidops cardIds: [401]   Team Rocket cards: 64
+
+our games scanned: 365  (dirs: 0717_54768702, 0718_54783479, 0718_54797761, 0719_54797761, 0720_54797761, 0721_54878432)
+vs ANY Team Rocket deck: 38-72  wr=0.528  share=19.7%
+vs a SPIDOPS deck:       1-7  wr=0.143  share=1.9%
+
+most-played Spidops list (0-3):
+  x8  Basic {G} Energy
+  x4  Team Rocket's Energy
+  x4  Team Rocket's Tarountula
+  x4  Team Rocket's Spidops
+  x4  Team Rocket's Transceiver
+  x4  Poké Pad
+  x4  Team Rocket's Ariana
+  x4  Team Rocket's Proton
+  x3  Team Rocket's Mimikyu
+  x3  Bug Catching Set
+  x3  Team Rocket's Giovanni
+  x3  Lillie's Determination
+  x3  Team Rocket's Factory
+  x2  Team Rocket's Articuno
+  x2  Team Rocket's Mewtwo ex
+  x1  Basic {W} Energy
+  x1  Ultra Ball
+  x1  Hero’s Cape
+  x1  Brave Bangle
+  x1  Team Rocket's Archer
+-> real_spidops_deck.json

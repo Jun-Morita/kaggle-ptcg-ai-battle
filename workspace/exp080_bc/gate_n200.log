@@ -1,0 +1,4 @@
+KILL-GATE  net=exp041_pilotnet/results/pre_grimm1/model_ep2.pth  deck=Grimmsnarl(modal)  opp=pub1034 mirror  n=200  pass>=0.55
+
+net 131-69-0  errors=0  winrate=0.655  (81s)
+VERDICT: PASS (>=0.55) -> distill+ship path

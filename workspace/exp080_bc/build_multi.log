@@ -1,0 +1,15 @@
+target=mixed_ex3  min_score=1000.0  days=5
+   pokemon-tcg-ai-battle-episodes-2026-07-18.zip
+   pokemon-tcg-ai-battle-episodes-2026-07-19.zip
+   pokemon-tcg-ai-battle-episodes-2026-07-20.zip
+   pokemon-tcg-ai-battle-episodes-2026-07-21.zip
+   pokemon-tcg-ai-battle-episodes-2026-07-22.zip
+  pokemon-tcg-ai-battle-episodes-2026-07-18.zip: teacher games 1572, cum recorded 141406
+  pokemon-tcg-ai-battle-episodes-2026-07-19.zip: teacher games 1445, cum recorded 271939
+  pokemon-tcg-ai-battle-episodes-2026-07-20.zip: teacher games 1511, cum recorded 410064
+  pokemon-tcg-ai-battle-episodes-2026-07-21.zip: teacher games 1604, cum recorded 556014
+  pokemon-tcg-ai-battle-episodes-2026-07-22.zip: teacher games 2199, cum recorded 762255
+
+[mixed_ex3] recorded=762255 from games=8331 over 5 days
+opp mix: [('mixed_ex3', 276028), ('mixed_ex1', 223472), ('mixed_ex2', 109667), ('crustle_control', 78060), ('dragapult', 42140), ('ex_beatdown', 12880), ('mixed_ex4', 12732), ('non_ex_attackers', 5894), ('mixed_ex5', 694), ('lucario_ex', 688)]
+wrote /home/jun/kaggle-ptcg-ai-battle/workspace/exp080_bc/data/mixed_ex3_multi_w7.pkl (1904.1MB)

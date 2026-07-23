@@ -1,0 +1,37 @@
+leaderboard names loaded: 5522
+zip: pokemon-tcg-ai-battle-episodes-2026-07-21.zip   MIN_SCORE=1000.0
+
+  ...500/4613 parsed, teachers so far 392
+  ...1000/4613 parsed, teachers so far 777
+  ...1500/4613 parsed, teachers so far 1170
+  ...2000/4613 parsed, teachers so far 1557
+  ...2500/4613 parsed, teachers so far 1975
+  ...3000/4613 parsed, teachers so far 2423
+  ...3500/4613 parsed, teachers so far 2858
+  ...4000/4613 parsed, teachers so far 3288
+  ...4500/4613 parsed, teachers so far 3706
+
+episodes parsed: 4612   seats with unknown team name: 0
+
+archetype               all seats  >=min_score
+mixed_ex3                    3719         3057
+mixed_ex1                    2431         1948
+mixed_ex2                    1555         1306
+crustle_control               669          491
+dragapult                     603          600
+mixed_ex4                     143          139
+non_ex_attackers               55           43
+mixed_ex5                      24           24
+ex_beatdown                    21            0
+
+TEACHER SAMPLES (>= 1000.0, and WON): 3802
+  mixed_ex3              1604
+  mixed_ex1              876
+  mixed_ex2              675
+  dragapult              329
+  crustle_control        215
+  mixed_ex4              76
+  non_ex_attackers       19
+  mixed_ex5              8
+
+-> /home/jun/kaggle-ptcg-ai-battle/workspace/exp080_bc/teachers_index.json

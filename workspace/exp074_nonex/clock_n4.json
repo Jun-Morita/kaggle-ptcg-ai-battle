@@ -1,0 +1,74 @@
+{
+ "alakazam_dun": {
+  "n": 4,
+  "wr": 0.5,
+  "my_prize_left": 6,
+  "op_prize_left": 3.75,
+  "op_deck_left": 8.25,
+  "min_op_hp": 50,
+  "took_any_prize": 0.0
+ },
+ "marnie": {
+  "n": 4,
+  "wr": 1.0,
+  "my_prize_left": 5.5,
+  "op_prize_left": 5.5,
+  "op_deck_left": 0.25,
+  "min_op_hp": 80,
+  "took_any_prize": 0.5
+ },
+ "alakazam": {
+  "n": 4,
+  "wr": 1.0,
+  "my_prize_left": 6,
+  "op_prize_left": 3.75,
+  "op_deck_left": 0.75,
+  "min_op_hp": 55,
+  "took_any_prize": 0.0
+ },
+ "pure_wall": {
+  "n": 4,
+  "wr": 0.5,
+  "my_prize_left": 6,
+  "op_prize_left": 1.75,
+  "op_deck_left": 5.5,
+  "min_op_hp": 47.5,
+  "took_any_prize": 0.0
+ },
+ "archaludon": {
+  "n": 4,
+  "wr": 0.75,
+  "my_prize_left": 6,
+  "op_prize_left": 4.5,
+  "op_deck_left": 6.5,
+  "min_op_hp": 122.5,
+  "took_any_prize": 0.0
+ },
+ "lucario_ex": {
+  "n": 4,
+  "wr": 0.75,
+  "my_prize_left": 5.75,
+  "op_prize_left": 4,
+  "op_deck_left": 5,
+  "min_op_hp": 70,
+  "took_any_prize": 0.25
+ },
+ "dragapult": {
+  "n": 4,
+  "wr": 0.25,
+  "my_prize_left": 6,
+  "op_prize_left": 1,
+  "op_deck_left": 4.75,
+  "min_op_hp": 40,
+  "took_any_prize": 0.0
+ },
+ "crustle_LO": {
+  "n": 4,
+  "wr": 0.5,
+  "my_prize_left": 6,
+  "op_prize_left": 6,
+  "op_deck_left": 2.75,
+  "min_op_hp": 105,
+  "took_any_prize": 0.0
+ }
+}

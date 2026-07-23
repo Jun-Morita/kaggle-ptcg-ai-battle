@@ -1,0 +1,13 @@
+v030, same decks, pub1034 pilot instead of lucario_v2. n=200, CRN
+slot            weight  lucario_v2   pub1034    delta
+alakazam_dun    0.2891       0.847     0.645   -0.202   err=(0,0) 211s
+marnie          0.1600       0.912     0.635   -0.277   err=(0,0) 205s
+alakazam        0.1239       0.893     0.620   -0.273   err=(0,0) 211s
+pure_wall       0.0933       0.205     0.690   +0.485   err=(0,0) 202s
+lucario_ex      0.0670       0.785     0.580   -0.205   err=(0,0) 235s
+
+band (lucario_v2 pool) 0.7661
+band (re-piloted)      0.6420
+real ladder, 147 games 0.5578
+
+residual vs reality: +0.2083 -> +0.0842

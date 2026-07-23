@@ -1,0 +1,14 @@
+H17 energy 8->12, n=200/matchup, CRN, lucario_v2 pool
+
+matchup         weight     base      e12    delta   errors
+alakazam_dun    0.2891    0.820    0.730   -0.090   [(0, 0), (0, 0)]
+marnie          0.1600    0.920    0.880   -0.040   [(0, 0), (0, 0)]
+alakazam        0.1239    0.850    0.820   -0.030   [(0, 0), (0, 0)]
+pure_wall       0.0933    0.225    0.150   -0.075   [(0, 0), (0, 0)]
+archaludon      0.0730    0.900    0.720   -0.180   [(0, 0), (0, 0)]
+lucario_ex      0.0670    0.810    0.720   -0.090   [(0, 0), (0, 0)]
+dragapult       0.0270    0.320    0.265   -0.055   [(0, 0), (0, 0)]
+crustle_LO      0.0120    0.610    0.610   +0.000   [(0, 0), (0, 0)]
+
+band base 0.7648   e12 0.6894   delta -0.0755
+Reminder: this pool's LEVEL is ~0.13 optimistic (H7); only the delta is meaningful, and only if errors are 0.

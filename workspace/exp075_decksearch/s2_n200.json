@@ -1,0 +1,62 @@
+{
+ "pub1034_deck": {
+  "wr": {
+   "mirror": 0.53,
+   "marnie": 0.955,
+   "pure_wall": 0.905,
+   "archaludon": 0.86,
+   "lucario_ex": 0.855,
+   "dragapult": 0.47,
+   "crustle_LO": 0.355,
+   "dipplin": 0.525,
+   "koff_h2h": 0.345
+  },
+  "band": 0.7016213017751479,
+  "errs": 0
+ },
+ "real_silver_alakazam": {
+  "wr": {
+   "mirror": 0.505,
+   "marnie": 0.91,
+   "pure_wall": 0.925,
+   "archaludon": 0.85,
+   "lucario_ex": 0.865,
+   "dragapult": 0.485,
+   "crustle_LO": 0.38,
+   "dipplin": 0.495,
+   "koff_h2h": 0.31
+  },
+  "band": 0.6838461538461539,
+  "errs": 0
+ },
+ "real_nonex_deck": {
+  "wr": {
+   "mirror": 0.515,
+   "marnie": 0.905,
+   "pure_wall": 0.93,
+   "archaludon": 0.855,
+   "lucario_ex": 0.845,
+   "dragapult": 0.475,
+   "crustle_LO": 0.34,
+   "dipplin": 0.435,
+   "koff_h2h": 0.385
+  },
+  "band": 0.6862958579881657,
+  "errs": 0
+ },
+ "real_dipplin_deck": {
+  "wr": {
+   "mirror": 0.505,
+   "marnie": 0.9,
+   "pure_wall": 0.935,
+   "archaludon": 0.83,
+   "lucario_ex": 0.87,
+   "dragapult": 0.44,
+   "crustle_LO": 0.33,
+   "dipplin": 0.55,
+   "koff_h2h": 0.355
+  },
+  "band": 0.6795739644970414,
+  "errs": 0
+ }
+}

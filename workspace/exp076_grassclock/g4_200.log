@@ -1,0 +1,14 @@
+H18 grass clock (+4 Basic Grass for Superb Scissors), n=200/matchup, CRN, lucario_v2 pool
+
+matchup         weight     base       g4    delta   errors
+alakazam_dun    0.2891    0.840    0.825   -0.015   [(0, 0), (0, 0)]
+marnie          0.1600    0.905    0.845   -0.060   [(0, 0), (0, 0)]
+alakazam        0.1239    0.865    0.840   -0.025   [(0, 0), (0, 0)]
+pure_wall       0.0933    0.190    0.180   -0.010   [(0, 0), (0, 0)]
+archaludon      0.0730    0.815    0.825   +0.010   [(0, 0), (0, 0)]
+lucario_ex      0.0670    0.845    0.815   -0.030   [(0, 0), (0, 0)]
+dragapult       0.0270    0.300    0.345   +0.045   [(0, 0), (0, 0)]
+crustle_LO      0.0120    0.570    0.575   +0.005   [(0, 0), (0, 0)]
+
+band base 0.7614   g4 0.7401   delta -0.0213
+Reminder: this pool's LEVEL is ~0.13 optimistic (H7); only the delta is meaningful, and only if errors are 0.

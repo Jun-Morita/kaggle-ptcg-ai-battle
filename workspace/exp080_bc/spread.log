@@ -1,0 +1,10 @@
+SPREAD  net=exp041_pilotnet/results/pre_grimm1/model_ep2.pth  deck=Grimmsnarl(modal)  opp=pub1034  n=100/matchup
+
+matchup                 share       W-L-D  winrate
+Grimmsnarl(mirror)       0.43     74-25-1    0.740  err=0
+Alakazam                 0.28     12-88-0    0.120  err=0  <-- HOLE
+TR Spidops               0.18     87-13-0    0.870  err=0
+Crustle                  0.08     84-16-0    0.840  err=0
+Dragapult                0.07     81-19-0    0.810  err=0
+
+share-weighted winrate = 0.632

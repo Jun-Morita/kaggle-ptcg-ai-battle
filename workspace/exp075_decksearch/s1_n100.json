@@ -1,0 +1,22 @@
+{
+ "A_pub_stock": {
+  "mirror": 0.4,
+  "koff": 0.36,
+  "wall": 0.88
+ },
+ "B_hammer": {
+  "mirror": 0.5,
+  "koff": 0.4,
+  "wall": 0.92
+ },
+ "C_nonex_freq": {
+  "mirror": 0.51,
+  "koff": 0.4,
+  "wall": 0.98
+ },
+ "D_dipplin": {
+  "mirror": 0.47,
+  "koff": 0.35,
+  "wall": 0.88
+ }
+}

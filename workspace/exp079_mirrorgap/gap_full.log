@@ -1,0 +1,30 @@
+decisions replayed through pub1034: 2232 (from 36 real mirror games)
+
+=== MAIN: take-when-legal (the exp022 lens) ===
+option         legal  THEM take  US take   them%     us%     gap
+END             1247         64       94    5.1%    7.5%   -2.4%
+PLAY            1103        659      726   59.7%   65.8%   -6.1%
+ATTACK           716         66      106    9.2%   14.8%   -5.6%
+RETREAT          693         29        4    4.2%    0.6%   +3.6%
+ATTACH           528        161      136   30.5%   25.8%   +4.7%
+EVOLVE           453         72      123   15.9%   27.2%  -11.3%
+ABILITY          297         63       58   21.2%   19.5%   +1.7%
+
+=== decision agreement by SelectContext (top 10 by volume) ===
+  ctx  0  match 174/1247 = 0.140
+  ctx  7  match 73/387 = 0.189
+  ctx 43  match 41/191 = 0.215
+  ctx  4  match 0/104 = 0.000
+  ctx  5  match 0/72 = 0.000
+  ctx 30  match 9/46 = 0.196
+  ctx  3  match 14/40 = 0.350
+  ctx  1  match 17/36 = 0.472
+  ctx  8  match 0/35 = 0.000
+  ctx 37  match 4/30 = 0.133
+
+=== ABILITY use by card (legal / them / us) ===
+  None                       legal  362  them   63 (17.4%)  us   58 (16.0%)  gap  +1.4%
+
+=== PLAY/ABILITY cards THEY use more (top 12) ===
+  ABILITY  None                       them   63  us   58    +5
+  PLAY     None                       them  659  us  726   -67

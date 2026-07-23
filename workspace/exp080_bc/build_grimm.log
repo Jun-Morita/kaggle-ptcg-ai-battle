@@ -1,0 +1,13 @@
+target=mixed_ex3  teacher seats=1604  zip=pokemon-tcg-ai-battle-episodes-2026-07-21.zip
+  ...200/1604 eps, recorded 18016
+  ...400/1604 eps, recorded 36636
+  ...600/1604 eps, recorded 55089
+  ...800/1604 eps, recorded 73190
+  ...1000/1604 eps, recorded 91020
+  ...1200/1604 eps, recorded 109644
+  ...1400/1604 eps, recorded 127774
+  ...1600/1604 eps, recorded 145559
+
+[mixed_ex3] recorded=145950 from games=1604  nomatch=2073 obs_fail=0 feat_fail=0
+opp archetype mix: [('mixed_ex3', 54769), ('mixed_ex1', 36377), ('mixed_ex2', 28408), ('crustle_control', 12886), ('dragapult', 10145), ('mixed_ex4', 1788), ('ex_beatdown', 816), ('non_ex_attackers', 537), ('mixed_ex5', 224)]
+wrote /home/jun/kaggle-ptcg-ai-battle/workspace/exp080_bc/data/mixed_ex3_w7.pkl (364.5MB)

@@ -1,0 +1,28 @@
+{
+ "per_matchup": {
+  "base": {
+   "alakazam_dun": 0.84,
+   "marnie": 0.905,
+   "alakazam": 0.865,
+   "pure_wall": 0.19,
+   "archaludon": 0.815,
+   "lucario_ex": 0.845,
+   "dragapult": 0.3,
+   "crustle_LO": 0.57
+  },
+  "g4": {
+   "alakazam_dun": 0.825,
+   "marnie": 0.845,
+   "alakazam": 0.84,
+   "pure_wall": 0.18,
+   "archaludon": 0.825,
+   "lucario_ex": 0.815,
+   "dragapult": 0.345,
+   "crustle_LO": 0.575
+  }
+ },
+ "band": {
+  "base": 0.7613799834378328,
+  "g4": 0.7401188927008163
+ }
+}

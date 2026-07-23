@@ -84,6 +84,8 @@ workspace/exp041_pilotnet/data/
 workspace/exp043_learnpri/data/
 workspace/exp041_pilotnet/build_np/
 workspace/exp043_learnpri/build_sp1/
+workspace/exp080_bc/build_grimm/
+workspace/exp080_bc/data/
 workspace/exp041_pilotnet/results/
 /episode-*-replay.json
 /episode-*-logs.json
@@ -101,3 +103,15 @@ workspace/exp052_crn/cg/
 workspace/exp054_upperband/build_lo/
 workspace/exp054_upperband/build_koff/
 data/discussions.db
+
+# exp080 BC derived corpora (references/raw/ already covers the 21.5GB/day source)
+workspace/exp080_bc/data/
+# built submission bundles (engine .so must not be redistributed)
+workspace/exp078_alakazam/build/cg/
+workspace/exp078_alakazam/submission.tar.gz
+workspace/exp076_grassclock/build_g4/
+workspace/exp076_grassclock/build_g2swap/
+workspace/exp074_nonex/build_e12/
+# belt-and-braces: the engine .so must never be redistributed (disc717141 licence)
+**/cg/libcg.so
+**/submission.tar.gz

@@ -1,0 +1,45 @@
+exp075 S2 weakness map, n=200. SE~0.035. pub1034 pilot.
+
+deck                      mirror    marnie pure_wall archaludo lucario_e dragapult crustle_L   dipplin  koff_h2h   band~
+    pub1034_deck mirror: 0.530 (106-94-0) err=(0,0)
+    pub1034_deck marnie: 0.955 (191-9-0) err=(0,0)
+    pub1034_deck pure_wall: 0.905 (181-19-0) err=(0,0)
+    pub1034_deck archaludon: 0.860 (172-28-0) err=(0,0)
+    pub1034_deck lucario_ex: 0.855 (171-29-0) err=(0,0)
+    pub1034_deck dragapult: 0.470 (94-106-0) err=(0,0)
+    pub1034_deck crustle_LO: 0.355 (71-129-0) err=(0,0)
+    pub1034_deck dipplin: 0.525 (105-95-0) err=(0,0)
+    pub1034_deck koff_h2h: 0.345 (69-131-0) err=(0,0)
+pub1034_deck               0.530     0.955     0.905     0.860     0.855     0.470     0.355     0.525     0.345   0.702
+    real_silver_alakazam mirror: 0.505 (101-99-0) err=(0,0)
+    real_silver_alakazam marnie: 0.910 (182-18-0) err=(0,0)
+    real_silver_alakazam pure_wall: 0.925 (185-15-0) err=(0,0)
+    real_silver_alakazam archaludon: 0.850 (170-30-0) err=(0,0)
+    real_silver_alakazam lucario_ex: 0.865 (173-27-0) err=(0,0)
+    real_silver_alakazam dragapult: 0.485 (97-103-0) err=(0,0)
+    real_silver_alakazam crustle_LO: 0.380 (76-124-0) err=(0,0)
+    real_silver_alakazam dipplin: 0.495 (99-101-0) err=(0,0)
+    real_silver_alakazam koff_h2h: 0.310 (62-138-0) err=(0,0)
+real_silver_alakazam       0.505     0.910     0.925     0.850     0.865     0.485     0.380     0.495     0.310   0.684
+    real_nonex_deck mirror: 0.515 (103-97-0) err=(0,0)
+    real_nonex_deck marnie: 0.905 (181-19-0) err=(0,0)
+    real_nonex_deck pure_wall: 0.930 (186-14-0) err=(0,0)
+    real_nonex_deck archaludon: 0.855 (171-29-0) err=(0,0)
+    real_nonex_deck lucario_ex: 0.845 (169-31-0) err=(0,0)
+    real_nonex_deck dragapult: 0.475 (95-105-0) err=(0,0)
+    real_nonex_deck crustle_LO: 0.340 (68-132-0) err=(0,0)
+    real_nonex_deck dipplin: 0.435 (87-113-0) err=(0,0)
+    real_nonex_deck koff_h2h: 0.385 (77-123-0) err=(0,0)
+real_nonex_deck            0.515     0.905     0.930     0.855     0.845     0.475     0.340     0.435     0.385   0.686
+    real_dipplin_deck mirror: 0.505 (101-99-0) err=(0,0)
+    real_dipplin_deck marnie: 0.900 (180-20-0) err=(0,0)
+    real_dipplin_deck pure_wall: 0.935 (187-13-0) err=(0,0)
+    real_dipplin_deck archaludon: 0.830 (166-34-0) err=(0,0)
+    real_dipplin_deck lucario_ex: 0.870 (174-26-0) err=(0,0)
+    real_dipplin_deck dragapult: 0.440 (88-112-0) err=(0,0)
+    real_dipplin_deck crustle_LO: 0.330 (66-134-0) err=(0,0)
+    real_dipplin_deck dipplin: 0.550 (110-90-0) err=(0,0)
+    real_dipplin_deck koff_h2h: 0.355 (71-129-0) err=(0,0)
+real_dipplin_deck          0.505     0.900     0.935     0.830     0.870     0.440     0.330     0.550     0.355   0.680
+
+ref: koff v030 on this pool's V3 weights ~0.766 (lucario_v2 pool level, 0.13 optimistic); real-ladder koff level 0.558.

@@ -1,0 +1,10 @@
+same agent, same seed, twice. n=60. Identical => CRN holds.
+
+pub1034 (search-augmented)
+   run1 wr=0.617 (37-23-0)
+   run2 wr=0.550 (33-27-0)   DIFFERENT -> CRN broken here
+
+RVP (lucario_v2, control)
+   run1 wr=0.800 (48-11-1)
+   run2 wr=0.800 (48-11-1)   IDENTICAL -> CRN holds
+
