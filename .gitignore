@@ -85,6 +85,7 @@ workspace/exp043_learnpri/data/
 workspace/exp041_pilotnet/build_np/
 workspace/exp043_learnpri/build_sp1/
 workspace/exp080_bc/build_grimm/
+workspace/exp080_bc/build_grimm10/
 workspace/exp080_bc/data/
 workspace/exp041_pilotnet/results/
 /episode-*-replay.json

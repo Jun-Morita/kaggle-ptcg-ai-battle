@@ -1,0 +1,5 @@
+LEVER (self-mirror)  net=exp041_pilotnet/results/pre_grimm10/model_ep2.pth  MCTS(sc=16) vs raw-argmax  Grimmsnarl both sides  n=60
+
+MCTS-net vs raw-net: 18-42-0  errors=0  MCTS winrate=0.300  (227s)
+z vs 0.5 = -3.10
+VERDICT: MCTS lever NEGATIVE (search makes it WORSE, exp010 pattern) -> do NOT build the loop

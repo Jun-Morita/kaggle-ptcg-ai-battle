@@ -1,42 +1,42 @@
 {
- "model": "/home/jun/kaggle-ptcg-ai-battle/workspace/exp041_pilotnet/results/pre_grimm5/model_ep2.pth",
+ "model": "/home/jun/kaggle-ptcg-ai-battle/workspace/exp041_pilotnet/results/pre_grimm10/model_ep2.pth",
  "n": 100,
  "rows": {
   "mixed_ex3": {
-   "w": 85,
-   "l": 14,
-   "d": 1,
-   "err": 0,
-   "wr": 0.85
-  },
-  "mixed_ex1": {
-   "w": 36,
-   "l": 63,
-   "d": 1,
-   "err": 0,
-   "wr": 0.36
-  },
-  "mixed_ex2": {
-   "w": 97,
-   "l": 3,
-   "d": 0,
-   "err": 0,
-   "wr": 0.97
-  },
-  "crustle_control": {
    "w": 89,
    "l": 11,
    "d": 0,
    "err": 0,
    "wr": 0.89
   },
-  "dragapult": {
-   "w": 98,
-   "l": 2,
+  "mixed_ex1": {
+   "w": 37,
+   "l": 63,
    "d": 0,
    "err": 0,
-   "wr": 0.98
+   "wr": 0.37
+  },
+  "mixed_ex2": {
+   "w": 96,
+   "l": 4,
+   "d": 0,
+   "err": 0,
+   "wr": 0.96
+  },
+  "crustle_control": {
+   "w": 78,
+   "l": 22,
+   "d": 0,
+   "err": 0,
+   "wr": 0.78
+  },
+  "dragapult": {
+   "w": 97,
+   "l": 3,
+   "d": 0,
+   "err": 0,
+   "wr": 0.97
   }
  },
- "weighted": 0.7807000000000001
+ "weighted": 0.7894
 }

@@ -18,8 +18,8 @@ sys.path.insert(0, os.path.join(WS, "exp041_pilotnet"))
 import build_np_submission as BNS  # noqa: E402
 
 BNS.DECK = os.path.join(HERE, "grimmsnarl_deck.json")
-BNS.WEIGHTS_SRC = os.path.join(WS, "exp041_pilotnet", "results", "pre_grimm5", "weights_pure.pkl")
-BNS.OUT = os.path.join(HERE, "build_grimm")
+BNS.WEIGHTS_SRC = os.path.join(WS, "exp041_pilotnet", "results", "pre_grimm10", "weights_pure.pkl")
+BNS.OUT = os.path.join(HERE, "build_grimm10")
 
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()

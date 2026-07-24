@@ -1,9 +1,11 @@
 {
  "model": "/home/jun/kaggle-ptcg-ai-battle/workspace/exp041_pilotnet/results/pre_grimm10/model_ep2.pth",
- "n": 200,
- "w": 182,
- "l": 18,
+ "n": 60,
+ "sc": 16,
+ "w": 18,
+ "l": 42,
  "d": 0,
- "errors": 0,
- "winrate": 0.91
+ "err": 0,
+ "mcts_wr": 0.3,
+ "z": -3.098386676965934
 }

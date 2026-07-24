@@ -1,0 +1,14 @@
+{
+ "model": "/home/jun/kaggle-ptcg-ai-battle/workspace/exp041_pilotnet/results/pre_grimm10/model_ep2.pth",
+ "n": 2,
+ "sc": 4,
+ "rows": {
+  "mixed_ex4": {
+   "raw": 1.0,
+   "mcts": 1.0,
+   "delta": 0.0,
+   "raw_rec": "2-0-0",
+   "mcts_rec": "2-0-0"
+  }
+ }
+}
