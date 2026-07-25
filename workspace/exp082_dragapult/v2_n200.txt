@@ -1,0 +1,3 @@
+EVAL skarin-dragapult (adopted)  n=200  opp=all
+  dragapult vs koff(LO)   147-53-0  err=0  drag_wr=0.735  (14s)
+  dragapult vs pub-alakazam 114-86-0  err=0  drag_wr=0.570  (238s)

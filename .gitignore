@@ -118,3 +118,8 @@ workspace/exp074_nonex/build_e12/
 **/submission.tar.gz
 workspace/exp082_dragapult/build_sub/
 workspace/exp082_dragapult/build_drag/cg
+workspace/exp082_dragapult/build_v3_sub/
+workspace/exp082_dragapult/build_v2_nopenalty/cg
+workspace/exp082_dragapult/build_v3_greedy/cg
+workspace/exp082_dragapult/build_v4_maxgreedy/cg
+workspace/exp082_dragapult/probe_cards.py

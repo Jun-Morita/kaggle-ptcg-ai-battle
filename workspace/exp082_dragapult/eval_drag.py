@@ -32,7 +32,7 @@ load_engine()
 from cg.api import to_observation_class  # noqa
 from cg.game import battle_start, battle_finish, battle_select  # noqa
 
-DRAG_DIR = os.path.join(HERE, "build_drag")
+DRAG_DIR = os.environ.get("DRAG_DIR", os.path.join(HERE, "build_drag"))
 KOFF_DIR = os.path.join(WS, "exp071_bundlefix", "build")
 PUB_DIR = os.path.join(WS, "exp057_pubalakazam", "agent")
 _n = [0]

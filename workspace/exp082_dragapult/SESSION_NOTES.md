@@ -37,3 +37,38 @@ exp081 の silver帯 全archetype勝率行列（`../exp080_bc/matchup_matrix.py`
    alakazam 0.558 は Archaludon等で dragapult を補完＝ヘッジ維持）
 - silver cut 916 に対し 827.5 は+40〜60の増分＝即silverではないが、0.576archetypeは
   koffの0.492より高均衡＝reroll vehicleとしても格上
+
+## exp082 パイロット改良（07-25）: プライズ調整の矛盾を修正 = V3（確定改善）
+
+skarin ロジックの通読で5点の候補を特定（詳細は下記）。テスト可能で高価値な①に集中。
+③弱点は API で type/weakness が綺麗に取れず、かつ Alakazam の Abra線は全て≤140HP で 200 既KO
+＝恩恵小で deprioritize。④免疫リストは koff の Crustle(345)・alakazam の Abra線を正しくカバー済み。
+
+### ① プライズ調整の矛盾（main_option_proc 268-274行）
+元コード: 勝ちに近い(remain_prize<=4)時に2プライズKOを **-1200 で罰**、1プライズ -300、0プライズ **+1200 で報酬**
+＝「ばら撒いて多面KO準備」思想だが、**プライズを取る手を罰し取らない手を報酬**する逆説。
+
+### A/B スイープ（eval_drag.py, seat交替, n=200、DRAG_DIR で変異体切替）
+| variant | vs koff | vs pub-alakazam |
+|---|---|---|
+| baseline (skarin as-is) | 0.675 | 0.505 |
+| V2 罰除去（2プライズ罰のみ削除, spread報酬維持） | 0.735 | 0.570 |
+| **V3 中庸greed（prize>=2:+1500 / ==1:+500 / spread報酬削除）** | **0.735 / 0.720**(2run) | **0.615 / 0.610**(2run) |
+| V4 強greed（+4000/+1500） | 0.655↓ | 0.645 |
+
+- **V3 が sweet spot**。pooled n=400: koff **0.735**（baseline+0.060）/ alakazam **0.6125**（baseline **+0.1075, z≈3**）。
+- 単調 baseline<V2<V3 ＋ V4 オーバーシュート（強greedは koff の setup を犠牲）＝ノイズでなく実最適。
+- 原理的修正（矛盾除去）で control(koff)・combo(alakazam)の異archetype両方で改善＝過学習リスク低。
+- V3 提出ビルド: build_v3_sub/submission.tar.gz、クラッシュ安全wrapper付与、スモーク90試合0err。
+
+### 特定した他の候補（未実施、将来レバー）
+- ② ATTACK スコア = `o.attackId`（838行）＝攻撃選択が任意ID順。実際は「setup全部→attack」の
+  創発フローで機能するが、複数攻撃の使い分け不可・lethal優先せず。低インパクトと判断し保留。
+- ③ 弱点未モデル化（damage=200固定）＝上記理由でdeprioritize。
+- ④ 免疫カードのハードコード＝現テスト相手はカバー済み。他メタ（Grimmsnarl/Archaludon）は
+  強パイロット不在で検証不能。
+- ⑤ Phantom Dive の「詰め」配置＝①の改善で部分的に前進。
+
+### 出荷判断
+V3 は skarin baseline に対し両マッチ確定改善＝**現行 v038（skarin as-is）の上位互換**。
+提出するなら v038 ドロー1枚を退出させて {v038, v038-V3} または {v038-V3 ×2}。ユーザー承認待ち。
