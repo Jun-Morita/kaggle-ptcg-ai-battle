@@ -86,16 +86,18 @@ uv run python run_gauntlet.py 20      # random vs random
 
 ## 進捗（2026-07-25 時点）
 
-**デッキを dragapult に転換して提出（v038）**。exp081 で「エージェント強化レーンは出尽くし」を確定させた上で、silver帯の全archetype勝率行列を実データから構築し、**dragapult が silver帯で最良の一般 archetype（総合 0.576、Alakazam(23%)にも 0.553）**と判明。公開の強パイロット（skarin/Phantom Dive、ラダー実績827.5）を採用・独立評価（vs koff 0.72 / vs 実Alakazamパイロット 0.57、0クラッシュ）。eligible = **{v038 dragapult ×2}**（同一tarの独立2ドロー＝最良archetypeの両枠リロール。v036 koff・v037 alakazam とも退出）。rank ~1170 / 5652、silver cut 916.1（あと約127点）。締切8/16（Simulation）・9/13（Strategy）。
+**dragapult 転換を試みたが実ラダーで棄却、koff+alakazam に revert**。eligible = **{v040 koff-restore, v041 alakazam-restore}**（proven ~790/0.54、μ600 から早期収束中）。rank は dragapult 撤退時 ~#1824 まで後退したが、実績ビルドで回復見込み。silver cut ~916。締切8/16（Simulation）・9/13（Strategy）。
 
-### 07-25: エージェント強化レーンの total closure → dragapult 転換（exp081/exp082）
-「今出せる提出物を強くする」最後の未探索ターゲットを潰し、データが指す最良デッキへ乗り換えた。
+**今日の最大の学び（耐久性あり）**: **local eval（固定パイロット相手の勝率）は ladder を予測しない**。pub1034 BC ゲートに続き dragapult でも再現（local koff 0.72/alak 0.57 → 実ラダー 0.489, n=94）。**今後デッキ/パイロットの出荷判断は実ラダー試合そのものでのみ行う。**
 
-1. **koff の対Grimmsnarl = 構造的（パッチ不可）**: 唯一の未調律マッチ（Grimmsnarl は新台頭）を n=100 で診断。負け方は**プライズ・レース負け**（相手の山を8残しでミル未完・相手プライズ4先取、turn25決着）＝control-mill が aggro-ex の時計に間に合わない古典的な負け。gated-decision 漏れではない。かつ有効な局所計器も無い（BCネット弱すぎ・pub1034過大評価）。
-2. **koff(crustle_control) は silver帯で 0.492＝負け越し archetype**。942 の高ドローは下位帯分散で、post-deadline 収束（真の実力≒2週間）では <0.5 へ回帰＝**koff reroll は silver に信頼できない道**と判明。
-3. **silver帯 全archetype×archetype 勝率行列を構築**（10日, n=数千/セル）。**dragapult 0.576 が最良の一般archetype**、Alakazam(23%)に 0.553 で勝つ。anti-Alakazam 特攻の mixed_ex2 は Alakazam を 0.690 で叩くが総合 0.509＝**罠**（他に折れる）。
-4. **skarin の公開 dragapult を採用・独立評価**: 公式サンプル(kiyotah)はラダー499.6で archetype潜在を出せないが、コミュニティ版(SK Arin #735=827.5)は強パイロット。我々のハーネスで **vs koff 0.72 / vs 実Alakazamパイロット 0.57**、クラッシュ安全スモーク90試合0err → **v038 提出**。
-5. **eligible=dragapult×2 の是非**: LB=2枠のmax なので、strictly 最良の dragapult を両枠に置く方が max 最大化に有利（alakazam枠は dragapult枠を超えた時だけ寄与）。dragapult はラダー実証済みで BC のような「ローカル≠ラダー」リスクが低い。alakazam ヘッジ喪失の唯一のリスクは dragapult のメタ回転崩壊だが、最良ポジション archetype ゆえ低リスク。→ **維持し、片方が沈んだら個別リロール**。
+### 07-25: dragapult 転換の試みと棄却、silver 戦略の TrueSkill 再設計（exp081/exp082）
+
+1. **koff の対Grimmsnarl = 構造的（パッチ不可）**: n=100 診断で**プライズ・レース負け**（ミル未完のまま相手にプライズを取り切られる）＝control-mill vs aggro-ex の時計負け。gated-decision 漏れではない。
+2. **silver帯 全archetype×archetype 勝率行列を構築**（10日, n=数千/セル）。**dragapult 0.576 が最良の一般archetype**（Alakazam 23% にも 0.553）。koff=crustle は 0.492＝silver帯で負け越し。anti-Alakazam 特攻の mixed_ex2 は Alakazam 0.690 だが総合 0.509＝罠。
+3. **skarin の公開 dragapult を採用(v038)＋パイロット改良(v039 V3)**: skarin ロジックの矛盾（Phantom Dive プランニングで勝ちに近い時にプライズKOを罰していた）を修正。local A/B n=400 で koff 0.675→0.735 / alakazam 0.505→0.6125（+0.11）＝**local では確定改善**。
+4. **だが実ラダーで棄却**: v038/v039 プールで **dragapult 0.489（n=94）< koff/alakazam 0.54**。local eval が誤予測＝**local≠ladder の罠、再**（ラダーでは crustle 0.25/Alakazam 0.25 と local と真逆）。「最良archetype でも入手可能パイロットでは 0.49」＝dragapult レーンは誠実なネガティブ。
+5. **koff/alakazam に修正できる漏れは無い**: 実リプレイ ground-truth 診断（koff 71戦・alakazam 72戦）で**全負けが構造的プライズレース**（patchable な機構漏れ無し＝24ネガの履歴と整合）。
+6. **silver 戦略を TrueSkill 規定から再設計**（μ更新∝σ、σは試合数で縮小、最終=最新2提出を締切後~2週間走らせた後）: **早く提出→試合蓄積→σ極小→ロックが sticky**（幸運ロックが生存）。締切間際リロールは σ 大→真の実力へ収束＝ロック消失。**上振れが大きいほど回帰**するので、true skill を少し上げると小さな sticky ロックで届く＝**経路A(reroll)×B(実力向上)は掛け算**。→ revert して早期に試合を稼ぎ、「早期ロック→保護、締切間際は触らない」＋ ladder-A/B で実力微増を回す。
 
 <details><summary>07-24 時点の進捗: 学習レーンの最終結論（クリックで展開）</summary>
 
