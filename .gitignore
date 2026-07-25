@@ -116,3 +116,5 @@ workspace/exp074_nonex/build_e12/
 # belt-and-braces: the engine .so must never be redistributed (disc717141 licence)
 **/cg/libcg.so
 **/submission.tar.gz
+workspace/exp082_dragapult/build_sub/
+workspace/exp082_dragapult/build_drag/cg

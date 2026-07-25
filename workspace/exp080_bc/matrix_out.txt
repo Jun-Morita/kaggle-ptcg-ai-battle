@@ -1,0 +1,75 @@
+days=10  silver band both>=900
+
+  scanned pokemon-tcg-ai-battle-episodes-2026-07-13.zip
+  scanned pokemon-tcg-ai-battle-episodes-2026-07-14.zip
+  scanned pokemon-tcg-ai-battle-episodes-2026-07-15.zip
+  scanned pokemon-tcg-ai-battle-episodes-2026-07-16.zip
+  scanned pokemon-tcg-ai-battle-episodes-2026-07-17.zip
+  scanned pokemon-tcg-ai-battle-episodes-2026-07-18.zip
+  scanned pokemon-tcg-ai-battle-episodes-2026-07-19.zip
+  scanned pokemon-tcg-ai-battle-episodes-2026-07-20.zip
+  scanned pokemon-tcg-ai-battle-episodes-2026-07-21.zip
+  scanned pokemon-tcg-ai-battle-episodes-2026-07-22.zip
+=== meta-weighted overall winrate (silver band, stable shares) ===
+  mixed_ex5              0.612  (share 0.012)
+  dragapult              0.576  (share 0.069)
+  mixed_ex1              0.558  (share 0.233)
+  ex_beatdown            0.544  (share 0.053)
+  mixed_ex3              0.526  (share 0.112)
+  mixed_ex2              0.509  (share 0.020)
+  crustle_control        0.492  (share 0.085)
+  mixed_ex4              0.442  (share 0.206)
+  non_ex_attackers       0.442  (share 0.109)
+  lucario_ex             0.342  (share 0.098)
+
+=== mixed_ex2 full spread (silver band) ===
+  vs mixed_ex1              0.690  (n=2985, meta 0.233)
+  vs mixed_ex4              0.444  (n=27, meta 0.206)
+  vs mixed_ex3              0.399  (n=2830, meta 0.112)
+  vs non_ex_attackers       0.588  (n=262, meta 0.109)
+  vs lucario_ex             0.400  (n=15, meta 0.098)
+  vs crustle_control        0.623  (n=1072, meta 0.085)
+  vs dragapult              0.357  (n=384, meta 0.069)
+  vs ex_beatdown            0.282  (n=85, meta 0.053)
+  vs mixed_ex2              0.500  (n=602, meta 0.020)
+  vs mixed_ex5              0.422  (n=45, meta 0.012)
+
+=== dragapult full spread (silver band) ===
+  vs mixed_ex1              0.553  (n=1135, meta 0.233)
+  vs mixed_ex4              0.500  (n=12, meta 0.206)
+  vs mixed_ex3              0.449  (n=1161, meta 0.112)
+  vs non_ex_attackers       0.727  (n=44, meta 0.109)
+  vs crustle_control        0.468  (n=378, meta 0.085)
+  vs dragapult              0.500  (n=92, meta 0.069)
+  vs ex_beatdown            0.400  (n=50, meta 0.053)
+  vs mixed_ex2              0.643  (n=384, meta 0.020)
+  vs mixed_ex5              0.500  (n=20, meta 0.012)
+
+=== ex_beatdown full spread (silver band) ===
+  vs mixed_ex1              0.393  (n=359, meta 0.233)
+  vs mixed_ex3              0.502  (n=305, meta 0.112)
+  vs non_ex_attackers       0.778  (n=18, meta 0.109)
+  vs crustle_control        0.728  (n=125, meta 0.085)
+  vs dragapult              0.600  (n=50, meta 0.069)
+  vs mixed_ex2              0.718  (n=85, meta 0.020)
+
+=== mixed_ex4 full spread (silver band) ===
+  vs mixed_ex1              0.296  (n=98, meta 0.233)
+  vs mixed_ex3              0.341  (n=91, meta 0.112)
+  vs non_ex_attackers       0.636  (n=11, meta 0.109)
+  vs crustle_control        0.531  (n=64, meta 0.085)
+  vs dragapult              0.500  (n=12, meta 0.069)
+  vs mixed_ex2              0.556  (n=27, meta 0.020)
+  vs mixed_ex5              0.077  (n=13, meta 0.012)
+
+=== crustle_control full spread (silver band) ===
+  vs mixed_ex1              0.474  (n=4949, meta 0.233)
+  vs mixed_ex4              0.469  (n=64, meta 0.206)
+  vs mixed_ex3              0.481  (n=3073, meta 0.112)
+  vs non_ex_attackers       0.404  (n=451, meta 0.109)
+  vs lucario_ex             0.769  (n=13, meta 0.098)
+  vs crustle_control        0.500  (n=1906, meta 0.085)
+  vs dragapult              0.532  (n=378, meta 0.069)
+  vs ex_beatdown            0.272  (n=125, meta 0.053)
+  vs mixed_ex2              0.377  (n=1072, meta 0.020)
+  vs mixed_ex5              0.767  (n=206, meta 0.012)

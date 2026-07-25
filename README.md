@@ -84,9 +84,23 @@ uv run python run_gauntlet.py 20      # random vs random
 - `agents.py` … ベースラインエージェント
 - 結果は `results/` に JSON で保存（`.gitignore` 対象）
 
-## 進捗（2026-07-24 時点）
+## 進捗（2026-07-25 時点）
 
-**模倣学習（BC）レーンを最後まで検証して畳み、実績ビルドに復旧**。eligible = **{v036 koff-restore, v037 alakazam-restore}**、μ600 から再収束中（koff は実証均衡 810-936 へ）。rank ~1240 / 5634、silver cut ~915。締切8/16（Simulation）・9/13（Strategy）。
+**デッキを dragapult に転換して提出（v038）**。exp081 で「エージェント強化レーンは出尽くし」を確定させた上で、silver帯の全archetype勝率行列を実データから構築し、**dragapult が silver帯で最良の一般 archetype（総合 0.576、Alakazam(23%)にも 0.553）**と判明。公開の強パイロット（skarin/Phantom Dive、ラダー実績827.5）を採用・独立評価（vs koff 0.72 / vs 実Alakazamパイロット 0.57、0クラッシュ）。eligible = **{v038 dragapult ×2}**（同一tarの独立2ドロー＝最良archetypeの両枠リロール。v036 koff・v037 alakazam とも退出）。rank ~1170 / 5652、silver cut 916.1（あと約127点）。締切8/16（Simulation）・9/13（Strategy）。
+
+### 07-25: エージェント強化レーンの total closure → dragapult 転換（exp081/exp082）
+「今出せる提出物を強くする」最後の未探索ターゲットを潰し、データが指す最良デッキへ乗り換えた。
+
+1. **koff の対Grimmsnarl = 構造的（パッチ不可）**: 唯一の未調律マッチ（Grimmsnarl は新台頭）を n=100 で診断。負け方は**プライズ・レース負け**（相手の山を8残しでミル未完・相手プライズ4先取、turn25決着）＝control-mill が aggro-ex の時計に間に合わない古典的な負け。gated-decision 漏れではない。かつ有効な局所計器も無い（BCネット弱すぎ・pub1034過大評価）。
+2. **koff(crustle_control) は silver帯で 0.492＝負け越し archetype**。942 の高ドローは下位帯分散で、post-deadline 収束（真の実力≒2週間）では <0.5 へ回帰＝**koff reroll は silver に信頼できない道**と判明。
+3. **silver帯 全archetype×archetype 勝率行列を構築**（10日, n=数千/セル）。**dragapult 0.576 が最良の一般archetype**、Alakazam(23%)に 0.553 で勝つ。anti-Alakazam 特攻の mixed_ex2 は Alakazam を 0.690 で叩くが総合 0.509＝**罠**（他に折れる）。
+4. **skarin の公開 dragapult を採用・独立評価**: 公式サンプル(kiyotah)はラダー499.6で archetype潜在を出せないが、コミュニティ版(SK Arin #735=827.5)は強パイロット。我々のハーネスで **vs koff 0.72 / vs 実Alakazamパイロット 0.57**、クラッシュ安全スモーク90試合0err → **v038 提出**。
+5. **eligible=dragapult×2 の是非**: LB=2枠のmax なので、strictly 最良の dragapult を両枠に置く方が max 最大化に有利（alakazam枠は dragapult枠を超えた時だけ寄与）。dragapult はラダー実証済みで BC のような「ローカル≠ラダー」リスクが低い。alakazam ヘッジ喪失の唯一のリスクは dragapult のメタ回転崩壊だが、最良ポジション archetype ゆえ低リスク。→ **維持し、片方が沈んだら個別リロール**。
+
+<details><summary>07-24 時点の進捗: 学習レーンの最終結論（クリックで展開）</summary>
+
+**模倣学習（BC）レーンを最後まで検証して畳み、実績ビルドに復旧**。eligible = **{v036 koff-restore, v037 alakazam-restore}**、μ600 から再収束中（koff は実証均衡 810-936 へ）。rank ~1240 / 5634、silver cut ~915。
+</details>
 
 ### 学習レーンの最終結論（07-24）— 24ネガティブで確定的に終了
 exp080 で BC-Grimmsnarl（上位帯43%の最多デッキ）を丁寧に検証したが、**ローカルで強く見えてラダーに転移しなかった**。段階的に全ての学習レバーを潰した:

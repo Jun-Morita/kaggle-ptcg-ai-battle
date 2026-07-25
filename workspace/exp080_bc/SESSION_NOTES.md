@@ -203,3 +203,61 @@ MCTS vs raw: 18-42 = 0.300, z=-3.10  (n=60, 227s)
 → **Front 2（self-play/MCTS）は打ち切り**。BC 単体キャップ（583/prvsiyan~750 < koff~810）＋全帯データ
 不在＋MCTS逆効果 で、本コンペの学習レーンは網羅的に出尽くし（24ネガ＋this）。silver は Front 1（koff
 リロール）に集約。
+
+## exp081 Track A（07-25）: koff-vs-Grimmsnarl 診断 = 構造的レース負け、パッチ不可
+
+「今出せる提出物の改良」で唯一の未調律ターゲット＝koff の対 Grimmsnarl（ラダー 0.29、Grimmsnarl は
+新台頭でkoffが一度も調律していない）を診断。`eval_diag.py`: koff(LO) vs 我々のBCネット(Grimmsnarl,
+oracle-free, ミラー0.91の稽古台) n=100。
+
+結果:
+```
+koff 75-25-0  koff_winrate=0.750   (BCネットは弱い稽古台=ラダー0.29を再現せず)
+koff WINS  (n=75): turn~29  相手山end~0   相手プライズ残~4  (=ミル完遂で勝つ)
+koff LOSES (n=25): turn~25  相手山end~8   相手プライズ残~2  (=相手が4プライズ先取、koffは山8残しでミル未完)
+```
+**負け方 = プライズ・レース負け**。koff(control-mill)が Grimmsnarl(aggro-ex)のプライズ時計に間に合わない。
+turn25で決着（勝ち試合の29より早い）、koffは山を8まで削るが完遂前にプライズ6-2で負ける。
+これは control vs aggro の古典的な時計負け＝**構造的、パッチ可能な gated-decision 漏れではない**。
+
+さらに **有効な局所計器が無い**: 我々のBCネットは弱すぎ（koff 0.75 vs ラダー 0.29）、pub1034 は過大評価。
+→ 仮にkoffをパッチしても局所A/B検証不能（pub1034ゲート失敗と同じ轍）。
+**→ Track A（koff-Grimmsnarlパッチ）は棄却。学習だけでなくヒューリスティック改良レーンも出尽くし。**
+
+## exp081 副産物: koff ≈ alakazam（安定メタで互角）— 「alakazam有利」はノイズだった
+
+現メタ再重み付けで koff と alakazam を比較（両ビルドの実ラダー archetype 別勝率）:
+- **ノイズ・スナップショット（Grimmsnarl 24%）**: koff 0.51 < alakazam 0.55 ← 一時的
+- **安定平均シェア（7スナップショット, n=562）**: **koff 0.550 ≈ alakazam 0.537** ← koff微差で上
+安定メタの最大2勢力は Alakazam ミラー(mixed_ex1 23%) と Archaludon(mixed_ex4 21%)=計44%。
+koff は Archaludon 0.90 で稼ぐ / alakazam は Grimmsnarl 0.53・dragapult 0.62・lucario 1.00 で稼ぐ＝相補的。
+**{koff, alakazam} のヘッジは正しい。alakazamは明確に上ではない。**
+
+真の天井: **最大勢力 Alakazam(23%) を我々のどのビルドも倒せない**（koff 0.46 / alakazam-mirror 0.36 /
+BC-Grimm 0.37）。ここが唯一の未探索・高レバー領域だが、ミラー調律は exp058/075 で既に NO-GO。
+
+## exp081 Track B（07-25）: anti-Alakazam レバー測定 → dragapult が最良archetype
+
+「レバーを先に測る」規律で、ビルド前に silver帯(both>=900)の全 archetype×archetype 勝率行列を実データ
+から構築（alakazam_predator_scan.py → matchup_matrix.py、10日分、n=数千/セル）。
+
+### Alakazam(mixed_ex1)の天敵
+- mixed_ex2 が Alakazam を 0.690 で叩く（n=2985）/ dragapult 0.553 / crustle 0.474 / mirror 0.500
+- だが mixed_ex2 は総合 0.509 = narrow tech（Grimmsnarl 0.40/dragapult 0.36/ex_beatdown 0.28 に折れる）
+  ＝anti-Alakazam 特攻は silver vehicle にならない（罠）。
+
+### silver帯 archetype 別 総合勝率（メタ加重, stable shares）
+mixed_ex5 0.612(share0.012レア) / dragapult 0.576(0.069)←最良 / mixed_ex1 0.558(0.233) /
+ex_beatdown 0.544(0.053) / mixed_ex3 0.526(0.112) / mixed_ex2 0.509(0.020) /
+crustle_ctrl 0.492(0.085)←koffのarchetype負け越し / mixed_ex4 0.442(0.206) / non_ex 0.442(0.109) /
+lucario_ex 0.342(0.098)
+
+### 重大な帰結
+1. koff(crustle_control)は silver帯で 0.492 = 構造的負け越し。942高ドローは下位帯分散で、post-deadline
+   収束（真の実力≒2週間）では <0.5 へ回帰＝reroll は silver に信頼できない道。（ただし我々koffは
+   Archaludon 0.90 >> archetype平均0.469＝平均超えのcrustleパイロット。それでも上限あり）
+2. dragapult(0.576)が silver帯で最良の一般archetype。Alakazam(23%)に勝ち(0.553)、我々の全ビルド
+   (0.54-0.55)を上回る唯一の現実的アップグレード。弱点は ex_beatdown 0.40(5%)のみ。
+3. dragapult spread: vs Alakazam0.553/vs非ex0.727/vs mixed_ex2 0.643/vs crustle0.468/vs Grimm0.449/
+   vs ex_beatdown0.400。安定勝ち越し。
+→ 次: 強い dragapult パイロットの入手可否（公開採用 or 自作）。archetype平均≠強いパイロットの壁は依然。

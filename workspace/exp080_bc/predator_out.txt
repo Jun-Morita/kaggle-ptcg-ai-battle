@@ -1,0 +1,38 @@
+days=10  target=mixed_ex1 (Alakazam)
+
+  scanned pokemon-tcg-ai-battle-episodes-2026-07-13.zip
+  scanned pokemon-tcg-ai-battle-episodes-2026-07-14.zip
+  scanned pokemon-tcg-ai-battle-episodes-2026-07-15.zip
+  scanned pokemon-tcg-ai-battle-episodes-2026-07-16.zip
+  scanned pokemon-tcg-ai-battle-episodes-2026-07-17.zip
+  scanned pokemon-tcg-ai-battle-episodes-2026-07-18.zip
+  scanned pokemon-tcg-ai-battle-episodes-2026-07-19.zip
+  scanned pokemon-tcg-ai-battle-episodes-2026-07-20.zip
+  scanned pokemon-tcg-ai-battle-episodes-2026-07-21.zip
+  scanned pokemon-tcg-ai-battle-episodes-2026-07-22.zip
+
+=== Alakazam WIN RATE by opponent archetype -- ALL bands ===
+  opponent                AlakWR     n   <-- predator if <0.45
+  mixed_ex1(mirror)        0.500 10894
+  mixed_ex3                0.488  9471
+  crustle_control          0.520  5306
+  mixed_ex2                0.313  3197  <== ALAKAZAM LOSES
+  non_ex_attackers         0.508  1384
+  dragapult                0.445  1170  <== ALAKAZAM LOSES
+  ex_beatdown              0.607   882
+  mixed_ex4                0.588   359
+  mixed_ex5                0.506   350
+  lucario_ex               0.636    77
+
+=== Alakazam WIN RATE by opponent archetype -- silver band (both >=900) ===
+  opponent                AlakWR     n   <-- predator if <0.45
+  mixed_ex1(mirror)        0.500 10120
+  mixed_ex3                0.490  8963
+  crustle_control          0.526  4949
+  mixed_ex2                0.310  2985  <== ALAKAZAM LOSES
+  dragapult                0.447  1135  <== ALAKAZAM LOSES
+  non_ex_attackers         0.522  1008
+  ex_beatdown              0.607   359
+  mixed_ex5                0.518   307
+  mixed_ex4                0.704    98
+  lucario_ex               0.645    31

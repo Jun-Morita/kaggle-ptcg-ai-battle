@@ -1,0 +1,394 @@
+{
+ "mixed_ex1": {
+  "mixed_ex2": [
+   925,
+   2985
+  ],
+  "mixed_ex1": [
+   5060,
+   10120
+  ],
+  "mixed_ex3": [
+   4395,
+   8963
+  ],
+  "crustle_control": [
+   2604,
+   4949
+  ],
+  "non_ex_attackers": [
+   526,
+   1008
+  ],
+  "mixed_ex4": [
+   69,
+   98
+  ],
+  "dragapult": [
+   507,
+   1135
+  ],
+  "mixed_ex5": [
+   159,
+   307
+  ],
+  "lucario_ex": [
+   20,
+   31
+  ],
+  "ex_beatdown": [
+   218,
+   359
+  ]
+ },
+ "mixed_ex2": {
+  "mixed_ex1": [
+   2060,
+   2985
+  ],
+  "mixed_ex3": [
+   1129,
+   2830
+  ],
+  "crustle_control": [
+   668,
+   1072
+  ],
+  "non_ex_attackers": [
+   154,
+   262
+  ],
+  "lucario_ex": [
+   6,
+   15
+  ],
+  "dragapult": [
+   137,
+   384
+  ],
+  "mixed_ex5": [
+   19,
+   45
+  ],
+  "mixed_ex4": [
+   12,
+   27
+  ],
+  "mixed_ex2": [
+   301,
+   602
+  ],
+  "ex_beatdown": [
+   24,
+   85
+  ]
+ },
+ "mixed_ex3": {
+  "mixed_ex1": [
+   4568,
+   8963
+  ],
+  "crustle_control": [
+   1596,
+   3073
+  ],
+  "mixed_ex5": [
+   55,
+   158
+  ],
+  "mixed_ex3": [
+   3596,
+   7192
+  ],
+  "non_ex_attackers": [
+   254,
+   556
+  ],
+  "mixed_ex2": [
+   1701,
+   2830
+  ],
+  "dragapult": [
+   640,
+   1161
+  ],
+  "mixed_ex4": [
+   60,
+   91
+  ],
+  "ex_beatdown": [
+   152,
+   305
+  ],
+  "lucario_ex": [
+   6,
+   15
+  ]
+ },
+ "crustle_control": {
+  "mixed_ex1": [
+   2345,
+   4949
+  ],
+  "non_ex_attackers": [
+   182,
+   451
+  ],
+  "mixed_ex3": [
+   1477,
+   3073
+  ],
+  "crustle_control": [
+   953,
+   1906
+  ],
+  "ex_beatdown": [
+   34,
+   125
+  ],
+  "mixed_ex5": [
+   158,
+   206
+  ],
+  "mixed_ex2": [
+   404,
+   1072
+  ],
+  "dragapult": [
+   201,
+   378
+  ],
+  "mixed_ex4": [
+   30,
+   64
+  ],
+  "lucario_ex": [
+   10,
+   13
+  ]
+ },
+ "non_ex_attackers": {
+  "crustle_control": [
+   269,
+   451
+  ],
+  "mixed_ex3": [
+   302,
+   556
+  ],
+  "mixed_ex5": [
+   23,
+   46
+  ],
+  "non_ex_attackers": [
+   39,
+   78
+  ],
+  "mixed_ex1": [
+   482,
+   1008
+  ],
+  "dragapult": [
+   12,
+   44
+  ],
+  "mixed_ex2": [
+   108,
+   262
+  ],
+  "mixed_ex4": [
+   4,
+   11
+  ],
+  "ex_beatdown": [
+   4,
+   18
+  ]
+ },
+ "mixed_ex5": {
+  "mixed_ex3": [
+   103,
+   158
+  ],
+  "non_ex_attackers": [
+   23,
+   46
+  ],
+  "crustle_control": [
+   48,
+   206
+  ],
+  "mixed_ex4": [
+   12,
+   13
+  ],
+  "dragapult": [
+   10,
+   20
+  ],
+  "mixed_ex1": [
+   148,
+   307
+  ],
+  "mixed_ex2": [
+   26,
+   45
+  ],
+  "ex_beatdown": [
+   1,
+   5
+  ],
+  "lucario_ex": [
+   1,
+   1
+  ],
+  "mixed_ex5": [
+   4,
+   8
+  ]
+ },
+ "ex_beatdown": {
+  "crustle_control": [
+   91,
+   125
+  ],
+  "mixed_ex5": [
+   4,
+   5
+  ],
+  "mixed_ex3": [
+   153,
+   305
+  ],
+  "mixed_ex1": [
+   141,
+   359
+  ],
+  "mixed_ex4": [
+   1,
+   2
+  ],
+  "non_ex_attackers": [
+   14,
+   18
+  ],
+  "mixed_ex2": [
+   61,
+   85
+  ],
+  "dragapult": [
+   30,
+   50
+  ],
+  "ex_beatdown": [
+   3,
+   6
+  ]
+ },
+ "mixed_ex4": {
+  "mixed_ex1": [
+   29,
+   98
+  ],
+  "mixed_ex5": [
+   1,
+   13
+  ],
+  "mixed_ex3": [
+   31,
+   91
+  ],
+  "crustle_control": [
+   34,
+   64
+  ],
+  "non_ex_attackers": [
+   7,
+   11
+  ],
+  "dragapult": [
+   6,
+   12
+  ],
+  "mixed_ex2": [
+   15,
+   27
+  ],
+  "mixed_ex4": [
+   1,
+   2
+  ],
+  "ex_beatdown": [
+   1,
+   2
+  ]
+ },
+ "dragapult": {
+  "crustle_control": [
+   177,
+   378
+  ],
+  "non_ex_attackers": [
+   32,
+   44
+  ],
+  "mixed_ex3": [
+   521,
+   1161
+  ],
+  "mixed_ex5": [
+   10,
+   20
+  ],
+  "mixed_ex1": [
+   628,
+   1135
+  ],
+  "mixed_ex4": [
+   6,
+   12
+  ],
+  "mixed_ex2": [
+   247,
+   384
+  ],
+  "lucario_ex": [
+   1,
+   1
+  ],
+  "ex_beatdown": [
+   20,
+   50
+  ],
+  "dragapult": [
+   46,
+   92
+  ]
+ },
+ "lucario_ex": {
+  "mixed_ex1": [
+   11,
+   31
+  ],
+  "mixed_ex2": [
+   9,
+   15
+  ],
+  "crustle_control": [
+   3,
+   13
+  ],
+  "dragapult": [
+   0,
+   1
+  ],
+  "mixed_ex5": [
+   0,
+   1
+  ],
+  "mixed_ex3": [
+   9,
+   15
+  ]
+ }
+}
