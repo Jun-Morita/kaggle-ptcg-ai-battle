@@ -25,6 +25,7 @@ from __future__ import annotations
 import argparse
 import glob
 import json
+import math
 import os
 import pickle
 import random
@@ -133,7 +134,11 @@ def make_batch(recs, device, opp_drop=0.0, vw_list=None):
             t(ld, torch.float32).view(bs, -1), t(vw, torch.float32).view(bs, -1))
 
 
-def train_epoch(model, optimizer, files, device, batch_size, limit_chunks, opp_drop=0.0):
+def train_epoch(model, optimizer, files, device, batch_size, limit_chunks, opp_drop=0.0,
+                sched=None, clip=0.0):
+    """sched, if given, is stepped PER BATCH (warmup needs step granularity, not
+    epoch granularity -- exp083: the official post-norm arch trains badly at 2+
+    layers without a warmup ramp)."""
     loss_fn_enc = torch.nn.HuberLoss(reduction="none", delta=0.2)
     loss_fn_dec = torch.nn.HuberLoss(reduction="none", delta=0.1)
     model.train()
@@ -155,7 +160,11 @@ def train_epoch(model, optimizer, files, device, batch_size, limit_chunks, opp_d
             loss = ((loss_fn_enc(oe, lte) * vw).sum() / max(float(vw.sum()), 1.0)
                     + (loss_fn_dec(od, ltd) * mt).sum() / len(batch))
             loss.backward()
+            if clip:
+                torch.nn.utils.clip_grad_norm_(model.parameters(), clip)
             optimizer.step()
+            if sched is not None:
+                sched.step()
             total += loss.item()
             n_batches += 1
     return total / max(n_batches, 1), n_batches
@@ -227,11 +236,27 @@ def main():
     ap.add_argument("--limit-chunks", type=int, default=0, help="smoke: cap chunks/epoch")
     ap.add_argument("--tag", default="pre1")
     ap.add_argument("--d-model", type=int, default=128)
+    # exp083: the arch used to be hardwired to heads=2, 1 encoder + 1 decoder layer,
+    # d_ff=2*d_model. Those knobs are what "scale the policy network" needs.
+    ap.add_argument("--heads", type=int, default=2)
+    ap.add_argument("--enc-layers", type=int, default=1)
+    ap.add_argument("--dec-layers", type=int, default=1)
+    ap.add_argument("--d-ff", type=int, default=0, help="0 = 2*d_model (the old default)")
+    ap.add_argument("--cosine", action="store_true",
+                    help="cosine-decay the LR over --epochs (for long runs)")
+    ap.add_argument("--warmup-steps", type=int, default=0,
+                    help="linear LR warmup over N optimizer steps; required for the "
+                         "post-norm arch at >1 layer (exp083)")
+    ap.add_argument("--clip", type=float, default=0.0,
+                    help="clip_grad_norm_ threshold (0=off); stabilises the deeper configs")
+    ap.add_argument("--steps-per-epoch", type=int, default=8044,
+                    help="only used to size the warmup+cosine schedule (10-day corpus @bs128)")
     ap.add_argument("--seed", type=int, default=42)
     ap.add_argument("--resume", default="", help="path to model .pth to continue from")
     ap.add_argument("--opp-drop", type=float, default=0.0,
                     help="train-time dropout prob of the opp_deck oracle word (word 22)")
     args = ap.parse_args()
+    d_ff = args.d_ff or args.d_model * 2
 
     random.seed(args.seed)
     torch.manual_seed(args.seed)
@@ -246,20 +271,42 @@ def main():
     os.makedirs(out_dir, exist_ok=True)
     lim = args.limit_chunks or None
 
-    model = tm.MyModel(args.d_model, 2, args.d_model * 2, 1, 1).to(device)
+    model = tm.MyModel(args.d_model, args.heads, d_ff,
+                       args.enc_layers, args.dec_layers).to(device)
     if args.resume:
         model.load_state_dict(torch.load(args.resume, map_location=device))
         print(f"resumed from {args.resume}")
     optimizer = torch.optim.AdamW(model.parameters(), lr=args.lr)
-    print(f"device={device} files={len(files)} tag={args.tag}")
+    sched = None
+    if args.warmup_steps or args.cosine:
+        total = max(1, args.epochs * args.steps_per_epoch)
+        wu = args.warmup_steps
+
+        def lr_at(step):  # multiplier on args.lr, stepped per batch
+            if wu and step < wu:
+                return (step + 1) / wu
+            if not args.cosine:
+                return 1.0
+            prog = min(1.0, max(0.0, (step - wu) / max(1, total - wu)))
+            return 0.5 * (1.0 + math.cos(math.pi * prog))
+
+        sched = torch.optim.lr_scheduler.LambdaLR(optimizer, lr_at)
+    # The arch is no longer implied by d_model alone -- record it so npnet/export and
+    # any later reload can rebuild the exact model without guessing.
+    arch = {"d_model": args.d_model, "heads": args.heads, "d_ff": d_ff,
+            "enc_layers": args.enc_layers, "dec_layers": args.dec_layers}
+    json.dump(arch, open(os.path.join(out_dir, "arch.json"), "w"), indent=1)
+    n_par = sum(p.numel() for p in model.parameters())
+    print(f"device={device} files={len(files)} tag={args.tag} arch={arch} params={n_par/1e6:.1f}M")
 
     history = []
     for ep in range(args.epochs):
         t0 = time.time()
         loss, nb = train_epoch(model, optimizer, files, device, args.batch_size, lim,
-                               opp_drop=args.opp_drop)
+                               opp_drop=args.opp_drop, sched=sched, clip=args.clip)
         metrics = evaluate(model, files, device, args.batch_size, lim)
         row = {"epoch": ep, "loss": round(loss, 4), "batches": nb,
+               "lr": round(optimizer.param_groups[0]["lr"], 7),
                "sec": round(time.time() - t0), **metrics}
         if args.opp_drop > 0.0:
             nofree = evaluate(model, files, device, args.batch_size, lim, opp_drop=1.0)

@@ -1,0 +1,29 @@
+# exp083 — scale-up BC. Only capacity + training budget change vs exp080's net;
+# the architecture family, corpus, features and ship path are all identical so the
+# comparison stays clean.
+corpus: ../exp080_bc/data/mixed_ex3_multi_w7.pkl   # 1,083,793 decisions / 12,235 games / 10 days
+deck: mixed_ex3 (Grimmsnarl)
+seed: 42
+opp_drop: 0.5          # oracle-free ship condition (same as exp080)
+batch_size: 128        # same as baseline
+lr: 3.0e-4
+cosine: true
+
+baseline:              # exp080 pre_grimm10 -- what we are trying to beat
+  d_model: 128
+  heads: 2
+  enc_layers: 1
+  dec_layers: 1
+  epochs: 3            # ~7 minutes total; val top-1 was STILL RISING at the last epoch
+  val_top1_oracle_free: 0.624
+  ladder_winrate: 0.43 # the real gate it failed
+
+configs:
+  A: {d_model: 256, heads: 4, enc_layers: 2, dec_layers: 2, epochs: 24}
+  B: {d_model: 384, heads: 6, enc_layers: 4, dec_layers: 4, epochs: 24}
+
+gates:                 # offline gates are NECESSARY conditions only, never ship evidence
+  val_top1_oracle_free: ">= 0.68"
+  vs_pre_grimm10_selfmirror: "> 0.5 clearly, n >= 200"
+  per_act_seconds: "<= 0.3 (2.3s/act is a known ladder failure)"
+  ladder: "> 0.54 (koff/alakazam true skill) -- the only ship gate"

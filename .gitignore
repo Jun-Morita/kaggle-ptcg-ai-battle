@@ -123,3 +123,8 @@ workspace/exp082_dragapult/build_v2_nopenalty/cg
 workspace/exp082_dragapult/build_v3_greedy/cg
 workspace/exp082_dragapult/build_v4_maxgreedy/cg
 workspace/exp082_dragapult/probe_cards.py
+# exp083: built bundles carry the engine sources (disc717141 licence = local testing
+# only, no redistribution) and 50-100MB weight blobs. Ship-path CODE stays tracked.
+workspace/exp083_scaleup/build_pure/
+workspace/exp083_scaleup/build_dual/
+workspace/exp083_scaleup/results/

@@ -16,6 +16,8 @@ TransformerEncoderLayer is post-norm relu:  x=n1(x+SA(x)); x=n2(x+W2 relu(W1 x))
 DecoderLayer (custom, train_mcts.py):       x=n1(x+CA(x,enc)); x=n2(x+W2 relu(W1 x)).
 """
 from __future__ import annotations
+import json
+import os
 import pickle
 import sys
 import time
@@ -23,9 +25,7 @@ import time
 import numpy as np
 
 NUM_WORDS_ENCODER = 25
-D = 128
-H = 2
-HD = D // H
+LEGACY_HEADS = 2  # the d128/1+1 nets shipped before exp083 had no arch.json
 
 
 # ---- primitives -----------------------------------------------------------------
@@ -40,25 +40,26 @@ def softmax(x, axis=-1):
     return e / e.sum(axis=axis, keepdims=True)
 
 
-def mha(q_in, kv_in, ipw, ipb, opw, opb):
-    """torch MultiheadAttention (batch=1, seq-first collapsed to (S,D))."""
-    wq, wk, wv = ipw[:D], ipw[D:2 * D], ipw[2 * D:]
-    bq, bk, bv = ipb[:D], ipb[D:2 * D], ipb[2 * D:]
+def mha(q_in, kv_in, ipw, ipb, opw, opb, d, h):
+    """torch MultiheadAttention (batch=1, seq-first collapsed to (S,d))."""
+    hd = d // h
+    wq, wk, wv = ipw[:d], ipw[d:2 * d], ipw[2 * d:]
+    bq, bk, bv = ipb[:d], ipb[d:2 * d], ipb[2 * d:]
     q = q_in @ wq.T + bq
     k = kv_in @ wk.T + bk
     v = kv_in @ wv.T + bv
     Sq, Sk = q.shape[0], k.shape[0]
-    q = q.reshape(Sq, H, HD).transpose(1, 0, 2)          # (H, Sq, HD)
-    k = k.reshape(Sk, H, HD).transpose(1, 0, 2)
-    v = v.reshape(Sk, H, HD).transpose(1, 0, 2)
-    a = softmax(q @ k.transpose(0, 2, 1) / np.sqrt(HD), axis=-1)
-    o = (a @ v).transpose(1, 0, 2).reshape(Sq, D)
+    q = q.reshape(Sq, h, hd).transpose(1, 0, 2)          # (h, Sq, hd)
+    k = k.reshape(Sk, h, hd).transpose(1, 0, 2)
+    v = v.reshape(Sk, h, hd).transpose(1, 0, 2)
+    a = softmax(q @ k.transpose(0, 2, 1) / np.sqrt(hd), axis=-1)
+    o = (a @ v).transpose(1, 0, 2).reshape(Sq, d)
     return o @ opw.T + opb
 
 
-def emb_bag(weight, idx, val, off, n_bags):
+def emb_bag(weight, idx, val, off, n_bags, d):
     """EmbeddingBag(mode=sum) with per_sample_weights, list/array inputs."""
-    out = np.zeros((n_bags, D), dtype=np.float64)
+    out = np.zeros((n_bags, d), dtype=np.float64)
     idx = np.asarray(idx, dtype=np.int64)
     val = np.asarray(val, dtype=np.float64)
     off = np.asarray(off, dtype=np.int64)
@@ -70,38 +71,60 @@ def emb_bag(weight, idx, val, off, n_bags):
     return out
 
 
+def infer_arch(keys, d_model, heads=None):
+    """Recover the architecture from the weight names/shapes.
+
+    Head count is NOT recoverable from shapes (MultiheadAttention packs qkv the
+    same way for any h), so it must come from arch.json / the caller; everything
+    else is derived so old and new checkpoints both load."""
+    enc = 1 + max([int(k.split(".")[2]) for k in keys
+                   if k.startswith("encoder.layers.")] or [-1])
+    dec = 1 + max([int(k.split(".")[1]) for k in keys
+                   if k.startswith("decoder.") and k[8:9].isdigit()] or [-1])
+    return {"d_model": d_model, "heads": heads or LEGACY_HEADS,
+            "enc_layers": enc, "dec_layers": dec}
+
+
 # ---- model ------------------------------------------------------------------------
 class NpNet:
-    def __init__(self, npz_path):
+    def __init__(self, npz_path, heads=None):
         z = np.load(npz_path)
         self.w = {k: z[k].astype(np.float64) for k in z.files}
+        if heads is None:  # sibling arch.json, written by pretrain.py since exp083
+            cand = os.path.join(os.path.dirname(os.path.abspath(npz_path)), "arch.json")
+            if os.path.exists(cand):
+                heads = json.load(open(cand)).get("heads")
+        self.arch = infer_arch(self.w.keys(), self.w["encoder_bag.weight"].shape[1], heads)
+        self.d = self.arch["d_model"]
+        self.h = self.arch["heads"]
 
     def forward(self, ie, ve, oe, idx, vd, od):
         """Single sample: returns (value_scalar, policy_vector[n_cands])."""
-        w = self.w
+        w, d, h = self.w, self.d, self.h
         n_enc = len(oe)                       # 25 bags
-        x = emb_bag(w["encoder_bag.weight"], ie, ve, oe, n_enc)
-        # encoder layer (post-norm relu)
-        y = mha(x, x, w["encoder.layers.0.self_attn.in_proj_weight"],
-                w["encoder.layers.0.self_attn.in_proj_bias"],
-                w["encoder.layers.0.self_attn.out_proj.weight"],
-                w["encoder.layers.0.self_attn.out_proj.bias"])
-        x = layer_norm(x + y, w["encoder.layers.0.norm1.weight"], w["encoder.layers.0.norm1.bias"])
-        y = np.maximum(x @ w["encoder.layers.0.linear1.weight"].T + w["encoder.layers.0.linear1.bias"], 0)
-        y = y @ w["encoder.layers.0.linear2.weight"].T + w["encoder.layers.0.linear2.bias"]
-        enc = layer_norm(x + y, w["encoder.layers.0.norm2.weight"], w["encoder.layers.0.norm2.bias"])
+        x = emb_bag(w["encoder_bag.weight"], ie, ve, oe, n_enc, d)
+        # encoder layers (post-norm relu)
+        for i in range(self.arch["enc_layers"]):
+            q = f"encoder.layers.{i}."
+            y = mha(x, x, w[q + "self_attn.in_proj_weight"], w[q + "self_attn.in_proj_bias"],
+                    w[q + "self_attn.out_proj.weight"], w[q + "self_attn.out_proj.bias"], d, h)
+            x = layer_norm(x + y, w[q + "norm1.weight"], w[q + "norm1.bias"])
+            y = np.maximum(x @ w[q + "linear1.weight"].T + w[q + "linear1.bias"], 0)
+            y = y @ w[q + "linear2.weight"].T + w[q + "linear2.bias"]
+            x = layer_norm(x + y, w[q + "norm2.weight"], w[q + "norm2.bias"])
+        enc = x
         v = float(np.tanh((enc @ w["encoder_fc.weight"].T + w["encoder_fc.bias"]).mean()))
-        # decoder
+        # decoder layers (cross-attend to the encoder output)
         n_dec = len(od)                       # n_cands bags
-        p = emb_bag(w["decoder_bag.weight"], idx, vd, od, n_dec)
-        y = mha(p, enc, w["decoder.0.attention.in_proj_weight"],
-                w["decoder.0.attention.in_proj_bias"],
-                w["decoder.0.attention.out_proj.weight"],
-                w["decoder.0.attention.out_proj.bias"])
-        p = layer_norm(p + y, w["decoder.0.norm1.weight"], w["decoder.0.norm1.bias"])
-        y = np.maximum(p @ w["decoder.0.fc1.weight"].T + w["decoder.0.fc1.bias"], 0)
-        y = y @ w["decoder.0.fc2.weight"].T + w["decoder.0.fc2.bias"]
-        p = layer_norm(p + y, w["decoder.0.norm2.weight"], w["decoder.0.norm2.bias"])
+        p = emb_bag(w["decoder_bag.weight"], idx, vd, od, n_dec, d)
+        for i in range(self.arch["dec_layers"]):
+            q = f"decoder.{i}."
+            y = mha(p, enc, w[q + "attention.in_proj_weight"], w[q + "attention.in_proj_bias"],
+                    w[q + "attention.out_proj.weight"], w[q + "attention.out_proj.bias"], d, h)
+            p = layer_norm(p + y, w[q + "norm1.weight"], w[q + "norm1.bias"])
+            y = np.maximum(p @ w[q + "fc1.weight"].T + w[q + "fc1.bias"], 0)
+            y = y @ w[q + "fc2.weight"].T + w[q + "fc2.bias"]
+            p = layer_norm(p + y, w[q + "norm2.weight"], w[q + "norm2.bias"])
         p = np.tanh(p @ w["decoder_fc.weight"].T + w["decoder_fc.bias"]).ravel()
         return v, p
 
@@ -129,10 +152,13 @@ def cmd_parity(pth, npz, pkl, n=500):
     sys.path.insert(0, ".")
     sys.path.insert(0, "../exp040_mctsv2")
     from train_mcts import MyModel
-    m = MyModel(128, 2, 256, 1, 1)
+    net = NpNet(npz)
+    a = net.arch
+    d_ff = net.w["encoder.layers.0.linear1.weight"].shape[0]
+    m = MyModel(a["d_model"], a["heads"], d_ff, a["enc_layers"], a["dec_layers"])
     m.load_state_dict(torch.load(pth, map_location="cpu"))
     m.eval()
-    net = NpNet(npz)
+    print(f"arch={a} d_ff={d_ff}")
     dv = dp = 0.0
     agree = tot = 0
     with torch.no_grad():
