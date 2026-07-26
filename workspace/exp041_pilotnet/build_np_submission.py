@@ -32,6 +32,9 @@ WEIGHTS_SRC = os.path.join(HERE, "results", "pre3b", "weights_pure.pkl")  # nump
 OUT = os.path.join(HERE, "build_np")
 
 
+ARCH_SRC = None  # set to force a specific arch.json; default = next to WEIGHTS_SRC
+
+
 def build():
     deck = json.load(open(DECK))
     assert len(deck) == 60
@@ -45,6 +48,14 @@ def build():
     # weights INSIDE cg/: cg/ contents are proven-delivered (libcg.so must arrive
     # for any agent to run), dodging any top-level-file whitelist in the extractor
     shutil.copy(WEIGHTS_SRC, os.path.join(dst, "weights_pure.pkl"))
+    # exp083: head count is NOT recoverable from the weight shapes, so a net with
+    # heads != 2 needs arch.json shipped alongside. Without it the pure-python
+    # NpNet silently falls back to the legacy 2 heads and computes a DIFFERENT
+    # function -- no crash, no error, just a wrong agent. Ship it whenever the
+    # weights have one next to them.
+    _arch = ARCH_SRC or os.path.join(os.path.dirname(WEIGHTS_SRC), "arch.json")
+    if os.path.exists(_arch):
+        shutil.copy(_arch, os.path.join(dst, "arch.json"))
 
     tarp = os.path.join(OUT, "submission.tar.gz")
     with tarfile.open(tarp, "w:gz") as tar:

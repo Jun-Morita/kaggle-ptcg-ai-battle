@@ -39,16 +39,27 @@ def main():
     target = sys.argv[1] if len(sys.argv) > 1 and not sys.argv[1].replace(".", "").isdigit() else "mixed_ex3"
     min_score = next((float(a) for a in sys.argv[1:] if a.replace(".", "").isdigit()), 1000.0)
 
+    # exp083b: --keep-losses also records LOST teacher seats (outcome=-1, which
+    # build_records.convert_seat already writes from the real reward). Without it
+    # every record has outcome=+1, so the value head is trained on a CONSTANT --
+    # measured on the shipped net: min 0.99986 / max 1.00000 / stdev 0.00002, i.e.
+    # zero information. That also invalidates the old "search makes it worse"
+    # result (MCTS lever 0.300, z=-3.10): the search was guided by a constant.
+    keep_losses = "--keep-losses" in sys.argv
+    enc_v3 = int(os.environ.get("ENC_V3", "0"))
+    suffix = ("_v3" if enc_v3 else "") + ("_wl" if keep_losses else "")
+
     zips = sorted(glob.glob(os.path.join(ROOT, "references/raw/episodes_*/*.zip")))
     scores = lb_scores()
     byid = card_map()
-    print(f"target={target}  min_score={min_score}  days={len(zips)}", flush=True)
+    print(f"target={target}  min_score={min_score}  days={len(zips)}  "
+          f"keep_losses={keep_losses}  ENC_V3={enc_v3}", flush=True)
     for z in zips:
         print("  ", os.path.basename(z), flush=True)
 
     stats = Counter()
     chunk, games, seen = [], 0, set()
-    out_pkl = os.path.join(HERE, "data", f"{target}_multi_w{BR.WID}.pkl")
+    out_pkl = os.path.join(HERE, "data", f"{target}_multi_w{BR.WID}{suffix}.pkl")
     os.makedirs(os.path.join(HERE, "data"), exist_ok=True)
     with open(out_pkl, "wb") as fout:
         for zp in zips:
@@ -80,8 +91,10 @@ def main():
                         continue
                     if scores.get(tn[s], 0.0) < min_score:
                         continue
-                    if not (rw[s] > rw[1 - s]):   # WON only
+                    won = rw[s] > rw[1 - s]
+                    if not keep_losses and not won:   # default: WON only
                         continue
+                    stats["seat_won" if won else "seat_lost"] += 1
                     n0 = stats["recorded"]
                     for rec in BR.convert_seat(ep, s, byid, stats):
                         chunk.append(rec)

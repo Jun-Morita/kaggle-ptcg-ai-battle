@@ -5,7 +5,7 @@ torch reference here; the shipped path never imports it (v015/v042 root cause).
 Usage: uv run python parity_ship.py <model.pth> <weights_pure.pkl> <records.pkl> [n]
 """
 from __future__ import annotations
-import os, pickle, sys
+import json, os, pickle, sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 WS = os.path.abspath(os.path.join(HERE, ".."))
@@ -26,8 +26,14 @@ def main():
     pth, pkl, recs_path = sys.argv[1], sys.argv[2], sys.argv[3]
     n = int(sys.argv[4]) if len(sys.argv) > 4 else 300
 
-    PP.MODEL = PP.NpNet(pkl)          # load the exact file that ships
-    m = MyModel(128, 2, 256, 1, 1)
+    cfg = {"d_model": 128, "heads": 2, "d_ff": 256, "enc_layers": 1, "dec_layers": 1}
+    cand = os.path.join(os.path.dirname(os.path.abspath(pth)), "arch.json")
+    if os.path.exists(cand):
+        cfg.update({k: v for k, v in json.load(open(cand)).items() if k in cfg})
+    PP.MODEL = PP.NpNet(pkl, heads=cfg["heads"])   # the exact file that ships
+    print("arch:", cfg)
+    m = MyModel(cfg["d_model"], cfg["heads"], cfg["d_ff"],
+                cfg["enc_layers"], cfg["dec_layers"])
     m.load_state_dict(torch.load(pth, map_location="cpu"))
     m.eval()
 

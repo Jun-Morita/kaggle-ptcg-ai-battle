@@ -28,7 +28,9 @@ now pure stdlib (math + array + pickle), no numpy import anywhere.
 """
 from __future__ import annotations
 import array
+import json
 import math
+import operator
 import os
 import pickle
 import random
@@ -40,10 +42,28 @@ from cg.api import (
 )
 
 SEARCH_COUNT = 0  # raw argmax; sc16 MCTS = ~2.3s/act, too slow for the sandbox per-act budget
-NUM_WORDS_ENCODER = 25
+NUM_WORDS_ENCODER = 25  # 26 when ENC_V3 (set below after the arch.json read)
 D = 128
 H = 2
 HD = D // H
+_MUL = operator.mul
+# ENC_V3 (exp083c): full-information encoder -- must mirror train_mcts.py's
+# ENC_V3 exactly. Selected by arch.json's enc_version so old weights keep the
+# old features; a mismatch is a SILENTLY different function (no crash), which is
+# why this comes from the same arch.json that already carries the head count.
+ENC_V3 = 0
+ENERGY_TYPES = 16
+for _c in ("arch.json", os.path.join("cg", "arch.json"),
+           "/kaggle_simulations/agent/arch.json",
+           "/kaggle_simulations/agent/cg/arch.json"):
+    try:
+        if os.path.exists(_c):
+            ENC_V3 = 1 if int(json.load(open(_c)).get("enc_version", 1)) >= 3 else 0
+            break
+    except Exception:
+        pass
+if ENC_V3:
+    NUM_WORDS_ENCODER = 26
 
 all_card = all_card_data()
 card_table = {c.cardId: c for c in all_card}
@@ -81,20 +101,22 @@ def _vec(n, val=0.0):
     return [val] * n
 
 
-def _linear(x, W, b, out_dim, in_dim):
-    """x: list[in_dim]. W: flat array.array, row-major (out_dim, in_dim). b: array/list[out_dim]."""
-    y = [0.0] * out_dim
-    for o in range(out_dim):
-        base = o * in_dim
-        s = b[o]
-        for i in range(in_dim):
-            s += x[i] * W[base + i]
-        y[o] = s
-    return y
+# exp083 item-3: _linear was 88% of the whole forward pass (7.48s of 8.51s in
+# cProfile) because it indexed a flat array element-by-element in Python. Slicing
+# each weight matrix into per-output-row array.array ONCE at load time lets the
+# dot product run as sum(map(mul, x, row)) -- entirely in C, no Python-level
+# indexing. Same arithmetic, same float32 storage; parity is unchanged.
+def _rows(W, out_dim, in_dim):
+    """Flat row-major (out_dim, in_dim) -> list of out_dim array.array rows."""
+    return [W[o * in_dim:(o + 1) * in_dim] for o in range(out_dim)]
 
 
-def _mat_linear(xs, W, b, out_dim, in_dim):
-    return [_linear(x, W, b, out_dim, in_dim) for x in xs]
+def _linear(x, rows, b):
+    return [bo + sum(map(_MUL, x, r)) for bo, r in zip(b, rows)]
+
+
+def _mat_linear(xs, rows, b):
+    return [[bo + sum(map(_MUL, x, r)) for bo, r in zip(b, rows)] for x in xs]
 
 
 def _add(a, b):
@@ -124,46 +146,46 @@ def _dot(a, b):
     return sum(ai * bi for ai, bi in zip(a, b))
 
 
-def _mha(q_in, kv_in, ipw, ipb, opw, opb):
-    """q_in: list[Sq][D], kv_in: list[Sk][D]. ipw/ipb: in_proj (3D,D)/(3D,).
-    opw/opb: out_proj (D,D)/(D,)."""
+def _mha(q_in, kv_in, ip_rows, ipb, op_rows, opb, d, h):
+    """q_in: list[Sq][d], kv_in: list[Sk][d]. ip_rows: pre-sliced in_proj rows
+    (3d rows of length d). op_rows: out_proj rows (d rows of length d)."""
     Sq, Sk = len(q_in), len(kv_in)
-    wq, bq = ipw[:D * D], ipb[:D]
-    wk, bk = ipw[D * D:2 * D * D], ipb[D:2 * D]
-    wv, bv = ipw[2 * D * D:3 * D * D], ipb[2 * D:3 * D]
-    q = _mat_linear(q_in, wq, bq, D, D)
-    k = _mat_linear(kv_in, wk, bk, D, D)
-    v = _mat_linear(kv_in, wv, bv, D, D)
-    scale = 1.0 / math.sqrt(HD)
-    out = [[0.0] * D for _ in range(Sq)]
-    for h in range(H):
-        lo, hi = h * HD, (h + 1) * HD
+    hd = d // h
+    q = _mat_linear(q_in, ip_rows[:d], ipb[:d])
+    k = _mat_linear(kv_in, ip_rows[d:2 * d], ipb[d:2 * d])
+    v = _mat_linear(kv_in, ip_rows[2 * d:], ipb[2 * d:])
+    scale = 1.0 / math.sqrt(hd)
+    out = [[0.0] * d for _ in range(Sq)]
+    for hi_ in range(h):
+        lo, hi = hi_ * hd, (hi_ + 1) * hd
+        kh = [kj[lo:hi] for kj in k]
+        vh_all = [vj[lo:hi] for vj in v]
         for si in range(Sq):
             qh = q[si][lo:hi]
-            scores = [_dot(qh, k[sj][lo:hi]) * scale for sj in range(Sk)]
-            a = _softmax(scores)
-            acc = [0.0] * HD
-            for sj in range(Sk):
-                aw = a[sj]
-                vh = v[sj][lo:hi]
-                for d in range(HD):
-                    acc[d] += aw * vh[d]
+            a = _softmax([sum(map(_MUL, qh, kj)) * scale for kj in kh])
+            acc = [0.0] * hd
+            for aw, vh in zip(a, vh_all):
+                if aw:
+                    acc = [x + aw * y for x, y in zip(acc, vh)]
             out[si][lo:hi] = acc
-    return _mat_linear(out, opw, opb, D, D)
+    return _mat_linear(out, op_rows, opb)
 
 
-def _emb_bag(weight, idx, val, off, n_bags):
-    """weight: flat array.array, row-major (vocab, D)."""
+def _emb_bag(weight, idx, val, off, n_bags, d):
+    """weight: flat array.array, row-major (vocab, d)."""
     ends = list(off[1:]) + [len(idx)]
     out = []
     for b in range(n_bags):
         s, e = off[b], ends[b]
-        acc = [0.0] * D
+        acc = [0.0] * d
         for j in range(s, e):
-            base = idx[j] * D
+            base = idx[j] * d
+            row = weight[base:base + d]
             vj = val[j]
-            for d in range(D):
-                acc[d] += weight[base + d] * vj
+            if vj == 1.0:
+                acc = [x + y for x, y in zip(acc, row)]
+            else:
+                acc = [x + vj * y for x, y in zip(acc, row)]
         out.append(acc)
     return out
 
@@ -171,43 +193,67 @@ def _emb_bag(weight, idx, val, off, n_bags):
 class NpNet:
     """Pure-stdlib (no numpy). Weight file = pickle of {name: (shape, array.array('f', flat))}."""
 
-    def __init__(self, pkl_path):
+    def __init__(self, pkl_path, heads=None):
         with open(pkl_path, "rb") as f:
             raw = pickle.load(f)
         self.w = {k: v for k, (_shape, v) in raw.items()}
+        shp = {k: s for k, (s, _v) in raw.items()}
+        # exp083: layer count is recoverable from the weight NAMES, d_model/d_ff
+        # from the SHAPES -- but head count is not recoverable from either, so it
+        # comes from arch.json next to the weights (legacy default 2 = every net
+        # shipped before exp083).
+        self.d = shp["encoder_bag.weight"][1]
+        self.n_enc = 1 + max([int(k.split(".")[2]) for k in self.w
+                              if k.startswith("encoder.layers.")] + [-1])
+        self.n_dec = 1 + max([int(k.split(".")[1]) for k in self.w
+                              if k.startswith("decoder.") and k[8:9].isdigit()] + [-1])
+        self.h = heads or H
+        if heads is None:
+            for cand in ("arch.json", os.path.join("cg", "arch.json"),
+                         "/kaggle_simulations/agent/arch.json",
+                         "/kaggle_simulations/agent/cg/arch.json"):
+                try:
+                    if os.path.exists(cand):
+                        import json as _json
+                        self.h = int(_json.load(open(cand)).get("heads", H))
+                        break
+                except Exception:
+                    pass
+        # Pre-slice every 2-D weight into per-output rows ONCE (see _rows).
+        self.r = {k: _rows(v, shp[k][0], shp[k][1])
+                  for k, v in self.w.items() if len(shp[k]) == 2 and "_bag." not in k}
 
     def forward(self, ie, ve, oe, idx, vd, od):
-        w = self.w
-        n_enc = len(oe)
-        x = _emb_bag(w["encoder_bag.weight"], ie, ve, oe, n_enc)
-        y = _mha(x, x, w["encoder.layers.0.self_attn.in_proj_weight"],
-                 w["encoder.layers.0.self_attn.in_proj_bias"],
-                 w["encoder.layers.0.self_attn.out_proj.weight"],
-                 w["encoder.layers.0.self_attn.out_proj.bias"])
-        x = [_layer_norm(_add(xi, yi), w["encoder.layers.0.norm1.weight"],
-                          w["encoder.layers.0.norm1.bias"]) for xi, yi in zip(x, y)]
-        y = _mat_linear(x, w["encoder.layers.0.linear1.weight"], w["encoder.layers.0.linear1.bias"], 256, D)
-        y = [_relu(yi) for yi in y]
-        y = _mat_linear(y, w["encoder.layers.0.linear2.weight"], w["encoder.layers.0.linear2.bias"], D, 256)
-        enc = [_layer_norm(_add(xi, yi), w["encoder.layers.0.norm2.weight"],
-                            w["encoder.layers.0.norm2.bias"]) for xi, yi in zip(x, y)]
-        vlogits = _mat_linear(enc, w["encoder_fc.weight"], w["encoder_fc.bias"], 1, D)
+        w, r, d, h = self.w, self.r, self.d, self.h
+        x = _emb_bag(w["encoder_bag.weight"], ie, ve, oe, len(oe), d)
+        for i in range(self.n_enc):
+            q = "encoder.layers.%d." % i
+            y = _mha(x, x, r[q + "self_attn.in_proj_weight"], w[q + "self_attn.in_proj_bias"],
+                     r[q + "self_attn.out_proj.weight"], w[q + "self_attn.out_proj.bias"], d, h)
+            x = [_layer_norm(_add(xi, yi), w[q + "norm1.weight"], w[q + "norm1.bias"])
+                 for xi, yi in zip(x, y)]
+            y = _mat_linear(x, r[q + "linear1.weight"], w[q + "linear1.bias"])
+            y = [_relu(yi) for yi in y]
+            y = _mat_linear(y, r[q + "linear2.weight"], w[q + "linear2.bias"])
+            x = [_layer_norm(_add(xi, yi), w[q + "norm2.weight"], w[q + "norm2.bias"])
+                 for xi, yi in zip(x, y)]
+        enc = x
+        vlogits = _mat_linear(enc, r["encoder_fc.weight"], w["encoder_fc.bias"])
         v = math.tanh(sum(row[0] for row in vlogits) / len(vlogits))
 
-        n_dec = len(od)
-        p = _emb_bag(w["decoder_bag.weight"], idx, vd, od, n_dec)
-        y = _mha(p, enc, w["decoder.0.attention.in_proj_weight"],
-                 w["decoder.0.attention.in_proj_bias"],
-                 w["decoder.0.attention.out_proj.weight"],
-                 w["decoder.0.attention.out_proj.bias"])
-        p = [_layer_norm(_add(pi, yi), w["decoder.0.norm1.weight"],
-                          w["decoder.0.norm1.bias"]) for pi, yi in zip(p, y)]
-        y = _mat_linear(p, w["decoder.0.fc1.weight"], w["decoder.0.fc1.bias"], 256, D)
-        y = [_relu(yi) for yi in y]
-        y = _mat_linear(y, w["decoder.0.fc2.weight"], w["decoder.0.fc2.bias"], D, 256)
-        p = [_layer_norm(_add(pi, yi), w["decoder.0.norm2.weight"],
-                          w["decoder.0.norm2.bias"]) for pi, yi in zip(p, y)]
-        plogits = _mat_linear(p, w["decoder_fc.weight"], w["decoder_fc.bias"], 1, D)
+        p = _emb_bag(w["decoder_bag.weight"], idx, vd, od, len(od), d)
+        for i in range(self.n_dec):
+            q = "decoder.%d." % i
+            y = _mha(p, enc, r[q + "attention.in_proj_weight"], w[q + "attention.in_proj_bias"],
+                     r[q + "attention.out_proj.weight"], w[q + "attention.out_proj.bias"], d, h)
+            p = [_layer_norm(_add(pi, yi), w[q + "norm1.weight"], w[q + "norm1.bias"])
+                 for pi, yi in zip(p, y)]
+            y = _mat_linear(p, r[q + "fc1.weight"], w[q + "fc1.bias"])
+            y = [_relu(yi) for yi in y]
+            y = _mat_linear(y, r[q + "fc2.weight"], w[q + "fc2.bias"])
+            p = [_layer_norm(_add(pi, yi), w[q + "norm2.weight"], w[q + "norm2.bias"])
+                 for pi, yi in zip(p, y)]
+        plogits = _mat_linear(p, r["decoder_fc.weight"], w["decoder_fc.bias"])
         policy = [math.tanh(row[0]) for row in plogits]
         return v, policy
 
@@ -284,12 +330,21 @@ def add_pokemon(sv, poke):
     if poke is None:
         sv.add_single(1)
         sv.add_pos(1 + 3 * card_count)
+        if ENC_V3:
+            sv.add_pos(2 + card_count + ENERGY_TYPES)
     else:
         sv.add_single(0)
         sv.add_single(poke.hp / 400)
         add_card(sv, poke)
         add_cards(sv, poke.tools, 1.0)
         add_cards(sv, poke.energyCards, 0.5)
+        if ENC_V3:
+            sv.add_single(poke.maxHp / 400)
+            sv.add_single(poke.appearThisTurn)
+            add_cards(sv, poke.preEvolution, 1.0)
+            for e in (poke.energies or []):
+                sv.add(int(e), 0.5)
+            sv.add_pos(ENERGY_TYPES)
 
 
 def add_player(sv, ps):
@@ -305,6 +360,9 @@ def add_player(sv, ps):
     sv.add_single(ps.paralyzed)
     sv.add_single(ps.confused)
     add_cards(sv, ps.discard, 0.25)
+    if ENC_V3:
+        sv.add_single(ps.benchMax / 5)
+        add_cards(sv, [c for c in ps.prize if c is not None], 1.0)
 
 
 def get_encoder_input(obs, your_deck, opp_deck=None):
@@ -349,6 +407,17 @@ def get_encoder_input(obs, your_deck, opp_deck=None):
     sv.add_single(1)
     sv.add_single(state.turn / 10)
     sv.add_single(state.firstPlayer == your_index)
+    if ENC_V3:
+        sv.add_single(state.supporterPlayed)
+        sv.add_single(state.stadiumPlayed)
+        sv.add_single(state.energyAttached)
+        sv.add_single(state.retreated)
+        sv.add_single(state.turnActionCount / 10)
+        # word 25: cards currently being looked at (search/reveal context)
+        sv.word_start()
+        looking = state.looking
+        sv.add_single(0.0 if looking is None else 1.0)
+        add_cards(sv, [c for c in (looking or []) if c is not None], 0.25)
     return sv
 
 

@@ -135,12 +135,37 @@ def make_batch(recs, device, opp_drop=0.0, vw_list=None):
 
 
 def train_epoch(model, optimizer, files, device, batch_size, limit_chunks, opp_drop=0.0,
-                sched=None, clip=0.0):
+                sched=None, clip=0.0, teacher=None, distill=0.0,
+                policy_loss="huber", margin=0.5, ce_scale=8.0, smoothing=0.1):
     """sched, if given, is stepped PER BATCH (warmup needs step granularity, not
     epoch granularity -- exp083: the official post-norm arch trains badly at 2+
-    layers without a warmup ramp)."""
+    layers without a warmup ramp).
+
+    teacher/distill (exp083b): blend the hard BC label with the TEACHER's own
+    outputs, target = (1-distill)*hard + distill*teacher. The heads are tanh +
+    Huber regression (not softmax), so the teacher's output vector IS the soft
+    target -- no temperature needed. Rationale: sc083_d128ctl showed that at this
+    capacity, more training raises label top-1 (0.6238 -> 0.6577) without raising
+    strength (0.525 vs the old net), while the big teacher DID get stronger
+    (0.665, z=+4.67). Hard labels only say which candidate was picked; the
+    teacher also says how good every OTHER candidate is, which is the part a
+    capacity-limited student may actually be able to use."""
     loss_fn_enc = torch.nn.HuberLoss(reduction="none", delta=0.2)
     loss_fn_dec = torch.nn.HuberLoss(reduction="none", delta=0.1)
+    # exp083b policy-loss forms. The default ("huber") regresses EVERY candidate
+    # to +-1 independently, i.e. it asserts "the observed move is right and all
+    # ~5 alternatives are wrong" -- but the player only ever gets to pick from
+    # the cards they happened to draw, so several alternatives may be equally
+    # fine and the label is one noisy sample, not ground truth.
+    #   margin: only penalises candidates the model ranks ABOVE the observed
+    #           move. Anything already ranked below contributes zero loss, so
+    #           "we cannot judge these" is expressed as no supervision at all.
+    #           This is the masked-loss idea in a form that still has contrast.
+    #   ce:     softmax cross-entropy (+ label smoothing). Contrast comes from
+    #           normalisation, so alternatives are only pushed down RELATIVE to
+    #           the chosen one, never to an absolute -1.
+    # Pure masking (drop the negatives entirely) is degenerate: with nothing
+    # pushing anything down, all-+1 is optimal and argmax becomes arbitrary.
     model.train()
     total, n_batches = 0.0, 0
     carry = []  # (record, value_weight) pairs
@@ -155,10 +180,42 @@ def train_epoch(model, optimizer, files, device, batch_size, limit_chunks, opp_d
             batch, carry = carry[:batch_size], carry[batch_size:]
             (iei, iev, ieo, idi, idv, ido, mt, lte, ltd, vw) = make_batch(
                 [r for r, _ in batch], device, opp_drop, vw_list=[w for _, w in batch])
+            ch = ltd.argmax(dim=1)  # from the HARD label (+1 > 0 pad > -1)
+            td = None
+            if teacher is not None and distill > 0.0:
+                with torch.no_grad():
+                    te, td = teacher(iei, iev, ieo, idi, idv, ido)
+                # Same inputs (incl. the same opp_drop draw), so the teacher sees
+                # exactly what the student sees. Padded slots are masked by mt.
+                lte = (1.0 - distill) * lte + distill * te
+                if policy_loss == "huber":
+                    ltd = (1.0 - distill) * ltd + distill * td
             optimizer.zero_grad()
             oe, od = model(iei, iev, ieo, idi, idv, ido)
+            if policy_loss == "huber":
+                dec_loss = (loss_fn_dec(od, ltd) * mt).sum() / len(batch)
+            else:
+                if policy_loss == "margin":
+                    s_ch = od.gather(1, ch.view(-1, 1))
+                    viol = torch.relu(margin - (s_ch - od)) * mt
+                    viol = viol.scatter(1, ch.view(-1, 1), 0.0)
+                    dec_loss = viol.sum() / len(batch)
+                else:  # ce -- tanh outputs are bounded, so scale them into a
+                       # usable logit range before softmax.
+                    logits = (od * ce_scale).masked_fill(mt == 0, -1e9)
+                    logp = torch.log_softmax(logits, dim=1)
+                    nval = mt.sum(1, keepdim=True).clamp(min=1.0)
+                    tgt = mt * (smoothing / nval)
+                    tgt = tgt.scatter_add(1, ch.view(-1, 1),
+                                          torch.full_like(ch, 1.0 - smoothing,
+                                                          dtype=tgt.dtype).view(-1, 1))
+                    dec_loss = -(tgt * logp).sum(1).mean()
+                if td is not None:
+                    # keep the distillation signal as its own regression term
+                    dec_loss = ((1.0 - distill) * dec_loss
+                                + distill * (loss_fn_dec(od, td) * mt).sum() / len(batch))
             loss = ((loss_fn_enc(oe, lte) * vw).sum() / max(float(vw.sum()), 1.0)
-                    + (loss_fn_dec(od, ltd) * mt).sum() / len(batch))
+                    + dec_loss)
             loss.backward()
             if clip:
                 torch.nn.utils.clip_grad_norm_(model.parameters(), clip)
@@ -255,6 +312,15 @@ def main():
     ap.add_argument("--resume", default="", help="path to model .pth to continue from")
     ap.add_argument("--opp-drop", type=float, default=0.0,
                     help="train-time dropout prob of the opp_deck oracle word (word 22)")
+    ap.add_argument("--teacher", default="",
+                    help="distillation: teacher .pth (arch read from its sibling arch.json)")
+    ap.add_argument("--policy-loss", default="huber", choices=("huber", "margin", "ce"),
+                    help="policy-head loss form (see train_epoch)")
+    ap.add_argument("--margin", type=float, default=0.5, help="margin loss: required gap")
+    ap.add_argument("--ce-scale", type=float, default=8.0, help="ce loss: tanh->logit scale")
+    ap.add_argument("--smoothing", type=float, default=0.1, help="ce loss: label smoothing")
+    ap.add_argument("--distill", type=float, default=0.0,
+                    help="blend weight on the teacher's outputs (0=pure hard labels, 1=pure teacher)")
     args = ap.parse_args()
     d_ff = args.d_ff or args.d_model * 2
 
@@ -294,16 +360,41 @@ def main():
     # The arch is no longer implied by d_model alone -- record it so npnet/export and
     # any later reload can rebuild the exact model without guessing.
     arch = {"d_model": args.d_model, "heads": args.heads, "d_ff": d_ff,
-            "enc_layers": args.enc_layers, "dec_layers": args.dec_layers}
+            "enc_layers": args.enc_layers, "dec_layers": args.dec_layers,
+            # ship side selects the feature encoder from this -- a v3-trained net
+            # fed v1 features is a silently different function, never a crash
+            "enc_version": 3 if tm.ENC_V3 else 1}
+    if args.policy_loss != "huber":
+        arch["policy_loss"] = args.policy_loss
     json.dump(arch, open(os.path.join(out_dir, "arch.json"), "w"), indent=1)
     n_par = sum(p.numel() for p in model.parameters())
     print(f"device={device} files={len(files)} tag={args.tag} arch={arch} params={n_par/1e6:.1f}M")
+
+    teacher = None
+    if args.teacher:
+        tcfg = {"d_model": 128, "heads": 2, "d_ff": 256, "enc_layers": 1, "dec_layers": 1}
+        tarch = os.path.join(os.path.dirname(os.path.abspath(args.teacher)), "arch.json")
+        if os.path.exists(tarch):
+            tcfg.update(json.load(open(tarch)))
+        tcfg.setdefault("d_ff", tcfg["d_model"] * 2)
+        teacher = tm.MyModel(tcfg["d_model"], tcfg["heads"], tcfg["d_ff"],
+                             tcfg["enc_layers"], tcfg["dec_layers"]).to(device)
+        teacher.load_state_dict(torch.load(args.teacher, map_location=device))
+        teacher.eval()
+        for p in teacher.parameters():
+            p.requires_grad_(False)
+        arch["distill"] = {"teacher": args.teacher, "teacher_arch": tcfg, "weight": args.distill}
+        json.dump(arch, open(os.path.join(out_dir, "arch.json"), "w"), indent=1)
+        print(f"distill: teacher={args.teacher} arch={tcfg} weight={args.distill}")
 
     history = []
     for ep in range(args.epochs):
         t0 = time.time()
         loss, nb = train_epoch(model, optimizer, files, device, args.batch_size, lim,
-                               opp_drop=args.opp_drop, sched=sched, clip=args.clip)
+                               opp_drop=args.opp_drop, sched=sched, clip=args.clip,
+                               teacher=teacher, distill=args.distill,
+                               policy_loss=args.policy_loss, margin=args.margin,
+                               ce_scale=args.ce_scale, smoothing=args.smoothing)
         metrics = evaluate(model, files, device, args.batch_size, lim)
         row = {"epoch": ep, "loss": round(loss, 4), "batches": nb,
                "lr": round(optimizer.param_groups[0]["lr"], 7),

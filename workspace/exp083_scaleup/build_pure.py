@@ -17,6 +17,7 @@ Usage: uv run python build_pure.py [--n 20]
 """
 from __future__ import annotations
 import argparse
+import json
 import os
 import sys
 
@@ -28,8 +29,25 @@ import build_np_submission as BNS  # noqa: E402
 
 BNS.DECK = os.path.join(WS, "exp080_bc", "grimmsnarl_deck.json")
 BNS.WEIGHTS_SRC = os.path.join(WS, "exp041_pilotnet", "results",
-                               "sc083_d128ctl", "weights_pure.pkl")
-BNS.OUT = os.path.join(HERE, "build_pure")
+                               os.environ.get("NET", "sc083_deep"), "weights_pure.pkl")
+BNS.OUT = os.path.join(HERE, os.environ.get("OUT", "build_deep"))
+
+
+def verify_arch(out_dir):
+    """A silently-wrong head count is the one failure this build cannot detect at
+    runtime, so assert the shipped arch matches the weights it was built from."""
+    import tarfile
+    names = set(tarfile.open(os.path.join(out_dir, "submission.tar.gz")).getnames())
+    src_arch = os.path.join(os.path.dirname(BNS.WEIGHTS_SRC), "arch.json")
+    if os.path.exists(src_arch):
+        cfg = json.load(open(src_arch))
+        assert "cg/arch.json" in names, "arch.json missing from the tar"
+        shipped = json.load(open(os.path.join(out_dir, "cg", "arch.json")))
+        assert shipped.get("heads") == cfg.get("heads"), (shipped, cfg)
+        print(f"arch shipped: heads={cfg['heads']} enc={cfg['enc_layers']} "
+              f"dec={cfg['dec_layers']} d_model={cfg['d_model']}")
+    else:
+        print("no arch.json next to the weights -> legacy 2 heads assumed")
 
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()
@@ -38,4 +56,5 @@ if __name__ == "__main__":
     assert os.path.exists(BNS.WEIGHTS_SRC), BNS.WEIGHTS_SRC
     print(f"deck={BNS.DECK}\nweights={BNS.WEIGHTS_SRC}\nout={BNS.OUT}\n")
     tarp = BNS.build()
+    verify_arch(BNS.OUT)
     BNS.smoke(tarp, a.n)

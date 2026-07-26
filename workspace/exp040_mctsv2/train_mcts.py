@@ -71,8 +71,23 @@ attack_count = max(all_attack(), key=lambda a: a.attackId).attackId + 1
 # Both need a stateful per-game tracker at the caller (datagen_bc / eval_raw).
 # Checkpoints trained without ENC_V2 are architecture-incompatible with it.
 ENC_V2 = int(os.environ.get("ENC_V2", "0"))
+# ENC_V3 (exp083c, 2026-07-26): full-information encoder. The v1 features omitted
+# state a real player ALWAYS consults: once-per-turn resources (supporter/energy/
+# stadium/retreat already used this turn), maxHp (KO distance), appearThisTurn
+# (evolution eligibility), pre-evolution cards (Memory Dive!), energy TYPES,
+# faceup prize cards, benchMax, turnActionCount, and the mid-search "looking"
+# cards. Legality is enforced by the candidate list, so these gaps never crashed
+# anything -- they only starved evaluation/planning. Words 0-24 keep their exact
+# layout ORDER (new dims are appended at the tail of each block) plus one new
+# word (25: looking bag), so OPPDECK_WORD=22 and drop_oppdeck stay valid.
+ENC_V3 = int(os.environ.get("ENC_V3", "0"))
+ENERGY_TYPES = 16  # EnergyType enum is 0..11; margin for future types
 num_words_encoder = 27 if ENC_V2 else 25  # 25 = +1 vs exp004 original: opp_deck word
+if ENC_V3:
+    num_words_encoder = 26  # +1: looking-cards word
 encoder_size = 26000 if ENC_V2 else 24000  # +card_count(1268) margin vs exp004's 22000
+if ENC_V3:
+    encoder_size = 34000  # measured v3 usage ~31.9k dims
 decoder_main_feature = 8
 decoder_attack_offset = 14
 decoder_card_offset = decoder_attack_offset + attack_count
@@ -174,12 +189,21 @@ def add_pokemon(sv, poke):
     if poke is None:
         sv.add_single(1)
         sv.add_pos(1 + 3 * card_count)
+        if ENC_V3:
+            sv.add_pos(2 + card_count + ENERGY_TYPES)
     else:
         sv.add_single(0)
         sv.add_single(poke.hp / 400)
         add_card(sv, poke)
         add_cards(sv, poke.tools, 1.0)
         add_cards(sv, poke.energyCards, 0.5)
+        if ENC_V3:
+            sv.add_single(poke.maxHp / 400)
+            sv.add_single(poke.appearThisTurn)
+            add_cards(sv, poke.preEvolution, 1.0)
+            for e in (poke.energies or []):
+                sv.add(int(e), 0.5)
+            sv.add_pos(ENERGY_TYPES)
 
 
 def add_player(sv, ps):
@@ -195,6 +219,9 @@ def add_player(sv, ps):
     sv.add_single(ps.paralyzed)
     sv.add_single(ps.confused)
     add_cards(sv, ps.discard, 0.25)
+    if ENC_V3:
+        sv.add_single(ps.benchMax / 5)
+        add_cards(sv, [c for c in ps.prize if c is not None], 1.0)
 
 
 def get_encoder_input(obs, your_deck, opp_deck=None, extra=None):
@@ -247,6 +274,17 @@ def get_encoder_input(obs, your_deck, opp_deck=None, extra=None):
     sv.add_single(1)
     sv.add_single(state.turn / 10)
     sv.add_single(state.firstPlayer == your_index)
+    if ENC_V3:
+        sv.add_single(state.supporterPlayed)
+        sv.add_single(state.stadiumPlayed)
+        sv.add_single(state.energyAttached)
+        sv.add_single(state.retreated)
+        sv.add_single(state.turnActionCount / 10)
+        # word 25: cards currently being looked at (search/reveal context)
+        sv.word_start()
+        looking = state.looking
+        sv.add_single(0.0 if looking is None else 1.0)
+        add_cards(sv, [c for c in (looking or []) if c is not None], 0.25)
     if ENC_V2:
         # word 25: revenge-window flag (cross-turn, from the caller's tracker)
         sv.word_start()
