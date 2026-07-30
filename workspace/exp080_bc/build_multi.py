@@ -46,14 +46,26 @@ def main():
     # zero information. That also invalidates the old "search makes it worse"
     # result (MCTS lever 0.300, z=-3.10): the search was guided by a constant.
     keep_losses = "--keep-losses" in sys.argv
-    enc_v3 = int(os.environ.get("ENC_V3", "0"))
-    suffix = ("_v3" if enc_v3 else "") + ("_wl" if keep_losses else "")
+    enc_v4 = int(os.environ.get("ENC_V4", "0"))
+    enc_v3 = int(os.environ.get("ENC_V3", "0")) or enc_v4
+    suffix = ("_v4" if enc_v4 else "_v3" if enc_v3 else "") + ("_wl" if keep_losses else "")
 
+    # DAY_MIN/DAY_MAX (MMDD) restrict the teacher window. Needed once history older
+    # than the 15-day window was downloaded: without it, changing the encoder and the
+    # corpus size in the same run would make the head-to-head gate uninterpretable.
+    day_min = os.environ.get("DAY_MIN", "")
+    day_max = os.environ.get("DAY_MAX", "")
     zips = sorted(glob.glob(os.path.join(ROOT, "references/raw/episodes_*/*.zip")))
+    if day_min or day_max:
+        def _day(p):
+            return os.path.basename(os.path.dirname(p)).split("_")[-1]
+        zips = [z for z in zips
+                if (not day_min or _day(z) >= day_min)
+                and (not day_max or _day(z) <= day_max)]
     scores = lb_scores()
     byid = card_map()
     print(f"target={target}  min_score={min_score}  days={len(zips)}  "
-          f"keep_losses={keep_losses}  ENC_V3={enc_v3}", flush=True)
+          f"keep_losses={keep_losses}  ENC_V3={enc_v3} ENC_V4={enc_v4}", flush=True)
     for z in zips:
         print("  ", os.path.basename(z), flush=True)
 

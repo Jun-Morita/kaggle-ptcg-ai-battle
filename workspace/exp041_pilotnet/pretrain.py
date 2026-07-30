@@ -120,8 +120,17 @@ def make_batch(recs, device, opp_drop=0.0, vw_list=None):
         for o in r[DO]:
             idd.offset.append(o + c)
         le.append(r[OUT])
-        pol = [BC_NEG] * r[NC]
-        pol[r[CH]] = BC_POS
+        # exp083e: a 13th element carries a SOFT search policy (per-candidate
+        # advantage from MCTS, already in [-1,1]) instead of the one-hot BC
+        # label. Search is a measurably stronger policy than the net that guides
+        # it (0.825 vs raw argmax, z=+5.81), so where we have it, it is the
+        # better target. Records without it keep the old +-1 behaviour.
+        if len(r) > 12 and r[12] is not None:
+            pol = list(r[12])[:r[NC]]
+            pol += [BC_NEG] * (r[NC] - len(pol))
+        else:
+            pol = [BC_NEG] * r[NC]
+            pol[r[CH]] = BC_POS
         ld.extend(pol)
         mask.extend([1.0] * r[NC])
         for _ in range(64 - r[NC]):
@@ -363,7 +372,7 @@ def main():
             "enc_layers": args.enc_layers, "dec_layers": args.dec_layers,
             # ship side selects the feature encoder from this -- a v3-trained net
             # fed v1 features is a silently different function, never a crash
-            "enc_version": 3 if tm.ENC_V3 else 1}
+            "enc_version": (4 if getattr(tm, "ENC_V4", 0) else (3 if tm.ENC_V3 else 1))}
     if args.policy_loss != "huber":
         arch["policy_loss"] = args.policy_loss
     json.dump(arch, open(os.path.join(out_dir, "arch.json"), "w"), indent=1)

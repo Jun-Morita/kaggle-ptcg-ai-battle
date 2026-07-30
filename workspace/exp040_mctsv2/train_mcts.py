@@ -81,13 +81,39 @@ ENC_V2 = int(os.environ.get("ENC_V2", "0"))
 # layout ORDER (new dims are appended at the tail of each block) plus one new
 # word (25: looking bag), so OPPDECK_WORD=22 and drop_oppdeck stay valid.
 ENC_V3 = int(os.environ.get("ENC_V3", "0"))
+# ENC_V4 (exp083h): the two remaining blind spots found by auditing every field of
+# the observation against what the encoder actually reads.
+#  (1) obs.select never reached the ENCODER at all. Only the decoder used it (for
+#      candidate features), so the state vector was IDENTICAL whether the engine
+#      was asking "attach energy to which Pokemon", "put which Pokemon on the
+#      bench" or "place how many damage counters" -- and the value head, which has
+#      no decoder input, could not tell those apart. remainDamageCounter and
+#      remainEnergyCost (mid-resolution state) existed nowhere in the features.
+#  (2) obs.logs was unused ANYWHERE in the codebase. It carries the events since
+#      the previous selection: coin flips, damage values, which cards moved and
+#      by whom. Discards show WHAT ended up in the pile but not what just
+#      happened, so within-turn sequencing had no observation of its own effects.
+# Deliberately NOT encoded: log attackId. npmcts_policy falls back to
+# attack_count=400 if all_attack() ever fails, so making the ENCODER depend on it
+# would add a new silent train/ship divergence; card ids come from all_card_data()
+# which the encoder already depends on.
+ENC_V4 = int(os.environ.get("ENC_V4", "0"))
+if ENC_V4:
+    ENC_V3 = 1                       # V4 is a superset; never run V4 without V3
 ENERGY_TYPES = 16  # EnergyType enum is 0..11; margin for future types
+SELECT_TYPES = 12      # SelectType enum is 0..10
+SELECT_CONTEXTS = 52   # SelectContext enum is 0..48
+LOG_TYPES = 28         # LogType enum is 0..23
 num_words_encoder = 27 if ENC_V2 else 25  # 25 = +1 vs exp004 original: opp_deck word
 if ENC_V3:
     num_words_encoder = 26  # +1: looking-cards word
+if ENC_V4:
+    num_words_encoder = 28  # +2: select-context word, log word
 encoder_size = 26000 if ENC_V2 else 24000  # +card_count(1268) margin vs exp004's 22000
 if ENC_V3:
     encoder_size = 34000  # measured v3 usage ~31.9k dims
+if ENC_V4:
+    encoder_size = 38000  # v3 ~31.9k + select block ~1.3k + log block ~2.6k
 decoder_main_feature = 8
 decoder_attack_offset = 14
 decoder_card_offset = decoder_attack_offset + attack_count
@@ -224,6 +250,54 @@ def add_player(sv, ps):
         add_cards(sv, [c for c in ps.prize if c is not None], 1.0)
 
 
+def add_select(sv, obs):
+    """ENC_V4 word 26: WHAT THE ENGINE IS ASKING. Mirror in npmcts_policy.py."""
+    sv.word_start()
+    sel = obs.select
+    if sel is None:
+        sv.add_pos(SELECT_TYPES + SELECT_CONTEXTS + 6 + card_count)
+        return
+    sv.add(int(sel.type), 1.0)
+    sv.add_pos(SELECT_TYPES)
+    sv.add(int(sel.context), 1.0)
+    sv.add_pos(SELECT_CONTEXTS)
+    sv.add_single((sel.minCount or 0) / 10)
+    sv.add_single((sel.maxCount or 0) / 10)
+    sv.add_single((sel.remainDamageCounter or 0) / 10)
+    sv.add_single((sel.remainEnergyCost or 0) / 10)
+    sv.add_single(len(sel.option or ()) / 20)
+    sv.add_single(1.0 if sel.deck else 0.0)
+    add_cards(sv, [c for c in (sel.contextCard, sel.effect) if c is not None], 1.0)
+
+
+def add_logs(sv, obs, your_index):
+    """ENC_V4 word 27: WHAT JUST HAPPENED (events since the previous selection).
+    Card ids are split by actor so "I discarded it" and "they discarded it" are
+    different features. Mirror in npmcts_policy.py."""
+    sv.word_start()
+    logs = getattr(obs, "logs", None) or ()
+    sv.add_single(len(logs) / 10)
+    heads = tails = 0
+    total = 0.0
+    for lg in logs:
+        sv.add(int(lg.type), 0.25)
+        if lg.head is True:
+            heads += 1
+        elif lg.head is False:
+            tails += 1
+        if lg.value:
+            total += lg.value
+    sv.add_pos(LOG_TYPES)
+    sv.add_single(heads / 4)
+    sv.add_single(tails / 4)
+    sv.add_single(total / 300)
+    for lg in logs:
+        if lg.cardId is not None:
+            mine = 0 if lg.playerIndex == your_index else 1
+            sv.add(lg.cardId + mine * card_count, 0.25)
+    sv.add_pos(2 * card_count)
+
+
 def get_encoder_input(obs, your_deck, opp_deck=None, extra=None):
     """`opp_deck` (added for exp040 Stage 4, oracle opponent-archetype probe):
     exp004's original had no opponent-identity feature at all -- the net had
@@ -285,6 +359,9 @@ def get_encoder_input(obs, your_deck, opp_deck=None, extra=None):
         looking = state.looking
         sv.add_single(0.0 if looking is None else 1.0)
         add_cards(sv, [c for c in (looking or []) if c is not None], 0.25)
+    if ENC_V4:
+        add_select(sv, obs)   # word 26: what is being asked
+        add_logs(sv, obs, your_index)  # word 27: what just happened
     if ENC_V2:
         # word 25: revenge-window flag (cross-turn, from the caller's tracker)
         sv.word_start()

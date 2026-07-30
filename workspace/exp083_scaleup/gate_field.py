@@ -1,0 +1,163 @@
+"""Field gate: two nets across the REAL opponent spread, not the mirror.
+
+Why this exists. Every net gate so far (gate.py, eval_cross.py) put the same
+Grimmsnarl deck on both seats, so a PASS only ever meant "better in the mirror".
+v046 passed that gate at 0.608 (z=+4.30) and then lost 146 ladder points to v045:
+
+                      ladder   Alakazam   lucario_ex   mirror
+  v045 (v3s+search)    886.9   0.70 n=40   0.62 n=8    0.39 n=41
+  v046 (v15s+search)   740.4   0.50 n=12   0.27 n=15   0.33 n=6
+
+Same 0.537 overall winrate, against weaker opponents. The 15-day corpus is 46%
+mirror, so the net specialised into the mirror and gave up the field -- a
+regression a mirror-only gate cannot see by construction.
+
+Weights are OUR OWN observed ladder shares (v045, n=136), renormalised over the
+archetypes we can actually simulate (77% of real games). lucario_ex matters most
+of all here: it is where v046 collapsed, and the ladder pool is ~87% a single
+pilot (lucario_v2), so the local stand-in is faithful.
+
+Raw argmax both sides: search is applied equally at ship time and costs ~5x the
+wall clock, so it dilutes rather than sharpens a net-vs-net read.
+
+Usage: ENC_V4=1 uv run python gate_field.py --new <a.pth> --old <b.pth> [--n 60]
+"""
+from __future__ import annotations
+import contextlib
+import json
+import os
+import sys
+import time
+
+HERE = os.path.dirname(os.path.abspath(__file__))
+WS = os.path.abspath(os.path.join(HERE, ".."))
+PILOT = os.path.join(WS, "exp041_pilotnet")
+for p in ("exp001_harness", "exp002_baselines", "exp007_anti_crustle",
+          "exp041_pilotnet", "exp040_mctsv2", "exp019_finisher", "exp080_bc"):
+    sys.path.insert(0, os.path.join(WS, p))
+
+from harness import load_engine  # noqa: E402
+load_engine()
+
+import torch  # noqa: E402
+import train_mcts as tm  # noqa: E402
+import eval_raw as ER  # noqa: E402
+import eval_gate as EG  # noqa: E402
+import anti_crustle as AC  # noqa: E402
+import baselines as B  # noqa: E402
+from cg.api import to_observation_class  # noqa: E402
+
+# our own ladder shares (v045, n=136), restricted to simulable archetypes
+WEIGHT = {"mixed_ex3": 0.30, "mixed_ex1": 0.29, "crustle_control": 0.08,
+          "lucario_ex": 0.06, "dragapult": 0.02, "mixed_ex2": 0.02}
+LABEL = {"mixed_ex3": "Grimmsnarl(mirror)", "mixed_ex1": "Alakazam",
+         "crustle_control": "Crustle", "lucario_ex": "lucario_v2",
+         "dragapult": "Dragapult", "mixed_ex2": "TR Spidops"}
+
+
+def arg(name, default=None):
+    return sys.argv[sys.argv.index(name) + 1] if name in sys.argv else default
+
+
+@contextlib.contextmanager
+def enc_version(v):
+    old = (tm.ENC_V3, getattr(tm, "ENC_V4", 0), tm.num_words_encoder, tm.encoder_size)
+    tm.ENC_V3 = 1 if v >= 3 else 0
+    tm.ENC_V4 = 1 if v >= 4 else 0
+    tm.num_words_encoder = 28 if v >= 4 else (26 if v >= 3 else 25)
+    tm.encoder_size = 38000 if v >= 4 else (34000 if v >= 3 else 24000)
+    try:
+        yield
+    finally:
+        (tm.ENC_V3, tm.ENC_V4, tm.num_words_encoder, tm.encoder_size) = old
+
+
+def load(pth, device):
+    pth = pth if os.path.isabs(pth) else os.path.join(PILOT, pth)
+    cfg = json.load(open(os.path.join(os.path.dirname(pth), "arch.json")))
+    v = int(cfg.get("enc_version", 1))
+    with enc_version(v):
+        m = tm.MyModel(cfg["d_model"], cfg["heads"], cfg["d_ff"],
+                       cfg["enc_layers"], cfg["dec_layers"]).to(device)
+        m.load_state_dict(torch.load(pth, map_location=device))
+    m.eval()
+    return m, v, cfg, pth
+
+
+def make_agent(model, v, my_deck):
+    def agent(obs_dict):
+        oc = to_observation_class(obs_dict)
+        cands = tm.enumerate_candidates(oc)
+        if len(cands) == 1:
+            return cands[0]
+        with enc_version(v):
+            sv_e = tm.get_encoder_input(oc, my_deck, None)
+            sv_d = tm.get_decoder_input(oc, cands)
+            _, policy = tm.eval_nn(sv_e, sv_d, model)
+        return cands[max(range(len(cands)), key=lambda i: policy[i])]
+    return agent
+
+
+def opponents(grimm, opp_decks):
+    """(key, opponent deck, factory taking that deck -> agent)."""
+    out = []
+    for k in WEIGHT:
+        if k == "lucario_ex":
+            out.append((k, list(AC.LUCARIO_DECK),
+                        lambda _d: AC.make_agent(AC.LUCARIO_DECK)))
+        elif k == "crustle_control":
+            out.append((k, list(opp_decks[k]), lambda _d: AC.make_crustle_agent()))
+        elif k == "dragapult":
+            out.append((k, list(opp_decks[k]),
+                        lambda _d: B.make_policy_agent("dragapult")))
+        else:
+            deck = grimm if k == "mixed_ex3" else opp_decks[k]
+            out.append((k, list(deck), EG.make_pub1034))
+    return out
+
+
+def run(model, v, grimm, opps, n):
+    res, total = {}, 0.0
+    for k, odeck, fac in opps:
+        w, l, d, e = ER.run_matchup(
+            model, grimm, odeck, fac, n,
+            agent_factory=lambda _m, my, _o: make_agent(model, v, my))
+        played = max(1, w + l + d)
+        wr = w / played
+        res[k] = (wr, w, l, d, e)
+        total += WEIGHT[k] * wr
+        print(f"    {LABEL[k]:<20} {wr:.3f}  ({w}-{l}-{d}, err={e})", flush=True)
+    return res, total / sum(WEIGHT.values())
+
+
+def main():
+    n = int(arg("--n", "60"))
+    tag = arg("--tag", "field")
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    grimm = json.load(open(os.path.join(WS, "exp080_bc", "grimmsnarl_deck.json")))
+    opp_decks = json.load(open(os.path.join(WS, "exp080_bc", "opp_decks.json")))
+    new, vn, cfgn, pn = load(arg("--new"), device)
+    old, vo, cfgo, po = load(arg("--old"), device)
+    print(f"NEW {os.path.relpath(pn, WS)}  enc_version={vn}")
+    print(f"OLD {os.path.relpath(po, WS)}  enc_version={vo}")
+    print(f"raw argmax, oracle-free, seats alternated, n={n} per matchup\n", flush=True)
+
+    t0 = time.time()
+    print("  NEW:")
+    rn, tn = run(new, vn, grimm, opponents(grimm, opp_decks), n)
+    print("  OLD:")
+    ro, to = run(old, vo, grimm, opponents(grimm, opp_decks), n)
+    print(f"\n  weighted   NEW {tn:.3f}   OLD {to:.3f}   delta {tn - to:+.3f}"
+          f"   ({time.time()-t0:.0f}s)")
+    print("  per-matchup delta: " + "  ".join(
+        f"{LABEL[k]} {rn[k][0]-ro[k][0]:+.2f}" for k in WEIGHT))
+    print("VERDICT:", "PASS" if tn - to >= 0.03 else
+          ("FLAT" if tn - to > -0.03 else "NEGATIVE"))
+    os.makedirs(os.path.join(HERE, "results"), exist_ok=True)
+    json.dump({"new": pn, "old": po, "n": n, "weight": WEIGHT,
+               "new_res": rn, "old_res": ro, "new_total": tn, "old_total": to},
+              open(os.path.join(HERE, "results", f"{tag}_n{n}.json"), "w"), indent=1)
+
+
+if __name__ == "__main__":
+    main()

@@ -41,7 +41,40 @@ from cg.api import (
     all_card_data, search_begin, search_end, search_step, to_observation_class,
 )
 
-SEARCH_COUNT = 0  # raw argmax; sc16 MCTS = ~2.3s/act, too slow for the sandbox per-act budget
+# exp083d: search is back on. The old "sc16 MCTS = ~2.3s/act, too slow" note was
+# built on a hypothesis about v015 that was later SUPERSEDED -- v015-fix4 found
+# the real cause was `__file__` being undefined, not slowness. The actual limit
+# (disc729219, host-cited, and confirmed on our own ladder replays) is 600s TOTAL
+# per agent per game with NO per-step cap; our worst observed game spent 52.3s of
+# 600. And the lever is large: with a value head that actually works, self-mirror
+# MCTS(sc16) vs raw argmax went 0.300 (z=-3.10, dead value head) -> 0.733 (z=+3.61).
+#
+# SEARCH_COUNT is now an upper bound, not a fixed cost: _plan_search() reads the
+# remaining bank straight out of the observation and scales down, so a long game
+# degrades to raw argmax instead of running the clock out.
+SEARCH_COUNT = 16
+SEARCH_MIN_BANK = 120.0   # below this many seconds left, stop searching entirely
+SEARCH_RESERVE = 60.0     # never plan to spend the last minute of the bank
+_SEARCH_COST = [0.0, 0]   # [total seconds spent searching, acts searched]
+
+
+def _plan_search(obs_dict):
+    """How many simulations can this act afford? Uses measured cost so far, so it
+    self-calibrates to whatever hardware the sandbox gives us (1.6 vCPU per the
+    host) instead of trusting a number measured on a dev box."""
+    try:
+        bank = float(obs_dict.get("remainingOverageTime", 600.0))
+    except Exception:
+        return SEARCH_COUNT
+    if bank <= SEARCH_MIN_BANK:
+        return 0
+    spent, acts = _SEARCH_COST
+    if acts < 3:
+        return SEARCH_COUNT            # no estimate yet; the guard below still applies
+    per_sim = spent / max(1.0, acts * SEARCH_COUNT)
+    # assume the game may still run as long as it already has, and keep a reserve
+    budget_per_act = (bank - SEARCH_RESERVE) / max(20.0, acts)
+    return max(0, min(SEARCH_COUNT, int(budget_per_act / max(per_sim, 1e-6))))
 NUM_WORDS_ENCODER = 25  # 26 when ENC_V3 (set below after the arch.json read)
 D = 128
 H = 2
@@ -52,18 +85,26 @@ _MUL = operator.mul
 # old features; a mismatch is a SILENTLY different function (no crash), which is
 # why this comes from the same arch.json that already carries the head count.
 ENC_V3 = 0
+ENC_V4 = 0
 ENERGY_TYPES = 16
+SELECT_TYPES = 12      # SelectType enum is 0..10
+SELECT_CONTEXTS = 52   # SelectContext enum is 0..48
+LOG_TYPES = 28         # LogType enum is 0..23
 for _c in ("arch.json", os.path.join("cg", "arch.json"),
            "/kaggle_simulations/agent/arch.json",
            "/kaggle_simulations/agent/cg/arch.json"):
     try:
         if os.path.exists(_c):
-            ENC_V3 = 1 if int(json.load(open(_c)).get("enc_version", 1)) >= 3 else 0
+            _ev = int(json.load(open(_c)).get("enc_version", 1))
+            ENC_V3 = 1 if _ev >= 3 else 0
+            ENC_V4 = 1 if _ev >= 4 else 0
             break
     except Exception:
         pass
 if ENC_V3:
     NUM_WORDS_ENCODER = 26
+if ENC_V4:
+    NUM_WORDS_ENCODER = 28  # +2: select-context word, log word
 
 all_card = all_card_data()
 card_table = {c.cardId: c for c in all_card}
@@ -365,6 +406,52 @@ def add_player(sv, ps):
         add_cards(sv, [c for c in ps.prize if c is not None], 1.0)
 
 
+def add_select(sv, obs):
+    """ENC_V4 word 26 -- mirrors train_mcts.add_select exactly."""
+    sv.word_start()
+    sel = obs.select
+    if sel is None:
+        sv.add_pos(SELECT_TYPES + SELECT_CONTEXTS + 6 + card_count)
+        return
+    sv.add(int(sel.type), 1.0)
+    sv.add_pos(SELECT_TYPES)
+    sv.add(int(sel.context), 1.0)
+    sv.add_pos(SELECT_CONTEXTS)
+    sv.add_single((sel.minCount or 0) / 10)
+    sv.add_single((sel.maxCount or 0) / 10)
+    sv.add_single((sel.remainDamageCounter or 0) / 10)
+    sv.add_single((sel.remainEnergyCost or 0) / 10)
+    sv.add_single(len(sel.option or ()) / 20)
+    sv.add_single(1.0 if sel.deck else 0.0)
+    add_cards(sv, [c for c in (sel.contextCard, sel.effect) if c is not None], 1.0)
+
+
+def add_logs(sv, obs, your_index):
+    """ENC_V4 word 27 -- mirrors train_mcts.add_logs exactly."""
+    sv.word_start()
+    logs = getattr(obs, "logs", None) or ()
+    sv.add_single(len(logs) / 10)
+    heads = tails = 0
+    total = 0.0
+    for lg in logs:
+        sv.add(int(lg.type), 0.25)
+        if lg.head is True:
+            heads += 1
+        elif lg.head is False:
+            tails += 1
+        if lg.value:
+            total += lg.value
+    sv.add_pos(LOG_TYPES)
+    sv.add_single(heads / 4)
+    sv.add_single(tails / 4)
+    sv.add_single(total / 300)
+    for lg in logs:
+        if lg.cardId is not None:
+            mine = 0 if lg.playerIndex == your_index else 1
+            sv.add(lg.cardId + mine * card_count, 0.25)
+    sv.add_pos(2 * card_count)
+
+
 def get_encoder_input(obs, your_deck, opp_deck=None):
     your_index = obs.current.yourIndex
     state = obs.current
@@ -418,6 +505,9 @@ def get_encoder_input(obs, your_deck, opp_deck=None):
         looking = state.looking
         sv.add_single(0.0 if looking is None else 1.0)
         add_cards(sv, [c for c in (looking or []) if c is not None], 0.25)
+    if ENC_V4:
+        add_select(sv, obs)
+        add_logs(sv, obs, your_index)
     return sv
 
 
@@ -808,8 +898,15 @@ def agent(obs_dict):
     try:
         import time as _time
         _t0 = _time.time()
-        sel = mcts_agent(obs_dict, my_deck, MODEL, SEARCH_COUNT, opp_deck=my_deck)
-        if _time.time() - _t0 > 1.5:  # sandbox act budget guard (v015-fix lesson)
+        _sc = _plan_search(obs_dict)
+        sel = mcts_agent(obs_dict, my_deck, MODEL, _sc, opp_deck=my_deck)
+        _dt = _time.time() - _t0
+        if _sc > 0:
+            _SEARCH_COST[0] += _dt
+            _SEARCH_COST[1] += 1
+        # The bank is the real limit, so the strike guard now fires on a single act
+        # eating an implausible slice of it rather than on a fixed wall-clock.
+        if _dt > 30.0:
             _SLOW_STRIKES += 1
             if _SLOW_STRIKES >= 3:
                 MODEL = None  # permanently degrade to the fast fallback

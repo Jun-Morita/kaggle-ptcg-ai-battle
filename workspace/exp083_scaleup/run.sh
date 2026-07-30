@@ -10,6 +10,18 @@ set -euo pipefail
 CORPUS=/home/jun/kaggle-ptcg-ai-battle/workspace/exp080_bc/data/mixed_ex3_multi_w7.pkl
 SPE=8044   # batches/epoch for the 10-day corpus at bs=128 (measured)
 CORPUS_V3=/home/jun/kaggle-ptcg-ai-battle/workspace/exp080_bc/data/mixed_ex3v3wl_multi_w7.pkl
+# 15-day rebuild (07-13..07-27). 3,545,132 records / 41,188 games -- 1.8x the 10-day
+# corpus, and it now spans the window in which Grimmsnarl went 17% -> 51% of the top
+# band. 46% of the records are mirror games, which is exactly the matchup v044 lost
+# (0.25). Same ENC_V3 + --keep-losses flags as CORPUS_V3, so V15* differ from V3*
+# ONLY in how much (and how recent) the teacher data is.
+CORPUS_V15=/home/jun/kaggle-ptcg-ai-battle/workspace/exp080_bc/data/mix15v3wl_multi_w7.pkl
+SPE15=27000
+# Elite corpus: teachers with LB score >= 1100 (top 20 teams) instead of >= 1000
+# (118 teams). 855,593 records / 9,333 games; 59% mirror.
+CORPUS_E11=/home/jun/kaggle-ptcg-ai-battle/workspace/exp080_bc/data/elite11_multi_w7.pkl
+SPE11=6684
+CORPUS_V4=/home/jun/kaggle-ptcg-ai-battle/workspace/exp080_bc/data/mix16v4wl_multi_w7.pkl
 cd "$(dirname "$0")/../exp041_pilotnet"
 
 case "${1:-A2}" in
@@ -78,6 +90,95 @@ case "${1:-A2}" in
         --opp-drop 0.5 --batch-size 128 --cosine --warmup-steps 4000 \
         --steps-per-epoch 14467 --seed 42 --policy-loss margin \
         --teacher results/sc083_v3t/model_ep15.pth --distill 0.7 ;;
+  # V15T / V15S: identical recipe to V3T / V3S, only the corpus changes (10d -> 15d).
+  # Step budget is held near V3T's 231k (8 * 27000 = 216k) so the comparison reads as
+  # "more/fresher data at the same compute", not "trained longer".
+  V15T) ENC_V3=1 uv run python pretrain.py --glob "$CORPUS_V15" --tag sc083_v15t --epochs 8 \
+        --d-model 256 --heads 4 --enc-layers 2 --dec-layers 2 --lr 1e-4 --clip 1.0 \
+        --opp-drop 0.5 --batch-size 128 --cosine --warmup-steps 4000 \
+        --steps-per-epoch $SPE15 --seed 42 --policy-loss margin ;;
+  V15S) ENC_V3=1 uv run python pretrain.py --glob "$CORPUS_V15" --tag sc083_v15s --epochs 8 \
+        --d-model 128 --heads 4 --enc-layers 2 --dec-layers 2 --lr 1e-4 --clip 1.0 \
+        --opp-drop 0.5 --batch-size 128 --cosine --warmup-steps 4000 \
+        --steps-per-epoch $SPE15 --seed 42 --policy-loss margin \
+        --teacher results/sc083_v15t/model_ep7.pth --distill 0.7 ;;
+  # E11T / E11S (exp083g): the OTHER axis -- teacher QUALITY instead of quantity.
+  # V15* asked "more data"; this asks "better data". min_score 1000 -> 1100 cuts the
+  # teacher pool from 118 teams to the top 20, i.e. the actual ladder frontier (our
+  # target, the silver cut, is 916.7). Cost: 855,593 records / 9,333 games, a quarter
+  # of the 15-day corpus. 59% of it is mirror, matching the top band being 51%
+  # Grimmsnarl -- the matchup v045 is still losing (0.45).
+  E11T) ENC_V3=1 uv run python pretrain.py --glob "$CORPUS_E11" --tag sc083_e11t --epochs 24 \
+        --d-model 256 --heads 4 --enc-layers 2 --dec-layers 2 --lr 1e-4 --clip 1.0 \
+        --opp-drop 0.5 --batch-size 128 --cosine --warmup-steps 4000 \
+        --steps-per-epoch $SPE11 --seed 42 --policy-loss margin ;;
+  # E11T's val curve PEAKS at epoch 9 (0.7553) and then DECLINES to 0.747-0.750 by
+  # ep18 -- 855k records cannot absorb 24 epochs. So the student distils from ep9,
+  # not the last checkpoint, and gets a matched 10-epoch budget.
+  E11S) ENC_V3=1 uv run python pretrain.py --glob "$CORPUS_E11" --tag sc083_e11s --epochs 10 \
+        --d-model 128 --heads 4 --enc-layers 2 --dec-layers 2 --lr 1e-4 --clip 1.0 \
+        --opp-drop 0.5 --batch-size 128 --cosine --warmup-steps 4000 \
+        --steps-per-epoch $SPE11 --seed 42 --policy-loss margin \
+        --teacher results/sc083_e11t/model_ep9.pth --distill 0.7 ;;
+  # V15S2: V15S was cut off half-trained. Its 8-epoch curve (0.7196 -> 0.7501)
+  # overlays V3S's first 8 (0.7107 -> 0.7497) almost exactly, and V3S went on to
+  # 0.7577 over 16 -- yet V15S ALREADY beats V3S head-to-head 0.608 (z=+4.30) at
+  # half the budget. A warm restart (SGDR-style second cosine cycle at half the
+  # peak LR, no warmup since the net is already conditioned) buys the missing half
+  # for 8 epochs instead of retraining 16 from scratch.
+  V15S2) ENC_V3=1 uv run python pretrain.py --glob "$CORPUS_V15" --tag sc083_v15s2 --epochs 8 \
+        --d-model 128 --heads 4 --enc-layers 2 --dec-layers 2 --lr 5e-5 --clip 1.0 \
+        --opp-drop 0.5 --batch-size 128 --cosine \
+        --steps-per-epoch $SPE15 --seed 43 --policy-loss margin \
+        --resume results/sc083_v15s/model_ep7.pth \
+        --teacher results/sc083_v15t/model_ep7.pth --distill 0.7 ;;
+  # V15E: quality and quantity are not exclusive -- this is the curriculum version.
+  # Start from V15S2 (broad: 41,188 games from 118 teams >= 1000) and finish on the
+  # elite corpus (9,333 games from the top 20 teams >= 1100) at a low LR. The broad
+  # pass supplies coverage; the elite pass shifts the net toward how the actual
+  # ladder frontier plays. Low LR + 3 epochs because exp083e showed what happens
+  # when a short fine-tune is allowed to overwrite a well-conditioned policy head.
+  V15E) ENC_V3=1 uv run python pretrain.py --glob "$CORPUS_E11" --tag sc083_v15e --epochs 3 \
+        --d-model 128 --heads 4 --enc-layers 2 --dec-layers 2 --lr 2e-5 --clip 1.0 \
+        --opp-drop 0.5 --batch-size 128 --cosine \
+        --steps-per-epoch $SPE11 --seed 44 --policy-loss margin \
+        --resume results/sc083_v15s2/model_ep7.pth \
+        --teacher results/sc083_e11t/model_ep9.pth --distill 0.7 ;;
+  # V4T / V4S (exp083h): ENC_V4 -- the encoder audit result. Same 15-day window and
+  # same recipe as V15T/V15S, so the ONLY variable is the two new feature words:
+  #   word 26 = obs.select (what the engine is asking: type, context, min/maxCount,
+  #             remainDamageCounter, remainEnergyCost, contextCard, effect). The
+  #             encoder had none of this -- the state vector was identical whether
+  #             the question was "attach energy where" or "place how many counters",
+  #             and the value head has no decoder input to disambiguate it.
+  #   word 27 = obs.logs (events since the previous selection: log types, coin
+  #             flips, damage values, card ids split by actor). Unused ANYWHERE in
+  #             the codebase before this.
+  # Verified before training: max index 35720 of 38000, 28 words, and train-vs-ship
+  # feature parity index-for-index on 300 real positions (parity_enc.py).
+  V4T) ENC_V4=1 uv run python pretrain.py --glob "$CORPUS_V4" --tag sc083_v4t --epochs 8 \
+        --d-model 256 --heads 4 --enc-layers 2 --dec-layers 2 --lr 1e-4 --clip 1.0 \
+        --opp-drop 0.5 --batch-size 128 --cosine --warmup-steps 4000 \
+        --steps-per-epoch $SPE15 --seed 42 --policy-loss margin ;;
+  V4S) ENC_V4=1 uv run python pretrain.py --glob "$CORPUS_V4" --tag sc083_v4s --epochs 8 \
+        --d-model 128 --heads 4 --enc-layers 2 --dec-layers 2 --lr 1e-4 --clip 1.0 \
+        --opp-drop 0.5 --batch-size 128 --cosine --warmup-steps 4000 \
+        --steps-per-epoch $SPE15 --seed 42 --policy-loss margin \
+        --teacher results/sc083_v4t/model_ep7.pth --distill 0.7 ;;
+  # SP (exp083e): the AlphaZero improvement step. sc083_v3s played 800 games against
+  # itself with sc16 search; selfplay_gen.py kept the SEARCH's per-candidate advantage
+  # (record element 12) as a SOFT policy target and the TD-blended root value as the
+  # value target. Search beats this same net 0.825 head-to-head, so those labels are a
+  # strictly better policy than the net that produced them -- this trains the net
+  # toward it. Huber (not margin): margin needs one observed pick, and would throw the
+  # soft distribution away. Low LR + 4 epochs on 162k records: the point is to move the
+  # net toward the search, not to retrain it and forget the BC corpus.
+  SP) ENC_V3=1 uv run python pretrain.py \
+        --glob /home/jun/kaggle-ptcg-ai-battle/workspace/exp080_bc/data/spfix_v3s_w0.pkl \
+        --tag sc083_sp --epochs 4 \
+        --d-model 128 --heads 4 --enc-layers 2 --dec-layers 2 --lr 2e-5 --clip 1.0 \
+        --opp-drop 0.0 --batch-size 128 --cosine --steps-per-epoch 1250 --seed 42 \
+        --policy-loss huber --resume results/sc083_v3s/model_ep15.pth ;;
   B)  uv run python pretrain.py --glob "$CORPUS" --tag sc083_B --epochs 24 \
         --d-model 384 --heads 6 --enc-layers 4 --dec-layers 4 --lr 1e-4 --clip 1.0 \
         --opp-drop 0.5 --batch-size 128 --cosine --warmup-steps 4000 \
