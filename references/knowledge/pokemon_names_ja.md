@@ -30,7 +30,11 @@ Strategy レポートで日本語・英語どちらの読者にも引用可能�
 | Thwackey | バチンキー | |
 | Dragapult | ドラパルト | |
 | Archaludon | ブリジュラス | |
-| Lucario | ルカリオ | |
+| Lucario | ルカリオ | Mega Lucario ex = メガルカリオex。07-13以降の教師データに1件も無い（07-03〜12 には 3〜20%）|
+| Grimmsnarl | オーロンゲ | **我々の現在のデッキ**。上位帯シェア 51.3%(07-26)＝ミラーが最頻出 |
+| Impidimp | ベロバー | Grimmsnarl の進化前 |
+| Morgrem | ギモー | Grimmsnarl の進化前 |
+| Spidops | ワナイダー | 内部名 mixed_ex2（Team Rocket 系, TR Spidops）|
 | Cinderace | エースバーン | |
 | Trevenant | オーロット | |
 | Phantump | ボクレー | |

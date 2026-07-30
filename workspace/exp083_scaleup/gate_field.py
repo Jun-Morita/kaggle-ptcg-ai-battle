@@ -46,6 +46,7 @@ import eval_gate as EG  # noqa: E402
 import anti_crustle as AC  # noqa: E402
 import baselines as B  # noqa: E402
 from cg.api import to_observation_class  # noqa: E402
+from eval_mcts import make_mcts_agent_factory  # noqa: E402
 
 # our own ladder shares (v045, n=136), restricted to simulable archetypes
 WEIGHT = {"mixed_ex3": 0.30, "mixed_ex1": 0.29, "crustle_control": 0.08,
@@ -84,7 +85,21 @@ def load(pth, device):
     return m, v, cfg, pth
 
 
-def make_agent(model, v, my_deck):
+def make_agent(model, v, my_deck, sc=0):
+    """sc>0 = the SHIP configuration (net + MCTS). This matters for more than
+    realism: raw argmax exercises only the POLICY head, while ENC_V4's main
+    additions (select context, remainDamageCounter/remainEnergyCost) are state
+    information that feeds the VALUE head -- and the value head is what search
+    consumes. A raw-argmax gate therefore under-measures any change aimed at
+    evaluation rather than at move ranking."""
+    if sc:
+        mk = make_mcts_agent_factory(sc, oracle_free=True)
+
+        def agent_s(obs_dict):
+            with enc_version(v):
+                return mk(model, my_deck, my_deck)(obs_dict)
+        return agent_s
+
     def agent(obs_dict):
         oc = to_observation_class(obs_dict)
         cands = tm.enumerate_candidates(oc)
@@ -116,12 +131,12 @@ def opponents(grimm, opp_decks):
     return out
 
 
-def run(model, v, grimm, opps, n):
+def run(model, v, grimm, opps, n, sc=0):
     res, total = {}, 0.0
     for k, odeck, fac in opps:
         w, l, d, e = ER.run_matchup(
             model, grimm, odeck, fac, n,
-            agent_factory=lambda _m, my, _o: make_agent(model, v, my))
+            agent_factory=lambda _m, my, _o: make_agent(model, v, my, sc))
         played = max(1, w + l + d)
         wr = w / played
         res[k] = (wr, w, l, d, e)
@@ -132,6 +147,7 @@ def run(model, v, grimm, opps, n):
 
 def main():
     n = int(arg("--n", "60"))
+    sc = int(arg("--sc", "0"))
     tag = arg("--tag", "field")
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     grimm = json.load(open(os.path.join(WS, "exp080_bc", "grimmsnarl_deck.json")))
@@ -140,13 +156,14 @@ def main():
     old, vo, cfgo, po = load(arg("--old"), device)
     print(f"NEW {os.path.relpath(pn, WS)}  enc_version={vn}")
     print(f"OLD {os.path.relpath(po, WS)}  enc_version={vo}")
-    print(f"raw argmax, oracle-free, seats alternated, n={n} per matchup\n", flush=True)
+    print(f"{'MCTS sc=%d (SHIP config)' % sc if sc else 'raw argmax'}, oracle-free, "
+          f"seats alternated, n={n} per matchup\n", flush=True)
 
     t0 = time.time()
     print("  NEW:")
-    rn, tn = run(new, vn, grimm, opponents(grimm, opp_decks), n)
+    rn, tn = run(new, vn, grimm, opponents(grimm, opp_decks), n, sc)
     print("  OLD:")
-    ro, to = run(old, vo, grimm, opponents(grimm, opp_decks), n)
+    ro, to = run(old, vo, grimm, opponents(grimm, opp_decks), n, sc)
     print(f"\n  weighted   NEW {tn:.3f}   OLD {to:.3f}   delta {tn - to:+.3f}"
           f"   ({time.time()-t0:.0f}s)")
     print("  per-matchup delta: " + "  ".join(
