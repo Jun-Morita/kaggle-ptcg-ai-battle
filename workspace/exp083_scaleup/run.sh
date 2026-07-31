@@ -21,6 +21,16 @@ SPE15=27000
 # (118 teams). 855,593 records / 9,333 games; 59% mirror.
 CORPUS_E11=/home/jun/kaggle-ptcg-ai-battle/workspace/exp080_bc/data/elite11_multi_w7.pkl
 SPE11=6684
+# 28-day corpus (07-01..07-28). Two things change at once vs the 15/16-day builds,
+# both in the direction the field gate says we need: (a) Mega Lucario ex is present
+# at 3.4-20% of teacher seats in 07-03..07-12 and at 0% from 07-13 on, and it is our
+# worst matchup on the ladder (v3s 0.45, v046 0.27) while being 6-22% of our games;
+# (b) mirror share falls -- the recent days run 50-67% mirror and the older ones
+# 0-35%, and mirror over-representation is what made v046 worse in the field.
+# Built with ENC_V3, not V4, so the only difference vs v3s (our strongest net) is
+# the teacher data.
+CORPUS_28=/home/jun/kaggle-ptcg-ai-battle/workspace/exp080_bc/data/mix28v3wl_multi_w7.pkl
+SPE28=38000
 CORPUS_V4=/home/jun/kaggle-ptcg-ai-battle/workspace/exp080_bc/data/mix16v4wl_multi_w7.pkl
 cd "$(dirname "$0")/../exp041_pilotnet"
 
@@ -165,6 +175,17 @@ case "${1:-A2}" in
         --opp-drop 0.5 --batch-size 128 --cosine --warmup-steps 4000 \
         --steps-per-epoch $SPE15 --seed 42 --policy-loss margin \
         --teacher results/sc083_v4t/model_ep7.pth --distill 0.7 ;;
+  # D28T / D28S (exp083k): the 28-day corpus. Step budget 6*38000 = 228k, matched to
+  # V3T's 231k so this reads as "different teacher data", not "trained longer".
+  D28T) ENC_V3=1 uv run python pretrain.py --glob "$CORPUS_28" --tag sc083_d28t --epochs 6 \
+        --d-model 256 --heads 4 --enc-layers 2 --dec-layers 2 --lr 1e-4 --clip 1.0 \
+        --opp-drop 0.5 --batch-size 128 --cosine --warmup-steps 4000 \
+        --steps-per-epoch $SPE28 --seed 42 --policy-loss margin ;;
+  D28S) ENC_V3=1 uv run python pretrain.py --glob "$CORPUS_28" --tag sc083_d28s --epochs 6 \
+        --d-model 128 --heads 4 --enc-layers 2 --dec-layers 2 --lr 1e-4 --clip 1.0 \
+        --opp-drop 0.5 --batch-size 128 --cosine --warmup-steps 4000 \
+        --steps-per-epoch $SPE28 --seed 42 --policy-loss margin \
+        --teacher results/sc083_d28t/model_ep5.pth --distill 0.7 ;;
   # SP (exp083e): the AlphaZero improvement step. sc083_v3s played 800 games against
   # itself with sc16 search; selfplay_gen.py kept the SEARCH's per-candidate advantage
   # (record element 12) as a SOFT policy target and the TD-blended root value as the

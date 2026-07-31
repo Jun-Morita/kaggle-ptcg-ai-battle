@@ -1,0 +1,22 @@
+{
+ "d_model": 128,
+ "heads": 4,
+ "d_ff": 256,
+ "enc_layers": 2,
+ "dec_layers": 2,
+ "enc_version": 3,
+ "policy_loss": "margin",
+ "distill": {
+  "teacher": "results/sc083_d28t/model_ep5.pth",
+  "teacher_arch": {
+   "d_model": 256,
+   "heads": 4,
+   "d_ff": 512,
+   "enc_layers": 2,
+   "dec_layers": 2,
+   "enc_version": 3,
+   "policy_loss": "margin"
+  },
+  "weight": 0.7
+ }
+}
