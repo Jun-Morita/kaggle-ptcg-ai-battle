@@ -1,0 +1,8 @@
+oppdeck oracle: exp041_pilotnet/results/sc083_d28s/model_ep5.pth sc=16 n=200
+
+  Crustle              oracle             0.735  (147-52-1, err=0)  (2846s)
+  Crustle              mirror_assumption  0.770  (154-45-1, err=0)  (3116s)
+  Crustle              delta -0.035  (se 0.050, weight 0.08)
+
+weighted delta over the non-mirror 0.08 of the field: -0.0028
+(as a share of the whole field, mirror included: -0.0036)

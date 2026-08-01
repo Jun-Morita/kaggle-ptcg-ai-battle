@@ -1,0 +1,8 @@
+gate_search: exp041_pilotnet/results/sc083_d28s/model_ep5.pth sc=16 n=150
+  cand {'FINAL_PICK': 'visit_q'}
+
+  Crustle              cand  0.673  (101-48-1, err=0)  (3012s)
+  Crustle              base  0.747  (112-37-1, err=0)  (2424s)
+  Crustle              delta -0.073  (se 0.058, weight 0.08)
+
+weighted delta over 0.08 of the field: -0.0733

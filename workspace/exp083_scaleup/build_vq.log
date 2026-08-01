@@ -1,0 +1,14 @@
+deck=/home/jun/kaggle-ptcg-ai-battle/workspace/exp080_bc/grimmsnarl_deck.json
+weights=/home/jun/kaggle-ptcg-ai-battle/workspace/exp041_pilotnet/results/sc083_d28s/weights_pure.pkl
+out=/home/jun/kaggle-ptcg-ai-battle/workspace/exp083_scaleup/build_d28s_vq
+
+built /home/jun/kaggle-ptcg-ai-battle/workspace/exp083_scaleup/build_d28s_vq/submission.tar.gz | top-level=['deck.csv', 'main.py'] | files=10 | size=53.6MB
+arch shipped: heads=4 enc=2 dec=2 d_model=128
+module load (incl. npnet.npz read) took 0.6s
+
+=== smoke test (built artifact, n=40/matchup, search_count=16) ===
+  vs lucario_v2(ex) wr=0.425 (17-23) err0=0 err1=0
+  vs Crustle        wr=0.375 (15-25) err0=0 err1=0
+  vs dragapult      wr=0.600 (24-16) err0=0 err1=0
+total 3918s for 240 games (16.32s/game)
+SMOKE OK (0 errors).

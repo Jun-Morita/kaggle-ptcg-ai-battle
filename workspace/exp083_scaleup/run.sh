@@ -31,6 +31,18 @@ SPE11=6684
 # the teacher data.
 CORPUS_28=/home/jun/kaggle-ptcg-ai-battle/workspace/exp080_bc/data/mix28v3wl_multi_w7.pkl
 SPE28=38000
+# exp083m: the same 28 days, plus the seats we always threw away. build_multi.py
+# only ever kept seats playing OUR archetype, so no position was ever labelled from
+# an Alakazam / Crustle / Lucario player's own point of view -- and MCTS asks the net
+# for exactly that at every opponent node. seat* files train the VALUE head only
+# (pretrain.is_value_only); their moves are not our moves.
+#   mix28  4,904,410 decisions   Grimmsnarl, policy + value
+#   seat   4,585,976 decisions   Alakazam 3.70M / Crustle 0.81M / Lucario 0.08M, value
+# SPE is doubled so the policy head still gets the same 228k Grimmsnarl steps as
+# D28S; otherwise "added value data" and "halved the policy budget" would be one
+# change measured as one number.
+CORPUS_28M="/home/jun/kaggle-ptcg-ai-battle/workspace/exp080_bc/data/mix28v3wl_multi_w7.pkl,/home/jun/kaggle-ptcg-ai-battle/workspace/exp080_bc/data/seat28*_multi_w7.pkl"
+SPE28M=76000
 CORPUS_V4=/home/jun/kaggle-ptcg-ai-battle/workspace/exp080_bc/data/mix16v4wl_multi_w7.pkl
 cd "$(dirname "$0")/../exp041_pilotnet"
 
@@ -186,6 +198,18 @@ case "${1:-A2}" in
         --opp-drop 0.5 --batch-size 128 --cosine --warmup-steps 4000 \
         --steps-per-epoch $SPE28 --seed 42 --policy-loss margin \
         --teacher results/sc083_d28t/model_ep5.pth --distill 0.7 ;;
+  # D28MT / D28MS (exp083m): D28T/D28S with the other seats' value labels added.
+  # The teacher is retrained too -- distilling the student's value against a teacher
+  # that has never seen those positions would put a guess where the real outcome is.
+  D28MT) ENC_V3=1 uv run python pretrain.py --glob "$CORPUS_28M" --tag sc083_d28mt --epochs 6 \
+        --d-model 256 --heads 4 --enc-layers 2 --dec-layers 2 --lr 1e-4 --clip 1.0 \
+        --opp-drop 0.5 --batch-size 128 --cosine --warmup-steps 4000 \
+        --steps-per-epoch $SPE28M --seed 42 --policy-loss margin ;;
+  D28MS) ENC_V3=1 uv run python pretrain.py --glob "$CORPUS_28M" --tag sc083_d28ms --epochs 6 \
+        --d-model 128 --heads 4 --enc-layers 2 --dec-layers 2 --lr 1e-4 --clip 1.0 \
+        --opp-drop 0.5 --batch-size 128 --cosine --warmup-steps 4000 \
+        --steps-per-epoch $SPE28M --seed 42 --policy-loss margin \
+        --teacher results/sc083_d28mt/model_ep5.pth --distill 0.7 ;;
   # SP (exp083e): the AlphaZero improvement step. sc083_v3s played 800 games against
   # itself with sc16 search; selfplay_gen.py kept the SEARCH's per-candidate advantage
   # (record element 12) as a SOFT policy target and the TD-blended root value as the

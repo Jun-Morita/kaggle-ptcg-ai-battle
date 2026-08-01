@@ -1,0 +1,4 @@
+ab: exp041_pilotnet/results/sc083_d28s/model_ep5.pth sc=16 n=120
+  cand {'VALUE_SCALE': 0.0}  vs base
+
+  37-82-1  wr 0.308  z -4.20  err 0  WORSE  (1771s)

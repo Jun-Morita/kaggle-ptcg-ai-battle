@@ -1,0 +1,8 @@
+oppdeck oracle: exp041_pilotnet/results/sc083_d28s/model_ep5.pth sc=16 n=200
+
+  Alakazam             oracle             0.885  (177-23-0, err=0)  (2765s)
+  Alakazam             mirror_assumption  0.845  (169-31-0, err=0)  (3301s)
+  Alakazam             delta +0.040  (se 0.050, weight 0.29)
+
+weighted delta over the non-mirror 0.29 of the field: +0.0116
+(as a share of the whole field, mirror included: +0.0151)

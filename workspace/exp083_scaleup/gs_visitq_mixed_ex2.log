@@ -1,0 +1,8 @@
+gate_search: exp041_pilotnet/results/sc083_d28s/model_ep5.pth sc=16 n=150
+  cand {'FINAL_PICK': 'visit_q'}
+
+  TR Spidops           cand  0.987  (148-2-0, err=0)  (1139s)
+  TR Spidops           base  0.993  (149-1-0, err=0)  (1128s)
+  TR Spidops           delta -0.007  (se 0.058, weight 0.02)
+
+weighted delta over 0.02 of the field: -0.0067

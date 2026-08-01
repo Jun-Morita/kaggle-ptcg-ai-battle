@@ -53,9 +53,32 @@ from cg.api import (
 # remaining bank straight out of the observation and scales down, so a long game
 # degrades to raw argmax instead of running the clock out.
 SEARCH_COUNT = 16
+# exp083l: mirrors train_mcts.py. See the note there -- at T=10 the PUCT prior is
+# so peaked (median 0.985 on one move over 1,059 measured decisions) that the
+# search changed the move only 14.6% of the time.
+SEARCH_TEMP = 10.0
+PUCT_C = 0.4
+# "visit" = the original (ties by candidate index); "visit_q" = ties by mean value.
+# Flipped after both gates, not on the self-mirror alone:
+#   self-mirror, pooled n=400   0.598  z=+3.90
+#   field, weighted             +0.020  (Alakazam +0.032, Crustle +0.028,
+#                                        Lucario +0.033 at n=400/150; the three
+#                                        cells with any headroom left)
+# The field number is under the +0.05 bar, which was set to catch a NET that had
+# specialised into the mirror (v046). Nothing is learned here, so that failure mode
+# has no mechanism -- and the pattern is its opposite: the mirror cell moved +0.007
+# (it sits at 0.987) while every non-mirror cell with room moved up.
+FINAL_PICK = "visit_q"
 SEARCH_MIN_BANK = 120.0   # below this many seconds left, stop searching entirely
 SEARCH_RESERVE = 60.0     # never plan to spend the last minute of the bank
-_SEARCH_COST = [0.0, 0]   # [total seconds spent searching, acts searched]
+# [total seconds spent searching, acts searched, SIMULATIONS actually run].
+# The third slot exists because the second alone is not enough to price a
+# simulation: once the bank forces _sc below SEARCH_COUNT, an act costs less than
+# a full-budget act, and dividing by acts*SEARCH_COUNT would price a simulation at
+# _sc/SEARCH_COUNT of its true cost -- i.e. the planner gets more optimistic
+# exactly when it has just been told it is running out of time, and climbs back to
+# 16 too eagerly. Divide by the sims we really ran.
+_SEARCH_COST = [0.0, 0, 0]
 
 
 def _plan_search(obs_dict):
@@ -68,10 +91,10 @@ def _plan_search(obs_dict):
         return SEARCH_COUNT
     if bank <= SEARCH_MIN_BANK:
         return 0
-    spent, acts = _SEARCH_COST
+    spent, acts, sims = _SEARCH_COST
     if acts < 3:
         return SEARCH_COUNT            # no estimate yet; the guard below still applies
-    per_sim = spent / max(1.0, acts * SEARCH_COUNT)
+    per_sim = spent / max(1.0, sims)
     # assume the game may still run as long as it already has, and keep a reserve
     budget_per_act = (bank - SEARCH_RESERVE) / max(20.0, acts)
     return max(0, min(SEARCH_COUNT, int(budget_per_act / max(per_sim, 1e-6))))
@@ -780,7 +803,7 @@ def create_node(parent, search_state, your_index, your_deck, model, opp_deck=Non
         node.backprop(v)
         s = 0.0
         for i in range(len(policy)):
-            p = math.exp(policy[i] * 10.0)
+            p = math.exp(policy[i] * SEARCH_TEMP)
             node.children.append(Child(actions[i], p))
             s += p
         for c in node.children:
@@ -817,7 +840,7 @@ def mcts_agent(obs_dict, your_deck, model, search_count, opp_deck=None):
         current = root
         while True:
             value = -1e9
-            c = 0.4 * math.sqrt(current.visit)
+            c = PUCT_C * math.sqrt(current.visit)
             nxt = None
             for child in current.children:
                 visit = 0
@@ -844,11 +867,21 @@ def mcts_agent(obs_dict, your_deck, model, search_count, opp_deck=None):
                     current.backprop(current.value)
                     break
 
-    max_child, max_visit = None, -1
+    # Mirrors train_mcts.py's FINAL_PICK. Visit count stays the primary key --
+    # AlphaZero's reason for preferring it holds -- but at sc16 over ~6 candidates
+    # it is a count from a handful of trials and ties are common, and the original
+    # broke them by CANDIDATE INDEX: neither the prior nor the value, just the
+    # order enumerate_candidates happened to return. Breaking them by mean value Q
+    # instead measured 0.644 (z=+3.64, n=160) against this file's own behaviour.
+    max_child, max_key = None, None
     for child in root.children:
-        if child.node is not None and max_visit < child.node.visit:
-            max_child = child
-            max_visit = child.node.visit
+        if child.node is None:
+            continue
+        key = (child.node.visit, child.node.total / child.node.visit)
+        if FINAL_PICK != "visit_q":
+            key = (child.node.visit,)
+        if max_key is None or key > max_key:
+            max_child, max_key = child, key
 
     search_end()
     if max_child is None:
@@ -904,6 +937,7 @@ def agent(obs_dict):
         if _sc > 0:
             _SEARCH_COST[0] += _dt
             _SEARCH_COST[1] += 1
+            _SEARCH_COST[2] += _sc
         # The bank is the real limit, so the strike guard now fires on a single act
         # eating an implausible slice of it rather than on a fixed wall-clock.
         if _dt > 30.0:

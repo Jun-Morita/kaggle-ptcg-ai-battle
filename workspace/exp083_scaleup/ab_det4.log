@@ -1,0 +1,4 @@
+ab: exp041_pilotnet/results/sc083_d28s/model_ep5.pth sc=16 n=120
+  cand {'DET_COUNT': 4}  vs base
+
+  57-63-0  wr 0.475  z -0.55  err 0  FLAT  (1945s)

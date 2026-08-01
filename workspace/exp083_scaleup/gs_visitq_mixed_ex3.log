@@ -1,0 +1,8 @@
+gate_search: exp041_pilotnet/results/sc083_d28s/model_ep5.pth sc=16 n=150
+  cand {'FINAL_PICK': 'visit_q'}
+
+  Grimmsnarl(mirror)   cand  0.993  (149-1-0, err=0)  (1629s)
+  Grimmsnarl(mirror)   base  0.987  (148-2-0, err=0)  (1495s)
+  Grimmsnarl(mirror)   delta +0.007  (se 0.058, weight 0.30)
+
+weighted delta over 0.30 of the field: +0.0067

@@ -98,6 +98,32 @@ ENC_V3 = int(os.environ.get("ENC_V3", "0"))
 # would add a new silent train/ship divergence; card ids come from all_card_data()
 # which the encoder already depends on.
 ENC_V4 = int(os.environ.get("ENC_V4", "0"))
+# exp083l: the two constants that decide whether the search searches at all.
+# SEARCH_TEMP scales the tanh policy head into the PUCT prior via exp(policy*T).
+# At the shipped T=10 the prior is brutally peaked -- measured over 1,059 real
+# decisions, the median position puts 0.985 of the prior mass on one move, so the
+# c*prior/(1+visit) exploration term is ~0 for every alternative and the search
+# only changed the move 14.6% of the time. PUCT_C=0.4 is also low for a
+# PUCT-style term (AlphaZero-family values are 1.0-2.5). Both are env-tunable so
+# they can be swept, and both must stay mirrored in npmcts_policy.py.
+SEARCH_TEMP = float(os.environ.get("SEARCH_TEMP", "10.0"))
+PUCT_C = float(os.environ.get("PUCT_C", "0.4"))
+# DET_COUNT: how many hidden-state samples the simulation budget is split over.
+# 1 = the original behaviour (one determinization for the whole search).
+DET_COUNT = int(os.environ.get("DET_COUNT", "1"))
+# VALUE_SCALE: multiplies the value head at NON-terminal leaves only. Terminal
+# nodes keep their exact +1/0/-1. Setting it to 0 makes the search purely
+# tactical -- it still finds forced wins inside the horizon, but has no opinion
+# about quiet positions. Diagnostic only (diag_value.py): how much of the
+# no-search -> sc16 gain (+0.325) is the learned value, and how much is just
+# lookahead? The value head's held-out AUC is 0.64 in the first quarter of the
+# game and 0.95 in the last, so this is a live question. Never ship != 1.0.
+VALUE_SCALE = float(os.environ.get("VALUE_SCALE", "1.0"))
+# FINAL_PICK: how the root turns a finished search into a move.
+#   visit    max visit count, ties by candidate index   (the original)
+#   visit_q  max visit count, ties by mean value Q
+#   q        max mean value Q, ties by visit count
+FINAL_PICK = os.environ.get("FINAL_PICK", "visit")
 if ENC_V4:
     ENC_V3 = 1                       # V4 is a superset; never run V4 without V3
 ENERGY_TYPES = 16  # EnergyType enum is 0..11; margin for future types
@@ -553,14 +579,14 @@ def create_node(parent, search_state, your_index, your_deck, model, opp_deck=Non
         sv_enc = get_encoder_input(obs, your_deck, opp_deck)
         sv_dec = get_decoder_input(obs, actions)
         value, policy = eval_nn(sv_enc, sv_dec, model)
-        v = value
+        v = value * VALUE_SCALE
         if state.yourIndex != your_index:
             v = -v
         node.value = v
         node.backprop(v)
         s = 0.0
         for i in range(len(policy)):
-            p = math.exp(policy[i] * 10.0)
+            p = math.exp(policy[i] * SEARCH_TEMP)
             node.children.append(Child(actions[i], p))
             s += p
         for c in node.children:
@@ -569,23 +595,22 @@ def create_node(parent, search_state, your_index, your_deck, model, opp_deck=Non
     return (node, sample)
 
 
-def mcts_agent(obs_dict, your_deck, model, search_count, opp_deck=None):
-    """`opp_deck` defaults to `your_deck` (mirror self-play); pass the real
-    opponent decklist explicitly for asymmetric matchups (teacher_pool.py) --
-    always exactly known here since self-play always picks both decks itself."""
-    obs = to_observation_class(obs_dict)
-    your_index = obs.current.yourIndex
-    state = obs.current
+def _run_one_tree(obs, your_index, your_deck, model, search_count, opp_deck, rng=None):
+    """One determinization: sample a hidden world, build a tree in it, return the
+    root. The caller is responsible for search_end() -- the engine keeps ONE global
+    search context (search_end takes no id), so determinizations run sequentially,
+    not in parallel."""
     search_state = search_begin(
         obs, **determinize(obs, your_index, your_deck,
-                            your_deck if opp_deck is None else opp_deck, POKEMON_IDS))
+                           your_deck if opp_deck is None else opp_deck,
+                           POKEMON_IDS, rng=rng))
     root, sample = create_node(None, search_state, your_index, your_deck, model, opp_deck)
 
     for _ in range(search_count):
         current = root
         while True:
             value = -1e9
-            c = 0.4 * math.sqrt(current.visit)
+            c = PUCT_C * math.sqrt(current.visit)
             nxt = None
             for child in current.children:
                 visit = 0
@@ -611,32 +636,81 @@ def mcts_agent(obs_dict, your_deck, model, search_count, opp_deck=None):
                 if current.state.observation.current.result >= 0:
                     current.backprop(current.value)
                     break
+    return root, sample
 
-    max_child, max_visit, min_value = None, -1, 10
-    for child in root.children:
-        if child.node is not None:
-            if max_visit < child.node.visit:
-                max_child = child
-                max_visit = child.node.visit
-            v = child.node.total / child.node.visit
-            if min_value > v:
-                min_value = v
 
-    if sample is not None:
-        sample.value = root.total / root.visit
-        for i in range(len(root.children)):
-            child = root.children[i]
-            v = sample.value
-            if child.node is None:
-                v = min_value - v - 0.03
+def mcts_agent(obs_dict, your_deck, model, search_count, opp_deck=None):
+    """`opp_deck` defaults to `your_deck` (mirror self-play); pass the real
+    opponent decklist explicitly for asymmetric matchups (teacher_pool.py) --
+    always exactly known here since self-play always picks both decks itself.
+
+    DET_COUNT (exp083l) splits the simulation budget over SEVERAL determinizations
+    instead of spending it all inside one guessed world. The original code sampled
+    the opponent's hidden hand/deck/prizes exactly once, before the loop, so every
+    simulation reasoned about the same guess. That is the likeliest explanation for
+    the pair of measurements we have: no-search -> sc16 was worth +0.325, but
+    sc16 -> sc32 was worth nothing (0.450, z=-0.89). In an imperfect-information
+    game the uncertainty lives in the hidden state, not in the depth, so deeper
+    reading of one fixed world saturates immediately. Root child statistics are
+    summed across trees (the candidate list comes from the real obs.select and is
+    identical in every determinization). DET_COUNT=1 reproduces the old behaviour
+    exactly. Must stay mirrored in npmcts_policy.py.
+    """
+    obs = to_observation_class(obs_dict)
+    your_index = obs.current.yourIndex
+    dets = max(1, DET_COUNT)
+    per = search_count if dets == 1 else max(1, search_count // dets)
+
+    agg_visit, agg_total, selects = {}, {}, {}
+    sample, n_children = None, 0
+    for d in range(dets):
+        root, s0 = _run_one_tree(obs, your_index, your_deck, model, per, opp_deck)
+        if d == 0:
+            sample = s0
+            n_children = len(root.children)
+        for i, child in enumerate(root.children):
+            selects[i] = child.select
+            if child.node is not None:
+                agg_visit[i] = agg_visit.get(i, 0) + child.node.visit
+                agg_total[i] = agg_total.get(i, 0.0) + child.node.total
+        if d == 0:
+            root_total, root_visit = root.total, root.visit
+        else:
+            root_total += root.total
+            root_visit += root.visit
+        search_end()
+
+    max_i, max_key = None, None
+    min_value = 10.0
+    for i, v in agg_visit.items():
+        q = agg_total[i] / v
+        # Visit count is the AlphaZero answer because with thousands of sims it is
+        # the lower-variance statistic. At sc16 over ~6 candidates it is a count
+        # from a handful of trials, and the old code broke its ties by CANDIDATE
+        # INDEX -- neither the prior nor the value, just enumeration order.
+        if FINAL_PICK == "q":
+            key = (q, v)
+        elif FINAL_PICK == "visit_q":
+            key = (v, q)
+        else:
+            key = (v,)
+        if max_key is None or key > max_key:
+            max_i, max_key = i, key
+        if q < min_value:
+            min_value = q
+
+    if sample is not None and n_children:
+        sample.value = root_total / max(1, root_visit)
+        for i in range(min(n_children, len(sample.policy))):
+            if i in agg_visit:
+                v = agg_total[i] / agg_visit[i] - sample.value
             else:
-                v = child.node.total / child.node.visit - v
+                v = min_value - sample.value - 0.03
             sample.policy[i] = max(-1.0, min(1.0, v))
 
-    search_end()
-    if max_child is None:  # fallback: no expanded child
-        return (root.children[0].select if root.children else [0], sample)
-    return (max_child.select, sample)
+    if max_i is None:  # fallback: no expanded child in any tree
+        return (selects.get(0, [0]), sample)
+    return (selects[max_i], sample)
 
 
 class LearnInput:

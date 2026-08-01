@@ -81,31 +81,61 @@ def is_policy_only(path):
     return os.path.basename(path).startswith("dagger")
 
 
+def is_value_only(path):
+    """"seat*" files: decisions made by a seat piloting some OTHER archetype.
+
+    build_multi.py only ever recorded seats playing OUR archetype, so the net has
+    never seen a position from an Alakazam/Crustle/Lucario player's own point of
+    view. MCTS asks it for exactly that at every opponent node -- roughly half the
+    tree, in the ~54% of ladder games that are not the mirror -- and the value head
+    is what the search consumes (zeroing it drops self-play strength to 0.308).
+
+    Their MOVES are not a target: we pilot Grimmsnarl, and imitating an Alakazam
+    player's choices would blur the policy head with decisions we will never face.
+    Their OUTCOMES are, so these files train the value head only."""
+    return os.path.basename(path).startswith("seat")
+
+
+def file_weights(path):
+    """(policy weight, value weight) for every record in this file."""
+    if is_policy_only(path):
+        return 1.0, 0.0
+    if is_value_only(path):
+        return 0.0, 1.0
+    return 1.0, 1.0
+
+
 def iter_chunks(files, limit_chunks=None):
     n = 0
     for path in files:
         wid = int(re.search(r"_w(\d+)\.pkl$", path).group(1))
-        pol_only = is_policy_only(path)
+        pw, vw = file_weights(path)
+        fid = os.path.basename(path)   # game ids restart per file, so (wid, gid)
+                                       # alone is not unique once several corpora
+                                       # are mixed; callers key per-game state on
+                                       # fid. The val split keeps using wid so an
+                                       # existing corpus splits exactly as before.
         with open(path, "rb") as f:
             while True:
                 try:
                     chunk = pickle.load(f)
                 except (EOFError, pickle.UnpicklingError):
                     break  # EOF, or a chunk a datagen worker is mid-writing
-                yield wid, chunk, pol_only
+                yield wid, fid, chunk, pw, vw
                 n += 1
                 if limit_chunks and n >= limit_chunks:
                     return
 
 
-def make_batch(recs, device, opp_drop=0.0, vw_list=None):
+def make_batch(recs, device, opp_drop=0.0, vw_list=None, pw_list=None):
     """Tensors in exactly train_mcts.train()'s format (64-candidate padding).
     opp_drop = probability of removing the opp_deck oracle word per record.
-    vw_list = per-record value-loss weight (None -> all 1.0)."""
+    vw_list / pw_list = per-record value- / policy-loss weight (None -> all 1.0)."""
     bs = len(recs)
     ie, idd = tm.LearnInput(), tm.LearnInput()
     mask, le, ld = [], [], []
     vw = list(vw_list) if vw_list is not None else [1.0] * bs
+    pw = list(pw_list) if pw_list is not None else [1.0] * bs
     for r in recs:
         if opp_drop > 0.0 and random.random() < opp_drop:
             rei, rev, reo = drop_oppdeck(r)
@@ -140,7 +170,8 @@ def make_batch(recs, device, opp_drop=0.0, vw_list=None):
     return (t(ie.index, torch.int32), t(ie.value, torch.float32), t(ie.offset, torch.int32),
             t(idd.index, torch.int32), t(idd.value, torch.float32), t(idd.offset, torch.int32),
             t(mask, torch.float32).view(bs, -1), t(le, torch.float32).view(bs, -1),
-            t(ld, torch.float32).view(bs, -1), t(vw, torch.float32).view(bs, -1))
+            t(ld, torch.float32).view(bs, -1), t(vw, torch.float32).view(bs, -1),
+            t(pw, torch.float32).view(bs, -1))
 
 
 def train_epoch(model, optimizer, files, device, batch_size, limit_chunks, opp_drop=0.0,
@@ -177,18 +208,18 @@ def train_epoch(model, optimizer, files, device, batch_size, limit_chunks, opp_d
     # pushing anything down, all-+1 is optimal and argmax becomes arbitrary.
     model.train()
     total, n_batches = 0.0, 0
-    carry = []  # (record, value_weight) pairs
+    carry = []  # (record, policy_weight, value_weight) triples
     shuffled = list(files)
     random.shuffle(shuffled)
-    for wid, chunk, pol_only in iter_chunks(shuffled, limit_chunks):
-        w = 0.0 if pol_only else 1.0
-        recs = [(r, w) for r in chunk if not is_val(wid, r[GID])]
+    for wid, _fid, chunk, fpw, fvw in iter_chunks(shuffled, limit_chunks):
+        recs = [(r, fpw, fvw) for r in chunk if not is_val(wid, r[GID])]
         random.shuffle(recs)
         carry.extend(recs)
         while len(carry) >= batch_size:
             batch, carry = carry[:batch_size], carry[batch_size:]
-            (iei, iev, ieo, idi, idv, ido, mt, lte, ltd, vw) = make_batch(
-                [r for r, _ in batch], device, opp_drop, vw_list=[w for _, w in batch])
+            (iei, iev, ieo, idi, idv, ido, mt, lte, ltd, vw, pw) = make_batch(
+                [r for r, _, _ in batch], device, opp_drop,
+                vw_list=[v for _, _, v in batch], pw_list=[p for _, p, _ in batch])
             ch = ltd.argmax(dim=1)  # from the HARD label (+1 > 0 pad > -1)
             td = None
             if teacher is not None and distill > 0.0:
@@ -201,14 +232,18 @@ def train_epoch(model, optimizer, files, device, batch_size, limit_chunks, opp_d
                     ltd = (1.0 - distill) * ltd + distill * td
             optimizer.zero_grad()
             oe, od = model(iei, iev, ieo, idi, idv, ido)
+            # Normalising the policy term by pw.sum() rather than len(batch) keeps
+            # value-only records from silently shrinking the policy gradient. With
+            # no seat* files pw is all ones and this is the old expression exactly.
+            pwn = max(float(pw.sum()), 1.0)
             if policy_loss == "huber":
-                dec_loss = (loss_fn_dec(od, ltd) * mt).sum() / len(batch)
+                dec_loss = (loss_fn_dec(od, ltd) * mt * pw).sum() / pwn
             else:
                 if policy_loss == "margin":
                     s_ch = od.gather(1, ch.view(-1, 1))
                     viol = torch.relu(margin - (s_ch - od)) * mt
                     viol = viol.scatter(1, ch.view(-1, 1), 0.0)
-                    dec_loss = viol.sum() / len(batch)
+                    dec_loss = (viol * pw).sum() / pwn
                 else:  # ce -- tanh outputs are bounded, so scale them into a
                        # usable logit range before softmax.
                     logits = (od * ce_scale).masked_fill(mt == 0, -1e9)
@@ -218,11 +253,11 @@ def train_epoch(model, optimizer, files, device, batch_size, limit_chunks, opp_d
                     tgt = tgt.scatter_add(1, ch.view(-1, 1),
                                           torch.full_like(ch, 1.0 - smoothing,
                                                           dtype=tgt.dtype).view(-1, 1))
-                    dec_loss = -(tgt * logp).sum(1).mean()
+                    dec_loss = -((tgt * logp).sum(1, keepdim=True) * pw).sum() / pwn
                 if td is not None:
                     # keep the distillation signal as its own regression term
                     dec_loss = ((1.0 - distill) * dec_loss
-                                + distill * (loss_fn_dec(od, td) * mt).sum() / len(batch))
+                                + distill * (loss_fn_dec(od, td) * mt * pw).sum() / pwn)
             loss = ((loss_fn_enc(oe, lte) * vw).sum() / max(float(vw.sum()), 1.0)
                     + dec_loss)
             loss.backward()
@@ -248,33 +283,40 @@ def evaluate(model, files, device, batch_size, limit_chunks, max_val=200000, opp
     files = [p for p in files if not is_policy_only(p)]
     val = []
     game_maxturn = {}
-    for wid, chunk, _pol in iter_chunks(files, limit_chunks):
+    for wid, fid, chunk, fpw, _fvw in iter_chunks(files, limit_chunks):
         for r in chunk:
             if is_val(wid, r[GID]):
-                key = (wid, r[GID])
+                key = (fid, r[GID])
                 game_maxturn[key] = max(game_maxturn.get(key, 0), r[TURN])
-                val.append((wid, r))
+                val.append((fid, r, fpw))
         if len(val) >= max_val:
             break  # chunk boundary only, so no game's maxturn is cut mid-way
     acc = Counter(); acc_n = Counter()
     auc_data = defaultdict(list)  # phase bucket -> (score, label)
     for i in range(0, len(val), batch_size):
         part = val[i:i + batch_size]
-        recs = [r for _, r in part]
-        (iei, iev, ieo, idi, idv, ido, mt, lte, ltd, _vw) = make_batch(recs, device, opp_drop)
+        recs = [r for _, r, _ in part]
+        (iei, iev, ieo, idi, idv, ido, mt, lte, ltd, _vw, _pw) = make_batch(recs, device, opp_drop)
         oe, od = model(iei, iev, ieo, idi, idv, ido)
         od = od.masked_fill(mt == 0, -1e9)
         pred = od.argmax(dim=1).tolist()
         vals = oe.view(-1).tolist()
-        for (wid, r), p, v in zip(part, pred, vals):
+        for (fid, r, fpw), p, v in zip(part, pred, vals):
+            mx = max(game_maxturn[(fid, r[GID])], 1)
+            bucket = min(int(4 * r[TURN] / mx), 3)
+            label = 1 if r[OUT] > 0 else 0
+            auc_data[bucket].append((v, label))
+            # seat* records exist to train the value head; their moves are another
+            # archetype's and are not what the policy head is asked to reproduce,
+            # so they are scored separately (own = our pilot, other = their seats).
+            auc_data[("other" if fpw == 0.0 else "own", bucket)].append((v, label))
+            if fpw == 0.0:
+                continue
             hit = int(p == r[CH])
             acc["all"] += hit; acc_n["all"] += 1
             acc[r[MU]] += hit; acc_n[r[MU]] += 1
             if r[NC] > 1:
                 acc["multi"] += hit; acc_n["multi"] += 1
-            mx = max(game_maxturn[(wid, r[GID])], 1)
-            bucket = min(int(4 * r[TURN] / mx), 3)
-            auc_data[bucket].append((v, 1 if r[OUT] > 0 else 0))
     def auc(pairs):
         pairs = sorted(pairs)
         pos = sum(l for _, l in pairs)
@@ -286,10 +328,16 @@ def evaluate(model, files, device, batch_size, limit_chunks, max_val=200000, opp
             if l:
                 rank_sum += j + 1
         return (rank_sum - pos * (pos + 1) / 2) / (pos * neg)
+    phases = [b for b in auc_data if isinstance(b, int)]
     out = {"n_val": len(val),
            "acc": {k: round(acc[k] / acc_n[k], 4) for k in acc_n},
            "auc_by_phase": {f"q{b+1}": (round(a, 4) if (a := auc(auc_data[b])) is not None else None)
-                            for b in sorted(auc_data)}}
+                            for b in sorted(phases)}}
+    seats = sorted({s for s in auc_data if isinstance(s, tuple)})
+    if any(s[0] == "other" for s in seats):
+        out["auc_by_seat"] = {
+            f"{s}_q{b+1}": (round(a, 4) if (a := auc(auc_data[(s, b)])) is not None else None)
+            for s, b in seats}
     return out
 
 
@@ -342,6 +390,10 @@ def main():
     n_pol_only = sum(1 for p in files if is_policy_only(p))
     if n_pol_only:
         print(f"{n_pol_only}/{len(files)} files are policy-only (DAgger; value loss zeroed)")
+    n_val_only = sum(1 for p in files if is_value_only(p))
+    if n_val_only:
+        print(f"{n_val_only}/{len(files)} files are value-only (other archetypes' "
+              f"seats; policy loss zeroed)")
     out_dir = os.path.join(HERE, "results", args.tag)
     os.makedirs(out_dir, exist_ok=True)
     lim = args.limit_chunks or None

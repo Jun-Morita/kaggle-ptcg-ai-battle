@@ -1,0 +1,8 @@
+gate_search: exp041_pilotnet/results/sc083_d28s/model_ep5.pth sc=16 n=150
+  cand {'FINAL_PICK': 'visit_q'}
+
+  Dragapult            cand  0.907  (136-14-0, err=0)  (2062s)
+  Dragapult            base  0.927  (139-11-0, err=0)  (1719s)
+  Dragapult            delta -0.020  (se 0.058, weight 0.02)
+
+weighted delta over 0.02 of the field: -0.0200

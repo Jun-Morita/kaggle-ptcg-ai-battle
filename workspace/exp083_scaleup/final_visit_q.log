@@ -1,0 +1,4 @@
+ab: exp041_pilotnet/results/sc083_d28s/model_ep5.pth sc=16 n=160
+  cand {'FINAL_PICK': 'visit_q'}  vs base
+
+  103-55-2  wr 0.644  z +3.64  err 0  PASS  (4058s)

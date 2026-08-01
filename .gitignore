@@ -130,3 +130,6 @@ workspace/exp083_scaleup/build_dual/
 workspace/exp083_scaleup/build_deep/
 workspace/exp083_scaleup/build_v3s/
 workspace/exp083_scaleup/results/
+
+# exp083: engine + shipped tars must never be committed (disc717141 forbids redistribution)
+workspace/exp083_scaleup/build_*/

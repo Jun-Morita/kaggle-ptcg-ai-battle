@@ -1,0 +1,61 @@
+target=mixed_ex1  min_score=1000.0  days=28  keep_losses=True  ENC_V3=1 ENC_V4=0
+   pokemon-tcg-ai-battle-episodes-2026-07-01.zip
+   pokemon-tcg-ai-battle-episodes-2026-07-02.zip
+   pokemon-tcg-ai-battle-episodes-2026-07-03.zip
+   pokemon-tcg-ai-battle-episodes-2026-07-04.zip
+   pokemon-tcg-ai-battle-episodes-2026-07-05.zip
+   pokemon-tcg-ai-battle-episodes-2026-07-06.zip
+   pokemon-tcg-ai-battle-episodes-2026-07-07.zip
+   pokemon-tcg-ai-battle-episodes-2026-07-08.zip
+   pokemon-tcg-ai-battle-episodes-2026-07-09.zip
+   pokemon-tcg-ai-battle-episodes-2026-07-10.zip
+   pokemon-tcg-ai-battle-episodes-2026-07-11.zip
+   pokemon-tcg-ai-battle-episodes-2026-07-12.zip
+   pokemon-tcg-ai-battle-episodes-2026-07-13.zip
+   pokemon-tcg-ai-battle-episodes-2026-07-14.zip
+   pokemon-tcg-ai-battle-episodes-2026-07-15.zip
+   pokemon-tcg-ai-battle-episodes-2026-07-16.zip
+   pokemon-tcg-ai-battle-episodes-2026-07-17.zip
+   pokemon-tcg-ai-battle-episodes-2026-07-18.zip
+   pokemon-tcg-ai-battle-episodes-2026-07-19.zip
+   pokemon-tcg-ai-battle-episodes-2026-07-20.zip
+   pokemon-tcg-ai-battle-episodes-2026-07-21.zip
+   pokemon-tcg-ai-battle-episodes-2026-07-22.zip
+   pokemon-tcg-ai-battle-episodes-2026-07-23.zip
+   pokemon-tcg-ai-battle-episodes-2026-07-24.zip
+   pokemon-tcg-ai-battle-episodes-2026-07-25.zip
+   pokemon-tcg-ai-battle-episodes-2026-07-26.zip
+   pokemon-tcg-ai-battle-episodes-2026-07-27.zip
+   pokemon-tcg-ai-battle-episodes-2026-07-28.zip
+  pokemon-tcg-ai-battle-episodes-2026-07-01.zip: teacher games 2, cum recorded 101
+  pokemon-tcg-ai-battle-episodes-2026-07-02.zip: teacher games 244, cum recorded 22146
+  pokemon-tcg-ai-battle-episodes-2026-07-03.zip: teacher games 619, cum recorded 72946
+  pokemon-tcg-ai-battle-episodes-2026-07-04.zip: teacher games 701, cum recorded 135598
+  pokemon-tcg-ai-battle-episodes-2026-07-05.zip: teacher games 290, cum recorded 162347
+  pokemon-tcg-ai-battle-episodes-2026-07-06.zip: teacher games 214, cum recorded 180570
+  pokemon-tcg-ai-battle-episodes-2026-07-07.zip: teacher games 678, cum recorded 237326
+  pokemon-tcg-ai-battle-episodes-2026-07-08.zip: teacher games 523, cum recorded 281306
+  pokemon-tcg-ai-battle-episodes-2026-07-09.zip: teacher games 1223, cum recorded 378313
+  pokemon-tcg-ai-battle-episodes-2026-07-10.zip: teacher games 2479, cum recorded 566831
+  pokemon-tcg-ai-battle-episodes-2026-07-11.zip: teacher games 2425, cum recorded 763177
+  pokemon-tcg-ai-battle-episodes-2026-07-12.zip: teacher games 2145, cum recorded 936702
+  pokemon-tcg-ai-battle-episodes-2026-07-13.zip: teacher games 2974, cum recorded 1174948
+  pokemon-tcg-ai-battle-episodes-2026-07-14.zip: teacher games 2978, cum recorded 1413775
+  pokemon-tcg-ai-battle-episodes-2026-07-15.zip: teacher games 2437, cum recorded 1620752
+  pokemon-tcg-ai-battle-episodes-2026-07-16.zip: teacher games 2901, cum recorded 1859892
+  pokemon-tcg-ai-battle-episodes-2026-07-17.zip: teacher games 3575, cum recorded 2141987
+  pokemon-tcg-ai-battle-episodes-2026-07-18.zip: teacher games 2753, cum recorded 2351872
+  pokemon-tcg-ai-battle-episodes-2026-07-19.zip: teacher games 2657, cum recorded 2559449
+  pokemon-tcg-ai-battle-episodes-2026-07-20.zip: teacher games 2709, cum recorded 2769028
+  pokemon-tcg-ai-battle-episodes-2026-07-21.zip: teacher games 2104, cum recorded 2936638
+  pokemon-tcg-ai-battle-episodes-2026-07-22.zip: teacher games 1427, cum recorded 3048439
+  pokemon-tcg-ai-battle-episodes-2026-07-23.zip: teacher games 1953, cum recorded 3201722
+  pokemon-tcg-ai-battle-episodes-2026-07-24.zip: teacher games 1678, cum recorded 3331537
+  pokemon-tcg-ai-battle-episodes-2026-07-25.zip: teacher games 1430, cum recorded 3445236
+  pokemon-tcg-ai-battle-episodes-2026-07-26.zip: teacher games 1545, cum recorded 3562691
+  pokemon-tcg-ai-battle-episodes-2026-07-27.zip: teacher games 1084, cum recorded 3644266
+  pokemon-tcg-ai-battle-episodes-2026-07-28.zip: teacher games 741, cum recorded 3702984
+
+[mixed_ex1] recorded=3702984 from games=46489 over 28 days
+opp mix: [('mixed_ex3', 1057545), ('mixed_ex1', 1030539), ('crustle_control', 632761), ('mixed_ex2', 443948), ('non_ex_attackers', 224900), ('dragapult', 100003), ('ex_beatdown', 79340), ('mixed_ex4', 62980), ('mixed_ex5', 44504), ('lucario_ex', 26429), ('sylveon_control', 35)]
+wrote /home/jun/kaggle-ptcg-ai-battle/workspace/exp080_bc/data/mixed_ex1_multi_w7_v3_wl.pkl (10799.7MB)

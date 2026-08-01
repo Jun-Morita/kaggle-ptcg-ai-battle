@@ -1,0 +1,4 @@
+ab: exp041_pilotnet/results/sc083_d28s/model_ep5.pth sc=16 n=160
+  cand {'FINAL_PICK': 'q'}  vs base
+
+  88-72-0  wr 0.550  z +1.26  err 0  FLAT  (4049s)
