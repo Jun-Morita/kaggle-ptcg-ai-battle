@@ -19,6 +19,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import itertools
 import math
 import os
 import random
@@ -119,6 +120,10 @@ DET_COUNT = int(os.environ.get("DET_COUNT", "1"))
 # lookahead? The value head's held-out AUC is 0.64 in the first quarter of the
 # game and 0.95 in the last, so this is a live question. Never ship != 1.0.
 VALUE_SCALE = float(os.environ.get("VALUE_SCALE", "1.0"))
+# SHORT_PICKS: also enumerate selections shorter than maxCount (see
+# enumerate_candidates). Off by default -- it changes the candidate list the net
+# is scored on, and the net was trained without those candidates.
+SHORT_PICKS = int(os.environ.get("SHORT_PICKS", "0"))
 # FINAL_PICK: how the root turns a finished search into a move.
 #   visit    max visit count, ties by candidate index   (the original)
 #   visit_q  max visit count, ties by mean value Q
@@ -544,7 +549,21 @@ def enumerate_candidates(obs):
     obs.select.option, capped at 64. Extracted as a shared helper (2026-07-07)
     so exp041's datagen can map a rule-based pilot's chosen move onto the SAME
     candidate list the decoder scores -- any drift between the two would
-    silently corrupt the BC labels."""
+    silently corrupt the BC labels.
+
+    exp083o: it only ever emits selections of EXACTLY maxCount, while the engine
+    accepts minCount <= len(select) <= maxCount (search_step error 4). Measured
+    over 3,892 self-play decisions, 12.8% had minCount < maxCount -- every
+    "discard up to N" / "search for up to N" / "bench up to N" is forced to the
+    maximum, and build_records.py drops the teacher decisions that took fewer as
+    skip_nomatch (62,335 = 1.3% of the Grimmsnarl corpus).
+
+    SHORT_PICKS appends the shorter sizes. It defaults OFF and should stay off
+    until the corpus is rebuilt with it: the policy head has never scored a short
+    candidate, the shipped prior is exp(policy*10), and one spurious high score on
+    an untrained candidate wins the move outright. The upside is 1.3% of
+    decisions; the downside is every decision. Appending (never prepending) keeps
+    indices 0..k-1 identical, so existing corpora stay valid either way."""
     actions = []
     indices = list(range(obs.select.maxCount))
     for _ in range(64):
@@ -558,6 +577,13 @@ def enumerate_candidates(obs):
                 break
         else:
             break
+    if SHORT_PICKS and obs.select.minCount < obs.select.maxCount:
+        n = len(obs.select.option)
+        for size in range(obs.select.maxCount - 1, obs.select.minCount - 1, -1):
+            for combo in itertools.combinations(range(n), size):
+                if len(actions) >= 64:
+                    return actions
+                actions.append(list(combo))
     return actions
 
 

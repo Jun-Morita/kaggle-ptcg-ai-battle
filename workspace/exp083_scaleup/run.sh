@@ -43,6 +43,15 @@ SPE28=38000
 # change measured as one number.
 CORPUS_28M="/home/jun/kaggle-ptcg-ai-battle/workspace/exp080_bc/data/mix28v3wl_multi_w7.pkl,/home/jun/kaggle-ptcg-ai-battle/workspace/exp080_bc/data/seat28*_multi_w7.pkl"
 SPE28M=76000
+# exp083n: an Alakazam PILOT (policy + value), not a value donor. The gate's
+# opponents are all rule-based and we beat four of six at 0.89-0.99, so it cannot
+# separate candidates -- the same agent scores 0.55 on the real ladder. Alakazam is
+# 27.6% of our score band (public score-band snapshot) and we have 3.7M of its
+# decisions with policy labels that the seat* path deliberately throws away. Same
+# file, hardlinked under a "pilot" name so is_value_only() does not fire.
+CORPUS_CRUS=/home/jun/kaggle-ptcg-ai-battle/workspace/exp080_bc/data/pilot28crusv3wl_multi_w7.pkl
+CORPUS_EX1=/home/jun/kaggle-ptcg-ai-battle/workspace/exp080_bc/data/pilot28ex1v3wl_multi_w7.pkl
+CORPUS_28A="/home/jun/kaggle-ptcg-ai-battle/workspace/exp080_bc/data/mix28v3wl_multi_w7.pkl,/home/jun/kaggle-ptcg-ai-battle/workspace/exp080_bc/data/seat28ex1v3wl_multi_w7.pkl"
 CORPUS_V4=/home/jun/kaggle-ptcg-ai-battle/workspace/exp080_bc/data/mix16v4wl_multi_w7.pkl
 cd "$(dirname "$0")/../exp041_pilotnet"
 
@@ -210,6 +219,36 @@ case "${1:-A2}" in
         --opp-drop 0.5 --batch-size 128 --cosine --warmup-steps 4000 \
         --steps-per-epoch $SPE28M --seed 42 --policy-loss margin \
         --teacher results/sc083_d28mt/model_ep5.pth --distill 0.7 ;;
+  # D28MSN: the same student with NO distillation. D28MT came out BELOW the old
+  # D28T on every own-seat metric (top-1 0.7394 vs 0.7412, value AUC q1 0.619 vs
+  # 0.649), so if D28MS disappoints there are two candidate causes -- the seat data
+  # itself, or a teacher that got worse. Distilling at 0.7 puts most of the target
+  # in the teacher's hands, so this separates them. Runs concurrently: the 128-wide
+  # student leaves the GPU at ~35%.
+  D28MSN) ENC_V3=1 uv run python pretrain.py --glob "$CORPUS_28M" --tag sc083_d28msn --epochs 6 \
+        --d-model 128 --heads 4 --enc-layers 2 --dec-layers 2 --lr 1e-4 --clip 1.0 \
+        --opp-drop 0.5 --batch-size 128 --cosine --warmup-steps 4000 \
+        --steps-per-epoch $SPE28M --seed 42 --policy-loss margin ;;
+  CRUST) ENC_V3=1 uv run python pretrain.py --glob "$CORPUS_CRUS" --tag sc083_crust --epochs 6 \
+        --d-model 256 --heads 4 --enc-layers 2 --dec-layers 2 --lr 1e-4 --clip 1.0 \
+        --opp-drop 0.5 --batch-size 128 --cosine --warmup-steps 2000 \
+        --steps-per-epoch 8000 --seed 42 --policy-loss margin ;;
+  EX1T) ENC_V3=1 uv run python pretrain.py --glob "$CORPUS_EX1" --tag sc083_ex1t --epochs 6 \
+        --d-model 256 --heads 4 --enc-layers 2 --dec-layers 2 --lr 1e-4 --clip 1.0 \
+        --opp-drop 0.5 --batch-size 128 --cosine --warmup-steps 4000 \
+        --steps-per-epoch $SPE28 --seed 42 --policy-loss margin ;;
+  EX1S) ENC_V3=1 uv run python pretrain.py --glob "$CORPUS_EX1" --tag sc083_ex1s --epochs 6 \
+        --d-model 128 --heads 4 --enc-layers 2 --dec-layers 2 --lr 1e-4 --clip 1.0 \
+        --opp-drop 0.5 --batch-size 128 --cosine --warmup-steps 4000 \
+        --steps-per-epoch $SPE28 --seed 42 --policy-loss margin \
+        --teacher results/sc083_ex1t/model_ep5.pth --distill 0.7 ;;
+  # D28MSA: seats from Alakazam ONLY. It is 25% of the ladder and 81% of the seat
+  # records; Crustle (0.81M) and Lucario (0.08M) may be adding dilution without
+  # adding coverage. Same policy budget as the others.
+  D28MSA) ENC_V3=1 uv run python pretrain.py --glob "$CORPUS_28A" --tag sc083_d28msa --epochs 6 \
+        --d-model 128 --heads 4 --enc-layers 2 --dec-layers 2 --lr 1e-4 --clip 1.0 \
+        --opp-drop 0.5 --batch-size 128 --cosine --warmup-steps 4000 \
+        --steps-per-epoch $SPE28M --seed 42 --policy-loss margin ;;
   # SP (exp083e): the AlphaZero improvement step. sc083_v3s played 800 games against
   # itself with sc16 search; selfplay_gen.py kept the SEARCH's per-candidate advantage
   # (record element 12) as a SOFT policy target and the TD-blended root value as the

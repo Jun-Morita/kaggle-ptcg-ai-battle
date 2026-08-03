@@ -33,7 +33,8 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 WS = os.path.abspath(os.path.join(HERE, ".."))
 PILOT = os.path.join(WS, "exp041_pilotnet")
 for p in ("exp001_harness", "exp002_baselines", "exp007_anti_crustle",
-          "exp041_pilotnet", "exp040_mctsv2", "exp019_finisher", "exp080_bc"):
+          "exp041_pilotnet", "exp040_mctsv2", "exp019_finisher", "exp080_bc",
+          "exp025_unkoable"):
     sys.path.insert(0, os.path.join(WS, p))
 
 from harness import load_engine  # noqa: E402
@@ -45,13 +46,26 @@ import eval_raw as ER  # noqa: E402
 import eval_gate as EG  # noqa: E402
 import anti_crustle as AC  # noqa: E402
 import baselines as B  # noqa: E402
+import load_archaludon as AR  # noqa: E402
 from cg.api import to_observation_class  # noqa: E402
 from eval_mcts import make_mcts_agent_factory  # noqa: E402
 
 # our own ladder shares (v045, n=136), restricted to simulable archetypes
-WEIGHT = {"mixed_ex3": 0.30, "mixed_ex1": 0.29, "crustle_control": 0.08,
+# exp083n: reweighted from the public score-band snapshot
+# (myso1987/ptcg-ai-battle-leaderboard-deck-meta-by-score-band, 07-27, 283
+# classified teams in 800-899 -- OUR band). The old weights came from our own
+# replay sample and were wrong in two ways that both cost measuring power:
+#   mirror       0.30 -> 0.237   Grimmsnarl is 58.8% at 1100+ but 23.7% here, and
+#                                the mirror cell is pinned at 0.99 (no headroom)
+#   archaludon   0.00 -> 0.163   MISSING ENTIRELY, and it is 27.6% one band below
+# Mega Lucario is 3.9% here but 24-30% in the 500-699 bands a new submission
+# passes through, so a fresh agent meets a different field on the way up.
+WEIGHT = {"mixed_ex1": 0.276, "mixed_ex3": 0.237, "archaludon": 0.163,
+          "crustle_control": 0.120, "lucario_ex": 0.039, "dragapult": 0.035}
+WEIGHT_OLD = {"mixed_ex3": 0.30, "mixed_ex1": 0.29, "crustle_control": 0.08,
           "lucario_ex": 0.06, "dragapult": 0.02, "mixed_ex2": 0.02}
-LABEL = {"mixed_ex3": "Grimmsnarl(mirror)", "mixed_ex1": "Alakazam",
+LABEL = {"archaludon": "Archaludon",
+         "mixed_ex3": "Grimmsnarl(mirror)", "mixed_ex1": "Alakazam",
          "crustle_control": "Crustle", "lucario_ex": "lucario_v2",
          "dragapult": "Dragapult", "mixed_ex2": "TR Spidops"}
 
@@ -113,11 +127,51 @@ def make_agent(model, v, my_deck, sc=0):
     return agent
 
 
+# SPAR: path to a LEARNED pilot to seat as the Alakazam opponent instead of the
+# rule-based pub1034. The gate's whole problem is that its opponents are weak --
+# we beat four of six at 0.89-0.99 while scoring 0.55 on the real ladder, and
+# adding Archaludon (16.3% of our band, and genuinely unsaturated at 0.71) still
+# did not let it see that v046's net is 116 ladder points worse. A pilot trained
+# on 3.7M Alakazam decisions from the same Daily Top Episodes is the closest thing
+# we can build to a real ladder opponent. SPAR_SC>0 gives it search too.
+SPAR = os.environ.get("SPAR", "")
+SPAR_SC = int(os.environ.get("SPAR_SC", "0"))
+# CHAMP: seat a net (normally the one we currently ship) as the MIRROR opponent
+# instead of rule-based pub1034. That cell is 0.237 of the weight and pins at
+# 0.99 against pub1034, i.e. it contributes weight but no information. Against
+# the champion it sits at 0.50 by construction and asks the only question that
+# matters for a ship decision -- is the candidate better than what is already on
+# the ladder. Costs no training; the champion checkpoint already exists.
+CHAMP = os.environ.get("CHAMP", "")
+CHAMP_SC = int(os.environ.get("CHAMP_SC", "16"))
+_SPAR = {}
+
+
+def _pilot(path, deck, sc):
+    if path not in _SPAR:
+        dev = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        _SPAR[path] = load(path, dev)
+    m, v, _cfg, _p = _SPAR[path]
+    return make_agent(m, v, list(deck), sc)
+
+
+def spar_pilot(deck):
+    return _pilot(SPAR, deck, SPAR_SC)
+
+
+def champ_pilot(deck):
+    return _pilot(CHAMP, deck, CHAMP_SC)
+
+
 def opponents(grimm, opp_decks):
     """(key, opponent deck, factory taking that deck -> agent)."""
     out = []
     for k in WEIGHT:
-        if k == "lucario_ex":
+        if k == "archaludon":
+            # public rule-based pilot + its own 60-card list (exp025). 16.3% of our
+            # band and 27.6% one band down, and it was never in this gate at all.
+            out.append((k, list(AR.ARCH_DECK), lambda _d: AR.make_archaludon_agent()))
+        elif k == "lucario_ex":
             out.append((k, list(AC.LUCARIO_DECK),
                         lambda _d: AC.make_agent(AC.LUCARIO_DECK)))
         elif k == "crustle_control":
@@ -125,6 +179,10 @@ def opponents(grimm, opp_decks):
         elif k == "dragapult":
             out.append((k, list(opp_decks[k]),
                         lambda _d: B.make_policy_agent("dragapult")))
+        elif k == "mixed_ex3" and CHAMP:
+            out.append((k, list(grimm), champ_pilot))
+        elif k == "mixed_ex1" and SPAR:
+            out.append((k, list(opp_decks[k]), spar_pilot))
         else:
             deck = grimm if k == "mixed_ex3" else opp_decks[k]
             out.append((k, list(deck), EG.make_pub1034))
@@ -152,6 +210,9 @@ def main():
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     grimm = json.load(open(os.path.join(WS, "exp080_bc", "grimmsnarl_deck.json")))
     opp_decks = json.load(open(os.path.join(WS, "exp080_bc", "opp_decks.json")))
+    # --only runs a single archetype so the six can be parallelised across cores;
+    # the weighted total is then meaningless for that process, so it is suppressed.
+    only = arg("--only", "")
     new, vn, cfgn, pn = load(arg("--new"), device)
     old, vo, cfgo, po = load(arg("--old"), device)
     print(f"NEW {os.path.relpath(pn, WS)}  enc_version={vn}")
@@ -159,21 +220,23 @@ def main():
     print(f"{'MCTS sc=%d (SHIP config)' % sc if sc else 'raw argmax'}, oracle-free, "
           f"seats alternated, n={n} per matchup\n", flush=True)
 
+    opps = [o for o in opponents(grimm, opp_decks) if not only or o[0] == only]
     t0 = time.time()
     print("  NEW:")
-    rn, tn = run(new, vn, grimm, opponents(grimm, opp_decks), n, sc)
+    rn, tn = run(new, vn, grimm, opps, n, sc)
     print("  OLD:")
-    ro, to = run(old, vo, grimm, opponents(grimm, opp_decks), n, sc)
-    print(f"\n  weighted   NEW {tn:.3f}   OLD {to:.3f}   delta {tn - to:+.3f}"
-          f"   ({time.time()-t0:.0f}s)")
+    ro, to = run(old, vo, grimm, opps, n, sc)
+    if not only:
+        print(f"\n  weighted   NEW {tn:.3f}   OLD {to:.3f}   delta {tn - to:+.3f}"
+              f"   ({time.time()-t0:.0f}s)")
     print("  per-matchup delta: " + "  ".join(
-        f"{LABEL[k]} {rn[k][0]-ro[k][0]:+.2f}" for k in WEIGHT))
+        f"{LABEL[k]} {rn[k][0]-ro[k][0]:+.2f}" for k in rn))
     print("VERDICT:", "PASS" if tn - to >= 0.03 else
           ("FLAT" if tn - to > -0.03 else "NEGATIVE"))
     os.makedirs(os.path.join(HERE, "results"), exist_ok=True)
     json.dump({"new": pn, "old": po, "n": n, "weight": WEIGHT,
                "new_res": rn, "old_res": ro, "new_total": tn, "old_total": to},
-              open(os.path.join(HERE, "results", f"{tag}_n{n}.json"), "w"), indent=1)
+              open(os.path.join(HERE, "results", f"{tag}_{only or 'all'}_n{n}.json"), "w"), indent=1)
 
 
 if __name__ == "__main__":

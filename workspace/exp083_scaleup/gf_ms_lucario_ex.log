@@ -1,0 +1,10 @@
+NEW exp041_pilotnet/results/sc083_d28ms/model_ep5.pth  enc_version=3
+OLD exp041_pilotnet/results/sc083_d28s/model_ep5.pth  enc_version=3
+MCTS sc=16 (SHIP config), oracle-free, seats alternated, n=150 per matchup
+
+  NEW:
+    lucario_v2           0.433  (65-85-0, err=0)
+  OLD:
+    lucario_v2           0.500  (75-74-1, err=0)
+  per-matchup delta: lucario_v2 -0.07
+VERDICT: FLAT

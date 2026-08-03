@@ -14,6 +14,9 @@ sys.path.insert(0, os.path.join(ROOT, "workspace", "exp001_harness"))
 from harness import load_engine  # noqa
 
 ARCH_DIR = os.path.join(HERE, "archaludon_opp")
+# exposed so callers (gate_field.py) can seat this pilot with its own list
+ARCH_DECK = [int(x) for x in open(os.path.join(ARCH_DIR, "deck.csv")).read().split()
+             if x.strip().isdigit()]
 _n = [0]
 
 

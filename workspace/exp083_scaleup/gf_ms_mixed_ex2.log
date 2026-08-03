@@ -1,0 +1,10 @@
+NEW exp041_pilotnet/results/sc083_d28ms/model_ep5.pth  enc_version=3
+OLD exp041_pilotnet/results/sc083_d28s/model_ep5.pth  enc_version=3
+MCTS sc=16 (SHIP config), oracle-free, seats alternated, n=150 per matchup
+
+  NEW:
+    TR Spidops           1.000  (150-0-0, err=0)
+  OLD:
+    TR Spidops           0.993  (149-1-0, err=0)
+  per-matchup delta: TR Spidops +0.01
+VERDICT: FLAT

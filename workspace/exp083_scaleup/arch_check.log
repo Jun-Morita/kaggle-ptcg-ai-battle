@@ -1,0 +1,10 @@
+NEW exp041_pilotnet/results/sc083_d28s/model_ep5.pth  enc_version=3
+OLD exp041_pilotnet/results/sc083_d28s/model_ep5.pth  enc_version=3
+MCTS sc=16 (SHIP config), oracle-free, seats alternated, n=100 per matchup
+
+  NEW:
+    Archaludon           0.700  (70-30-0, err=0)
+  OLD:
+    Archaludon           0.720  (72-28-0, err=0)
+  per-matchup delta: Archaludon -0.02
+VERDICT: FLAT

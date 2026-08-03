@@ -1,0 +1,10 @@
+NEW exp041_pilotnet/results/sc083_v4s/model_ep7.pth  enc_version=4
+OLD exp041_pilotnet/results/sc083_d28s/model_ep5.pth  enc_version=3
+MCTS sc=16 (SHIP config), oracle-free, seats alternated, n=150 per matchup
+
+  NEW:
+    Crustle              0.733  (110-40-0, err=0)
+  OLD:
+    Crustle              0.727  (109-41-0, err=0)
+  per-matchup delta: Crustle +0.01
+VERDICT: FLAT

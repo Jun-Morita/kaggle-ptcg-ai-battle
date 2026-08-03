@@ -1,0 +1,8 @@
+coin-ish LogTypes: {'COIN': <LogType.COIN: 22>}
+  game 1/20  decisions=242  with-coin=0
+  game 2/20  decisions=450  with-coin=0
+  game 3/20  decisions=630  with-coin=0
+  game 4/20  decisions=838  with-coin=0
+  game 5/20  decisions=1150  with-coin=0
+  game 6/20  decisions=1321  with-coin=0
+  game 7/20  decisions=1538  with-coin=0

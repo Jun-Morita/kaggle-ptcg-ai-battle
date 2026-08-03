@@ -1,0 +1,10 @@
+NEW exp041_pilotnet/results/sc083_v3s/model_ep14.pth  enc_version=3
+OLD exp041_pilotnet/results/sc083_v15s/model_ep5.pth  enc_version=3
+MCTS sc=16 (SHIP config), oracle-free, seats alternated, n=200 per matchup
+
+  NEW:
+    Alakazam             0.550  (110-90-0, err=0)
+  OLD:
+    Alakazam             0.580  (116-84-0, err=0)
+  per-matchup delta: Alakazam -0.03
+VERDICT: FLAT

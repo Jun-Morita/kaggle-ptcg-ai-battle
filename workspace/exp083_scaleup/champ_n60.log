@@ -1,0 +1,10 @@
+NEW exp041_pilotnet/results/sc083_d28s/model_ep5.pth  enc_version=3
+OLD exp041_pilotnet/results/sc083_d28s/model_ep5.pth  enc_version=3
+MCTS sc=16 (SHIP config), oracle-free, seats alternated, n=60 per matchup
+
+  NEW:
+    Grimmsnarl(mirror)   0.450  (27-33-0, err=0)
+  OLD:
+    Grimmsnarl(mirror)   0.400  (24-36-0, err=0)
+  per-matchup delta: Grimmsnarl(mirror) +0.05
+VERDICT: FLAT

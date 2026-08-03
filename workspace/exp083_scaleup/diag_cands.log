@@ -1,0 +1,31 @@
+diag_cands: exp041_pilotnet/results/sc083_d28s/model_ep5.pth sc=16 games=20
+  game 1/20  decisions=194
+  game 2/20  decisions=355
+  game 3/20  decisions=570
+  game 4/20  decisions=765
+  game 5/20  decisions=1048
+  game 6/20  decisions=1198
+  game 7/20  decisions=1400
+  game 8/20  decisions=1571
+  game 9/20  decisions=1854
+  game 10/20  decisions=2029
+  game 11/20  decisions=2276
+  game 12/20  decisions=2458
+  game 13/20  decisions=2694
+  game 14/20  decisions=2967
+  game 15/20  decisions=3132
+  game 16/20  decisions=3235
+  game 17/20  decisions=3410
+  game 18/20  decisions=3607
+  game 19/20  decisions=3795
+  game 20/20  decisions=3892
+
+decisions 3892
+  minCount < maxCount (we CANNOT take fewer): 500 = 0.128
+  combinations > 64 (tail unreachable):       4 = 0.001
+
+by SelectContext (context: decisions, variable-size, truncated):
+  ctx   7:   574  var   373  trunc     0
+  ctx  22:    66  var    66  trunc     4
+  ctx   5:    42  var    42  trunc     0
+  ctx   2:    19  var    19  trunc     0

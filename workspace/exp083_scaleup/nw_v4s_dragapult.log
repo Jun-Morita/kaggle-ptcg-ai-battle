@@ -1,0 +1,10 @@
+NEW exp041_pilotnet/results/sc083_v4s/model_ep7.pth  enc_version=4
+OLD exp041_pilotnet/results/sc083_d28s/model_ep5.pth  enc_version=3
+MCTS sc=16 (SHIP config), oracle-free, seats alternated, n=150 per matchup
+
+  NEW:
+    Dragapult            0.900  (135-15-0, err=0)
+  OLD:
+    Dragapult            0.947  (142-8-0, err=0)
+  per-matchup delta: Dragapult -0.05
+VERDICT: FLAT
