@@ -133,3 +133,19 @@ workspace/exp083_scaleup/results/
 
 # exp083: engine + shipped tars must never be committed (disc717141 forbids redistribution)
 workspace/exp083_scaleup/build_*/
+
+# exp084: third-party public agent kept for LOCAL analysis only; never redistributed
+workspace/exp084_council/ref_tetsutani/
+
+# exp084: the updated (v25) public agent, same terms as ref_tetsutani/
+workspace/exp084_council/ref_tetsutani_new/
+
+# exp085: engine copies inside built tars (disc717141 forbids redistribution),
+# multi-GB row corpora, LightGBM/pure model blobs, per-day teacher indices
+# (rebuildable with scan_all_days.sh), and run logs. Ship-path CODE stays tracked.
+workspace/exp085_gbdt/build_*/
+workspace/exp085_gbdt/results/
+workspace/exp085_gbdt/indices/
+workspace/exp085_gbdt/*.log
+workspace/exp084_council/*.log
+workspace/exp084_council/results/
