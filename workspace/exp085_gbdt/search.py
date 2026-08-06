@@ -74,7 +74,15 @@ def candidates(scores, lo, hi, n_opt, limit=CANDS):
 
 
 def _greedy_finish(state, our_index, score_options, value_of):
-    """Play OUR side greedily from `state` until the turn leaves us or it ends."""
+    """Play OUR side greedily from `state` until the turn leaves us or it ends.
+
+    The position handed to value_of is normally the OPPONENT's to move, and
+    base_state is built from the perspective of whoever is to move. value_of
+    therefore takes our_index explicitly and is responsible for orienting itself;
+    the first version of this file described that requirement in a comment and did
+    not implement it, so search maximised the opponent's win probability and the
+    arm scored 3-197 (0.015) against a no-search baseline of 0.565.
+    """
     steps = 0
     while steps < MAX_TURN_STEPS:
         obs = state.observation
@@ -93,12 +101,12 @@ def _greedy_finish(state, our_index, score_options, value_of):
         except Exception:
             break
         steps += 1
-    return value_of(state.observation)
+    return value_of(state.observation, our_index)
 
 
 def choose(obs_dict, deck, score_options, value_of, rng=None):
     """Return (action, info). `score_options(obs_class) -> (scores, semantics)`;
-    `value_of(obs_class) -> float in [0,1]` from OUR seat's point of view."""
+    `value_of(obs_class, our_index) -> float in [0,1]` from OUR seat's view."""
     obs = to_observation_class(obs_dict)
     sel = obs.select
     n_opt = len(sel.option or [])

@@ -104,8 +104,14 @@ def main():
     tag = arg("--rows", "grimm")
     rounds = int(arg("--rounds", "400"))
     hold = float(arg("--holdout", "0.1"))
-    lr = float(arg("--lr", "0.08"))
-    leaves = int(arg("--leaves", "63"))
+    otag = arg("--out-tag", None) or tag
+    # sweep_main.py on the v4 rows: main's top-k rose 0.6962 -> 0.7143 going from
+    # 63 to 511 leaves and then flattened (1023: 0.7128, 2047: 0.7152, both inside
+    # noise). 63 was simply too small for 284k training queries. 2047 triples the
+    # node count for nothing, so 511 is the operating point.
+    lr = float(arg("--lr", "0.04"))
+    leaves = int(arg("--leaves", "511"))
+    min_leaf = int(arg("--min-leaf", "100"))
     data = load(tag)
     cat_idx = [feats.IDX[n] for n in feats.CATEGORICAL]
     models, report = {}, {}
@@ -124,7 +130,7 @@ def main():
                           categorical_feature=cat_idx, reference=dtr,
                           free_raw_data=False)
         params = {"objective": "lambdarank", "metric": "ndcg", "ndcg_eval_at": [1],
-                  "learning_rate": lr, "num_leaves": leaves, "min_data_in_leaf": 40,
+                  "learning_rate": lr, "num_leaves": leaves, "min_data_in_leaf": min_leaf,
                   "feature_fraction": 0.8, "bagging_fraction": 0.8, "bagging_freq": 1,
                   "lambdarank_truncation_level": 12, "verbosity": -1, "seed": 42,
                   "num_threads": 0}
@@ -142,11 +148,12 @@ def main():
               f"topk {acc:.4f}  top1 {acc1:.4f} (n={n1})  trees {bst.best_iteration} "
               f"({report[fam]['sec']}s)", flush=True)
 
-    outdir = os.path.join(HERE, "results", f"gbdt_{tag}")
+    outdir = os.path.join(HERE, "results", f"gbdt_{otag}")
     os.makedirs(outdir, exist_ok=True)
     for fam, bst in models.items():
         bst.save_model(os.path.join(outdir, f"{fam}.txt"))
     json.dump({"tag": tag, "rounds": rounds, "lr": lr, "leaves": leaves,
+               "min_leaf": min_leaf,
                "n_features": feats.N_FEATURES, "report": report},
               open(os.path.join(outdir, "report.json"), "w"), indent=1)
     tw = sum(r["queries_val"] * r["topk"] for r in report.values())

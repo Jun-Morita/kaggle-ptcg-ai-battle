@@ -28,9 +28,15 @@ def arg(name, default=None):
 
 def main():
     tag = arg("--tag", "grimm")
+    # A model tag and a corpus tag are not the same thing: v4b is trained on the
+    # v4 rows with bigger trees. Defaulting --rows to --tag made this exit with
+    # FileNotFoundError, and because run_v4b.sh did not stop on it, an artifact
+    # got built with NO parity check at all. Ship-path verification must not be
+    # skippable by a missing file.
+    rows = arg("--rows", None) or tag
     n = int(arg("--n", "400"))
     pure = load_pure(os.path.join(HERE, "results", f"gbdt_pure_{tag}.pkl"))
-    data = load(tag)
+    data = load(rows)
     worst = 0.0
     same = tot = 0
     for fam, (_ctx, qid, y, X) in data.items():
@@ -49,6 +55,8 @@ def main():
             b = set(np.argsort(-ref, kind="stable")[:k].tolist())
             same += (a == b)
             tot += 1
+    if tot == 0:
+        raise SystemExit("PARITY FAILED -- no rows compared (wrong --rows tag?)")
     print(f"  max |pure - lgb| = {worst:.3e}")
     print(f"  identical top-k set: {same}/{tot}")
     if same != tot:
