@@ -93,9 +93,10 @@ def make_agent(pure_path, deck):
             order = sorted(range(n_opt), key=lambda i: (-sc[i], i))
             k = max(lo, min(hi, hi))
             chosen = sorted(order[:k])
+            turn = oc.current.turn
             for i in chosen:
-                state["history"].append(sems[i])
-            state["history"] = state["history"][-3:]
+                state["history"].append((turn, sems[i]))
+            state["history"] = state["history"][-40:]
             return chosen
         except Exception:
             state["fallbacks"] += 1

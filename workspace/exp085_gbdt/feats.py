@@ -122,6 +122,15 @@ def _names():
     for k in (1, 2, 3):
         f += [f"prev{k}_type", f"prev{k}_source_id", f"prev{k}_target_id",
               f"prev{k}_attack_id", f"prev{k}_area"]
+    # --- what has already happened THIS TURN ---
+    # diag_errors on v3: ABILITY is promoted 1.46x more often than the teacher
+    # takes it and Munkidori (the damage-transfer ability) is the single most
+    # over-promoted card (1720 + 1168 wrong promotions). prev1..3 only reaches
+    # three decisions back, so a model deciding the eighth action of a turn cannot
+    # tell "I already moved damage twice" from "I have not started". These are
+    # scoped to the current turn and reset when it changes.
+    f += ["turn_actions_so_far", "turn_abilities_used", "turn_plays_used",
+          "turn_attaches_used", "turn_evolves_used"]
     # --- state-level answers to "is stopping / swinging / retreating right?" ---
     f += ["best_attack_damage", "lethal_available", "prize_diff",
           "n_attack_opts", "n_ability_opts", "n_evolve_opts", "n_play_opts",
@@ -137,6 +146,10 @@ def _names():
           "tgt_is_active", "tgt_is_own",
           "opt_attack_damage", "opt_attack_energy", "opt_attack_lethal",
           "opt_attack_margin",
+          # per-option: has THIS action already been taken this turn, and does a
+          # damage-counter placement here actually finish the target?
+          "opt_src_acted_this_turn", "opt_same_action_this_turn",
+          "opt_counters_to_ko", "opt_tgt_hp_ratio",
           "dup_count", "dup_rank"]
     return f
 
@@ -268,14 +281,28 @@ def base_state(obs, history):
     if opp_active is not None:
         mh = float(opp_active.maxHp or 0)
         row[IDX["opp_active_hp_ratio"]] = opp_hp / mh if mh else 0.0
+    # history entries are (turn, semantic). Older callers passed bare semantics;
+    # accept both so a stale corpus does not silently shift every prev* field.
+    hist = [(h[0], h[1]) if isinstance(h, tuple) and len(h) == 2 and isinstance(h[1], tuple)
+            else (None, h) for h in history]
     for k in (1, 2, 3):
-        h = history[-k] if len(history) >= k else None
+        h = hist[-k][1] if len(hist) >= k else None
         if h:
             row[IDX[f"prev{k}_type"]] = float(h[0])
             row[IDX[f"prev{k}_source_id"]] = float(h[1])
             row[IDX[f"prev{k}_target_id"]] = float(h[2])
             row[IDX[f"prev{k}_attack_id"]] = float(h[3])
             row[IDX[f"prev{k}_area"]] = float(h[4])
+    this_turn = [h for (t, h) in hist if t is None or t == st.turn]
+    row[IDX["turn_actions_so_far"]] = float(len(this_turn))
+    row[IDX["turn_abilities_used"]] = float(
+        sum(1 for h in this_turn if h[0] == int(OptionType.ABILITY)))
+    row[IDX["turn_plays_used"]] = float(
+        sum(1 for h in this_turn if h[0] == int(OptionType.PLAY)))
+    row[IDX["turn_attaches_used"]] = float(
+        sum(1 for h in this_turn if h[0] == int(OptionType.ATTACH)))
+    row[IDX["turn_evolves_used"]] = float(
+        sum(1 for h in this_turn if h[0] == int(OptionType.EVOLVE)))
     return row
 
 
@@ -341,6 +368,12 @@ def option_rows(obs, history=()):
     _opp = obs.current.players[1 - yi]
     _oa = _opp.active[0] if _opp.active else None
     opp_hp = float(_oa.hp or 0) if _oa is not None else 0.0
+    _turn = obs.current.turn
+    _hist = [(h[0], h[1]) if isinstance(h, tuple) and len(h) == 2
+             and isinstance(h[1], tuple) else (None, h) for h in history]
+    _this_turn = [h for (t, h) in _hist if t is None or t == _turn]
+    _src_acted = Counter(h[1] for h in _this_turn)
+    _same_acted = Counter(_this_turn)
     rows = []
     n = max(1, len(opts))
     for pos, (o, s) in enumerate(zip(opts, sems)):
@@ -371,8 +404,15 @@ def option_rows(obs, history=()):
             r[IDX[f"{pre}_meta_hp"]] = float(hp)
             r[IDX[f"{pre}_ex"]] = float(ex)
         pi = o.playerIndex if o.playerIndex is not None else yi
+        # Resolve the targeted Pokemon the same way semantic() does. A
+        # DAMAGE_COUNTER option names its target through area/index with an
+        # explicit playerIndex, NOT through inPlayArea, so the inPlayArea-only
+        # lookup left every counter feature at zero on exactly the contexts they
+        # were added for.
         tp = _card_at(obs, o.inPlayArea, o.inPlayIndex, pi) \
             if o.inPlayArea is not None else None
+        if tp is None and o.area is not None and o.playerIndex is not None:
+            tp = _card_at(obs, o.area, o.index, pi)
         if tp is not None and hasattr(tp, "hp"):
             r[IDX["tgt_cur_hp"]] = float(tp.hp or 0)
             r[IDX["tgt_maxhp"]] = float(tp.maxHp or 0)
@@ -391,6 +431,22 @@ def option_rows(obs, history=()):
             r[IDX["opt_attack_energy"]] = float(ecost)
             r[IDX["opt_attack_lethal"]] = float(opp_hp > 0 and dmg >= opp_hp)
             r[IDX["opt_attack_margin"]] = float(dmg - opp_hp)
+        r[IDX["opt_src_acted_this_turn"]] = float(_src_acted.get(s[1], 0))
+        r[IDX["opt_same_action_this_turn"]] = float(_same_acted.get(s, 0))
+        # A damage counter is 10 HP. Placing/removing them is the deck's main
+        # mechanic, and the model had no way to see whether a placement finishes
+        # the target -- the same blind spot attack damage had before v3.
+        if tp is not None and getattr(tp, "hp", None):
+            # counters_to_ko: a damage counter is 10 HP, so this is how many more
+            # it takes to finish the target -- the deck's main mechanic, and
+            # invisible to the model before now.
+            # hp_ratio: trees split on thresholds, they cannot form hp/maxHp
+            # themselves, and "nearly dead" is what matters, not absolute HP.
+            # (remainDamageCounter is always 0 in replay observations, so a
+            # "counters are sufficient" flag would never fire -- checked, dropped.)
+            r[IDX["opt_counters_to_ko"]] = -(-float(tp.hp) // 10.0)
+            mh = float(getattr(tp, "maxHp", 0) or 0)
+            r[IDX["opt_tgt_hp_ratio"]] = float(tp.hp) / mh if mh else 0.0
         r[IDX["dup_count"]] = float(counts[s])
         r[IDX["dup_rank"]] = float(rank)
         rows.append(r)

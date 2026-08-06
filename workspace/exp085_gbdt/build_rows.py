@@ -121,10 +121,12 @@ def convert_seat(ep, ti, byid, stats, qid0, exact=None):
         except Exception:
             stats["skip_feat"] += 1
             continue
-        # advance history with what the teacher actually did
+        # advance history with what the teacher actually did. Entries carry the
+        # turn so feats can separate "this turn" from "three decisions ago"; the
+        # window has to outlive 3 now, since a turn can run a dozen actions.
         for i in chosen:
-            history.append(sems[i])
-        history = history[-3:]
+            history.append((oc.current.turn, sems[i]))
+        history = history[-40:]
         if n_opt < 2:
             stats["skip_forced"] += 1     # nothing to rank
             continue
