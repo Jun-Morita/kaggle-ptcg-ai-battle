@@ -95,6 +95,14 @@ def opponent(kind, grimm):
         m.eval()
         mk = make_mcts_agent_factory(16, oracle_free=True)
         return with_deck(mk(m, list(grimm), list(grimm)), grimm)
+    if kind.startswith("gbdt:"):
+        # Another GBDT artifact as the opponent. This is the gate that actually
+        # decides a submission: v052 on the ladder IS the v3 build, so "is the
+        # candidate better than v3" is the question, and measuring both against
+        # the transformer separately only answers it by inference.
+        tarp = kind.split(":", 1)[1]
+        ag, _inner = artifact_agent(tarp)
+        return ag
     import anti_crustle as AC
     if kind == "lucario":
         return AC.make_agent(AC.LUCARIO_DECK)
@@ -139,10 +147,11 @@ def main():
           f"({time.time()-t0:.0f}s)")
     if fb:
         print("  WARNING: silent fallbacks -- this measurement is not of the model")
+    safe = kind.replace("/", "_").replace(":", "_")
     json.dump({"opp": kind, "pure": pure, "n": st.n, "w": st.wins0, "l": st.wins1,
                "d": st.draws, "err_us": st.errors0, "wr": wr, "z": z,
                "max_move_time": st.max_move_time0},
-              open(os.path.join(HERE, "results", f"h2h2_{kind}.json"), "w"), indent=1)
+              open(os.path.join(HERE, "results", f"h2h2_{safe}.json"), "w"), indent=1)
 
 
 if __name__ == "__main__":

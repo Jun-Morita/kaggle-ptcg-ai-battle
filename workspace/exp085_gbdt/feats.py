@@ -86,6 +86,29 @@ def _atk_table():
     return _ATK
 
 
+DARK_ENERGY = 7          # attack costs on our line read [7, 7] = Darkness
+_CHEAP = {}
+
+
+def _cheapest_attack(cid):
+    """Energy count of the cheapest attack a card has, 0 if it has none.
+
+    Used to turn "attach an energy here" into "how many more does this Pokemon
+    need before it can swing", which is the question the teacher is answering.
+    """
+    cid = int(cid or 0)
+    if cid not in _CHEAP:
+        global _CD
+        if _CD is None:
+            _CD = {int(c.cardId): c for c in all_card_data()}
+        c = _CD.get(cid)
+        atk = _atk_table()
+        costs = [atk[int(a)][1] for a in (getattr(c, "attacks", None) or [])
+                 if int(a) in atk]
+        _CHEAP[cid] = min(costs) if costs else 0
+    return _CHEAP[cid]
+
+
 def card_meta(cid):
     """(stage, cardType, retreatCost, hp, ex_rank) for a card id; 0s if unknown."""
     global _CD
@@ -132,6 +155,17 @@ def _names():
     f += ["turn_actions_so_far", "turn_abilities_used", "turn_plays_used",
           "turn_attaches_used", "turn_evolves_used"]
     # --- state-level answers to "is stopping / swinging / retreating right?" ---
+    # --- ability / attachment preconditions ---
+    # diag_errors on v4 still shows ABILITY promoted 1.43x more often than the
+    # teacher takes it, and the single most over-promoted option is Munkidori
+    # (3,137 wrong promotions across two forms). Its ability, Adrena-Brain, is
+    # "once per turn, IF this Pokemon has {D} Energy attached, move up to 3 damage
+    # counters from one of your Pokemon to one of your opponent's". None of those
+    # preconditions were visible: not the energy, not whether we have counters to
+    # move, not whether moving them finishes anything. Same shape as the missing
+    # attack damage in v3 and the missing turn history in v4.
+    f += ["own_movable_counters", "opp_active_counters_to_ko",
+          "move3_would_ko", "own_dark_energy_total"]
     f += ["best_attack_damage", "lethal_available", "prize_diff",
           "n_attack_opts", "n_ability_opts", "n_evolve_opts", "n_play_opts",
           "n_end_opts", "n_retreat_opts",
@@ -150,6 +184,10 @@ def _names():
           # damage-counter placement here actually finish the target?
           "opt_src_acted_this_turn", "opt_same_action_this_turn",
           "opt_counters_to_ko", "opt_tgt_hp_ratio",
+          # per-option preconditions: can this ability source actually fire, and
+          # does this attachment bring its target closer to attacking?
+          "opt_src_dark_energy", "opt_src_energy_n",
+          "opt_tgt_energy_need", "opt_tgt_need_after",
           "dup_count", "dup_rank"]
     return f
 
@@ -262,6 +300,21 @@ def base_state(obs, history):
     for o in (sel.option or []):
         if o.attackId:
             best = max(best, float(atk.get(int(o.attackId), (0, 0))[0]))
+    # counters we could move (Adrena-Brain's raw material) and what it takes to
+    # finish the opponent's Active
+    movable = 0.0
+    for p in (list(own.active[:1]) + list(own.bench[:BENCH_SLOTS])):
+        if p is not None:
+            movable += ((p.maxHp or 0) - (p.hp or 0)) / 10.0
+    row[IDX["own_movable_counters"]] = movable
+    need = -(-opp_hp // 10.0) if opp_hp > 0 else 0.0
+    row[IDX["opp_active_counters_to_ko"]] = need
+    row[IDX["move3_would_ko"]] = float(need > 0 and min(3.0, movable) >= need)
+    dark = 0.0
+    for p in (list(own.active[:1]) + list(own.bench[:BENCH_SLOTS])):
+        if p is not None:
+            dark += sum(1 for e in (p.energies or []) if int(e) == DARK_ENERGY)
+    row[IDX["own_dark_energy_total"]] = dark
     row[IDX["best_attack_damage"]] = best
     row[IDX["lethal_available"]] = float(opp_hp > 0 and best >= opp_hp)
     row[IDX["prize_diff"]] = float(len(own.prize) - len(opp.prize))
@@ -431,6 +484,17 @@ def option_rows(obs, history=()):
             r[IDX["opt_attack_energy"]] = float(ecost)
             r[IDX["opt_attack_lethal"]] = float(opp_hp > 0 and dmg >= opp_hp)
             r[IDX["opt_attack_margin"]] = float(dmg - opp_hp)
+        sp = _card_at(obs, o.area, o.index, yi) if o.area is not None else None
+        if sp is not None and getattr(sp, "energies", None) is not None:
+            r[IDX["opt_src_dark_energy"]] = float(
+                sum(1 for e in (sp.energies or []) if int(e) == DARK_ENERGY))
+            r[IDX["opt_src_energy_n"]] = float(len(sp.energyCards or []))
+        if tp is not None and getattr(tp, "id", None):
+            cheapest = _cheapest_attack(tp.id)
+            if cheapest:
+                have = len(getattr(tp, "energyCards", []) or [])
+                r[IDX["opt_tgt_energy_need"]] = float(max(0, cheapest - have))
+                r[IDX["opt_tgt_need_after"]] = float(max(0, cheapest - have - 1))
         r[IDX["opt_src_acted_this_turn"]] = float(_src_acted.get(s[1], 0))
         r[IDX["opt_same_action_this_turn"]] = float(_same_acted.get(s, 0))
         # A damage counter is 10 HP. Placing/removing them is the deck's main
