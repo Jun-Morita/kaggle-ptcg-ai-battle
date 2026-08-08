@@ -189,7 +189,67 @@ def _names():
           "opt_src_dark_energy", "opt_src_energy_n",
           "opt_tgt_energy_need", "opt_tgt_need_after",
           "dup_count", "dup_rank"]
+    # --- v6: what a SEARCH is actually for (c7 / TO_HAND) ---
+    # diag_errors on v4b: TO_HAND is 3,741 of 17,320 errors (21.6%) at top-k
+    # 0.6437, and unlike every other family it did NOT improve when the trees went
+    # from 63 to 511 leaves. That is the signature of a missing feature, not of
+    # missing capacity.
+    #
+    # Deciding what to fetch is a question about the DECK and the EVOLUTION CHAIN,
+    # and the row could not express either. hand_c{cid}/discard_c{cid} exist, but
+    # only as 19 separate columns: to use them a tree would have to first split on
+    # opt_card_id and then on the matching counter, relearning the join 19 times.
+    # These project the counters onto the option being scored, so "I already hold
+    # two of these" is one split instead of two.
+    #
+    # The chain features answer the other half. Fetching Marnie's Grimmsnarl ex is
+    # right when Morgrem is on the board or Rare Candy is in hand over a
+    # Impidimp, and wrong otherwise -- a distinction nothing in v4b could draw.
+    f += ["opt_hand_count", "opt_discard_count", "opt_inplay_count",
+          "opt_copies_unseen", "opt_evo_base_in_play", "opt_evo_base_in_hand",
+          "opt_evo_next_in_hand", "opt_evo_candy_ready", "opt_playable_now",
+          "own_bench_free"]
     return f
+
+
+# Copies of each card in OUR 60. Inlined rather than read from
+# exp080_bc/grimmsnarl_deck.json because feats.py is concatenated into the
+# shipped main.py, where that file does not exist.
+DECK_COUNT = {7: 10, 104: 2, 112: 4, 646: 4, 647: 3, 648: 3, 860: 2, 1079: 3,
+              1080: 1, 1086: 4, 1097: 3, 1122: 1, 1137: 1, 1152: 4, 1182: 2,
+              1219: 4, 1227: 4, 1231: 1, 1259: 4}
+RARE_CANDY = 1079
+_EVO = None
+
+
+def _evo_tables():
+    """(evolves_from[cid] -> (pre-evolution ids,), evolves_to[cid] -> [successor ids]).
+
+    CardData.evolvesFrom is the pre-evolution's NAME, so this resolves names back
+    to ids once at import. A name maps to SEVERAL ids -- Snorunt is 103 and 860,
+    and our deck runs 860 -- so the pre-evolution is kept as the full id tuple and
+    counted across all of them. Taking the first id instead made Froslass look for
+    a Snorunt we never play, and the feature would have been silently zero.
+    """
+    global _EVO, _CD
+    if _EVO is None:
+        if _CD is None:
+            _CD = {int(c.cardId): c for c in all_card_data()}
+        by_name = {}
+        for cid, c in _CD.items():
+            by_name.setdefault(str(getattr(c, "name", "") or ""), []).append(cid)
+        frm, to = {}, {}
+        for cid, c in _CD.items():
+            nm = getattr(c, "evolvesFrom", None)
+            if not nm:
+                continue
+            pres = by_name.get(str(nm), [])
+            if pres:
+                frm[cid] = tuple(pres)
+            for p in pres:
+                to.setdefault(p, []).append(cid)
+        _EVO = (frm, to)
+    return _EVO
 
 
 FEATURES = _names()
@@ -356,6 +416,7 @@ def base_state(obs, history):
         sum(1 for h in this_turn if h[0] == int(OptionType.ATTACH)))
     row[IDX["turn_evolves_used"]] = float(
         sum(1 for h in this_turn if h[0] == int(OptionType.EVOLVE)))
+    row[IDX["own_bench_free"]] = float(BENCH_SLOTS - len(own.bench or []))
     return row
 
 
@@ -427,6 +488,17 @@ def option_rows(obs, history=()):
     _this_turn = [h for (t, h) in _hist if t is None or t == _turn]
     _src_acted = Counter(h[1] for h in _this_turn)
     _same_acted = Counter(_this_turn)
+    # per-option projections of the deck / evolution state (see _names v6 note)
+    _own = obs.current.players[yi]
+    _hand_c = Counter(int(c.id or 0) for c in (_own.hand or []))
+    _disc_c = Counter(int(c.id or 0) for c in (_own.discard or []))
+    _inplay_c = Counter()
+    for _p in (list(_own.active[:1]) + list(_own.bench[:BENCH_SLOTS])):
+        if _p is not None:
+            _inplay_c[int(_p.id or 0)] += 1
+    _evo_from, _evo_to = _evo_tables()
+    _bench_free = BENCH_SLOTS - len(_own.bench or [])
+    _sup_played = bool(obs.current.supporterPlayed)
     rows = []
     n = max(1, len(opts))
     for pos, (o, s) in enumerate(zip(opts, sems)):
@@ -513,5 +585,43 @@ def option_rows(obs, history=()):
             r[IDX["opt_tgt_hp_ratio"]] = float(tp.hp) / mh if mh else 0.0
         r[IDX["dup_count"]] = float(counts[s])
         r[IDX["dup_rank"]] = float(rank)
+        # --- v6: the option as a CARD, joined to deck / chain state ---
+        ocid = int(o.cardId or 0) or int(srcid or 0)
+        if ocid:
+            hcn = _hand_c.get(ocid, 0)
+            dcn = _disc_c.get(ocid, 0)
+            icn = _inplay_c.get(ocid, 0)
+            r[IDX["opt_hand_count"]] = float(hcn)
+            r[IDX["opt_discard_count"]] = float(dcn)
+            r[IDX["opt_inplay_count"]] = float(icn)
+            r[IDX["opt_copies_unseen"]] = float(
+                max(0, DECK_COUNT.get(ocid, 0) - hcn - dcn - icn))
+            pres = _evo_from.get(ocid) or ()
+            if pres:
+                r[IDX["opt_evo_base_in_play"]] = float(
+                    sum(_inplay_c.get(p, 0) for p in pres))
+                r[IDX["opt_evo_base_in_hand"]] = float(
+                    sum(_hand_c.get(p, 0) for p in pres))
+                # Rare Candy skips the middle stage, so a Stage 2/3 is live when
+                # the BASIC of its line is down and a Candy is in hand.
+                roots = pres
+                for _ in range(3):
+                    nxt = tuple(q for p in roots for q in (_evo_from.get(p) or ()))
+                    if not nxt:
+                        break
+                    roots = nxt
+                r[IDX["opt_evo_candy_ready"]] = float(
+                    _hand_c.get(RARE_CANDY, 0) > 0
+                    and any(_inplay_c.get(p, 0) for p in roots))
+            r[IDX["opt_evo_next_in_hand"]] = float(
+                sum(_hand_c.get(nc, 0) for nc in _evo_to.get(ocid, ())))
+            st_, ct_, _, _, _ = card_meta(ocid)
+            if ct_ == 3:                       # Supporter: one per turn
+                playable = not _sup_played
+            elif st_ == 1 and ct_ == 0:        # Basic Pokemon: needs a bench slot
+                playable = _bench_free > 0
+            else:
+                playable = True
+            r[IDX["opt_playable_now"]] = float(playable)
         rows.append(r)
     return rows, sems

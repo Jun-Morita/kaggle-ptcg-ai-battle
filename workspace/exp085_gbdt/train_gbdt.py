@@ -20,7 +20,7 @@ line's held-out top-1 (0.624 for the 7-minute baseline, ~0.68 targeted).
 Usage: uv run python train_gbdt.py [--rows grimm] [--rounds 400] [--holdout 0.1]
 """
 from __future__ import annotations
-import json, os, pickle, sys, time
+import gc, json, os, pickle, sys, time
 from collections import Counter, defaultdict
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -50,25 +50,62 @@ def family_of(ctx):
     return "easy"
 
 
-def load(tag):
-    path = os.path.join(HERE, "results", f"rows_{tag}.pkl")
-    per = defaultdict(lambda: ([], [], [], []))   # fam -> (ctx, qid, y, X)
+def _chunks(path):
+    """Yield (ctx, qid, y, X, score) chunks.
+
+    Corpora written before the teacher-score column carry 4-tuples; those are
+    padded with zeros so an old corpus stays readable and simply never passes a
+    --min-score filter.
+    """
     with open(path, "rb") as f:
         while True:
             try:
-                ctx, qid, y, X = pickle.load(f)
+                c = pickle.load(f)
             except EOFError:
-                break
-            fams = np.array([family_of(int(c)) for c in ctx])
-            for fam in set(fams):
-                m = fams == fam
-                a, b, c2, d = per[fam]
-                a.append(ctx[m]); b.append(qid[m]); c2.append(y[m]); d.append(X[m])
-    out = {}
-    for fam, (a, b, c2, d) in per.items():
-        out[fam] = (np.concatenate(a), np.concatenate(b),
-                    np.concatenate(c2), np.concatenate(d))
-    return out
+                return
+            yield c if len(c) == 5 else (c[0], c[1], c[2], c[3],
+                                         np.zeros(len(c[0]), np.float32))
+
+
+def load_family(tag, fam, n_feat=None, min_score=None):
+    """Read ONE family out of the row file, preallocated.
+
+    The v6 corpus is 9.4GB on a 19GB box. Reading every family into lists and
+    concatenating at the end peaks at roughly twice the file size and gets the
+    process killed, so this makes two passes -- count, then fill -- and holds only
+    the requested family. Two passes over a 9.4GB file cost about a minute of
+    disk; an OOM costs the whole run.
+    """
+    path = os.path.join(HERE, "results", f"rows_{tag}.pkl")
+
+    def keep(ctx, sc):
+        m = np.array([family_of(int(c)) == fam for c in ctx])
+        if min_score is not None:
+            m &= (sc >= min_score)
+        return m
+
+    n_rows = 0
+    n_cols = None
+    for ctx, qid, y, X, sc in _chunks(path):
+        n_rows += int(keep(ctx, sc).sum())
+        n_cols = X.shape[1]
+    if n_rows == 0:
+        return None
+    cols = n_cols if n_feat is None else min(n_feat, n_cols)
+    CTX = np.empty(n_rows, np.int16)
+    QID = np.empty(n_rows, np.int32)
+    Y = np.empty(n_rows, np.int8)
+    X_ = np.empty((n_rows, cols), np.float32)
+    i = 0
+    for ctx, qid, y, X, sc in _chunks(path):
+        m = keep(ctx, sc)
+        k = int(m.sum())
+        if not k:
+            continue
+        CTX[i:i + k] = ctx[m]; QID[i:i + k] = qid[m]; Y[i:i + k] = y[m]
+        X_[i:i + k] = X[m][:, :cols]
+        i += k
+    return CTX, QID, Y, X_
 
 
 def groups_from_qid(qid):
@@ -112,49 +149,71 @@ def main():
     lr = float(arg("--lr", "0.04"))
     leaves = int(arg("--leaves", "511"))
     min_leaf = int(arg("--min-leaf", "100"))
-    data = load(tag)
-    cat_idx = [feats.IDX[n] for n in feats.CATEGORICAL]
+    seed = int(arg("--seed", "42"))
+    # --n-feat truncates the row to its first N columns. The v6 features were
+    # appended, so the first 318 columns ARE the v4b row: passing 318 trains the
+    # same model on a bigger corpus and isolates corpus size from the features.
+    n_feat = int(arg("--n-feat", "0")) or None
+    fams = arg("--fam", "main,c7,mid,low,easy").split(",")
+    # Keep only decisions made by teachers at or above this ladder score. The
+    # score rides in the corpus, so a threshold costs a training run, not a
+    # re-featurisation. Note the trade: teachers are already all >=1000, and
+    # cutting at 1100 keeps 25.7% of seats -- the v6 result says corpus size is
+    # worth real winrate, so quality has to beat a 4x data loss to be right.
+    min_score = float(arg("--min-score", "0")) or None
+    cat_idx = [feats.IDX[n] for n in feats.CATEGORICAL
+               if n_feat is None or feats.IDX[n] < n_feat]
     models, report = {}, {}
-    for fam in ("main", "c7", "mid", "low", "easy"):
-        if fam not in data:
+    for fam in fams:
+        loaded = load_family(tag, fam, n_feat, min_score)
+        if loaded is None:
             continue
-        ctx, qid, y, X = data[fam]
+        ctx, qid, y, X = loaded
+        # qid is non-decreasing (rows are written in decision order), so the
+        # holdout is a suffix and the split can be a SLICE. Boolean masks copied
+        # the whole family a second time, which is 4GB+ for `main` on the v6
+        # corpus and does not fit alongside the LightGBM Dataset.
         uq = np.unique(qid)
         cut = uq[int(len(uq) * (1 - hold))]
-        tr, va = qid < cut, qid >= cut
-        if va.sum() == 0 or tr.sum() == 0:
+        i0 = int(np.searchsorted(qid, cut))
+        if i0 == 0 or i0 >= len(qid):
             continue
-        dtr = lgb.Dataset(X[tr], label=y[tr], group=groups_from_qid(qid[tr]),
+        Xtr, Xva = X[:i0], X[i0:]
+        ytr, yva, qtr, qva = y[:i0], y[i0:], qid[:i0], qid[i0:]
+        dtr = lgb.Dataset(Xtr, label=ytr, group=groups_from_qid(qtr),
                           categorical_feature=cat_idx, free_raw_data=False)
-        dva = lgb.Dataset(X[va], label=y[va], group=groups_from_qid(qid[va]),
+        dva = lgb.Dataset(Xva, label=yva, group=groups_from_qid(qva),
                           categorical_feature=cat_idx, reference=dtr,
                           free_raw_data=False)
         params = {"objective": "lambdarank", "metric": "ndcg", "ndcg_eval_at": [1],
                   "learning_rate": lr, "num_leaves": leaves, "min_data_in_leaf": min_leaf,
                   "feature_fraction": 0.8, "bagging_fraction": 0.8, "bagging_freq": 1,
-                  "lambdarank_truncation_level": 12, "verbosity": -1, "seed": 42,
+                  "lambdarank_truncation_level": 12, "verbosity": -1, "seed": seed,
+                  "bagging_seed": seed + 1, "feature_fraction_seed": seed + 2,
                   "num_threads": 0}
         t0 = time.time()
         bst = lgb.train(params, dtr, num_boost_round=rounds, valid_sets=[dva],
                         callbacks=[lgb.early_stopping(40, verbose=False)])
-        sc = bst.predict(X[va], num_iteration=bst.best_iteration)
-        acc, n, acc1, n1 = topk_accuracy(sc, y[va], qid[va])
+        sc = bst.predict(Xva, num_iteration=bst.best_iteration)
+        acc, n, acc1, n1 = topk_accuracy(sc, yva, qva)
         models[fam] = bst
-        report[fam] = {"queries_train": int(len(np.unique(qid[tr]))),
+        report[fam] = {"queries_train": int(len(np.unique(qtr))),
                        "queries_val": n, "topk": round(acc, 4),
                        "top1": round(acc1, 4), "n_top1": n1,
                        "trees": bst.best_iteration, "sec": round(time.time() - t0)}
         print(f"  {fam:<5} train_q {report[fam]['queries_train']:>7}  val_q {n:>6}  "
               f"topk {acc:.4f}  top1 {acc1:.4f} (n={n1})  trees {bst.best_iteration} "
               f"({report[fam]['sec']}s)", flush=True)
+        del ctx, qid, y, X, Xtr, Xva, ytr, yva, qtr, qva, dtr, dva, sc, loaded
+        gc.collect()
 
     outdir = os.path.join(HERE, "results", f"gbdt_{otag}")
     os.makedirs(outdir, exist_ok=True)
     for fam, bst in models.items():
         bst.save_model(os.path.join(outdir, f"{fam}.txt"))
     json.dump({"tag": tag, "rounds": rounds, "lr": lr, "leaves": leaves,
-               "min_leaf": min_leaf,
-               "n_features": feats.N_FEATURES, "report": report},
+               "min_leaf": min_leaf, "min_score": min_score, "seed": seed,
+               "n_features": n_feat or feats.N_FEATURES, "report": report},
               open(os.path.join(outdir, "report.json"), "w"), indent=1)
     tw = sum(r["queries_val"] * r["topk"] for r in report.values())
     tq = sum(r["queries_val"] for r in report.values())

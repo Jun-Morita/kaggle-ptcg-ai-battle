@@ -53,7 +53,7 @@ def decks_from_ep(ep):
     return d
 
 
-def convert_seat(ep, ti, byid, stats, qid0, exact=None):
+def convert_seat(ep, ti, byid, stats, qid0, exact=None, score=None):
     """Yield (ctx, qid, y[list], X[list of rows], mu) for one teacher seat.
 
     `exact`: if given, the teacher's 60 cards must match this list exactly.
@@ -136,7 +136,7 @@ def convert_seat(ep, ti, byid, stats, qid0, exact=None):
         ctx = int(getattr(oc.select, "context", -1) or -1)
         stats["recorded"] += 1
         stats[f"ctx_{ctx}"] += 1
-        yield ctx, qid, y, rows, mu
+        yield ctx, qid, y, rows, mu, score
         qid += 1
 
 
@@ -155,7 +155,10 @@ def main():
     days = []
     for p in ipaths:
         d = json.load(open(p))
-        s = [(d["zip"], m, seat) for (m, seat, a, _sc) in d["teachers"] if a == target]
+        # the teacher's ladder score rides along so a threshold can be applied at
+        # TRAIN time instead of costing another two-hour featurisation pass
+        s = [(d["zip"], m, seat, sc) for (m, seat, a, sc) in d["teachers"]
+             if a == target]
         if s:
             days.append(s)
     seats = [x for grp in zip_longest(*days) for x in grp if x is not None]
@@ -172,28 +175,30 @@ def main():
     stats = Counter()
     os.makedirs(os.path.join(HERE, "results"), exist_ok=True)
     out = os.path.join(HERE, "results", f"rows_{tag}.pkl")
-    CTX, QID, Y, X = [], [], [], []
+    CTX, QID, Y, X, SC = [], [], [], [], []
     qid = 0
     with open(out, "wb") as fout:
         def flush():
             if not X:
                 return
             pickle.dump((np.array(CTX, np.int16), np.array(QID, np.int32),
-                         np.array(Y, np.int8), np.asarray(X, np.float32)),
-                        fout, protocol=4)
-            CTX.clear(); QID.clear(); Y.clear(); X.clear()
+                         np.array(Y, np.int8), np.asarray(X, np.float32),
+                         np.array(SC, np.float32)), fout, protocol=4)
+            CTX.clear(); QID.clear(); Y.clear(); X.clear(); SC.clear()
 
-        for n, (zp, member, seat) in enumerate(seats):
+        for n, (zp, member, seat, tscore) in enumerate(seats):
             try:
                 z = zips.get(zp) or zips.setdefault(zp, zipfile.ZipFile(zp))
                 ep = json.loads(z.read(member))
             except Exception:
                 stats["skip_json"] += 1
                 continue
-            for ctx, q, y, rows, _mu in convert_seat(ep, seat, byid, stats, qid, exact):
+            for ctx, q, y, rows, _mu, sc in convert_seat(
+                    ep, seat, byid, stats, qid, exact, tscore):
                 qid = q + 1
                 for yy, rr in zip(y, rows):
                     CTX.append(ctx); QID.append(q); Y.append(yy); X.append(rr)
+                    SC.append(sc if sc is not None else 0.0)
                 if len(X) >= 400000:
                     flush()
             if stats["recorded"] >= max_dec:

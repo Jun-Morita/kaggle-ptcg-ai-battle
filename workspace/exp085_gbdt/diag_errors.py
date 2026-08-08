@@ -32,7 +32,7 @@ sys.path.insert(0, HERE)
 import numpy as np  # noqa: E402
 import lightgbm as lgb  # noqa: E402
 import feats  # noqa: E402
-from train_gbdt import load  # noqa: E402
+from train_gbdt import load_family, FAMILY  # noqa: E402
 from cg.api import SelectContext, OptionType, all_card_data  # noqa: E402
 
 CTX_NAME = {int(m.value): m.name for m in SelectContext}
@@ -47,17 +47,23 @@ def arg(name, default=None):
 def main():
     tag = arg("--tag", "grimm")
     top = int(arg("--top", "18"))
-    data = load(tag)
+    n_feat = int(arg("--n-feat", "0")) or None
     I = feats.IDX
     per_ctx = Counter(); per_ctx_err = Counter()
     promoted = Counter(); dropped = Counter()
     promoted_card = Counter(); dropped_card = Counter()
     n_dec = n_err = 0
 
-    for fam, (ctx, qid, y, X) in data.items():
+    rows_tag = arg("--rows", None) or tag
+    for fam in list(FAMILY) + ["easy"]:
         p = os.path.join(HERE, "results", f"gbdt_{tag}", f"{fam}.txt")
         if not os.path.exists(p):
             continue
+        # one family at a time: the v6 corpus is 9.4GB and does not fit whole
+        loaded = load_family(rows_tag, fam, n_feat)
+        if loaded is None:
+            continue
+        ctx, qid, y, X = loaded
         bst = lgb.Booster(model_file=p)
         uq = np.unique(qid)
         cut = uq[int(len(uq) * 0.9)]

@@ -72,16 +72,30 @@ def flatten(tree):
 
 def main():
     tag = arg("--tag", "grimm")
+    # --tags a,b,c averages several runs into one scorer. A tree ensemble's score
+    # is a SUM of leaf values, so the mean of K models is just all K models' trees
+    # concatenated with every leaf scaled by 1/K -- no change to the pure-Python
+    # scorer, and no ensemble bookkeeping at inference. Averaging over seeds is
+    # worth trying here because LightGBM's feature/bagging fractions make each fit
+    # a different sample of the same data, and capacity is already exhausted.
+    tags = [t for t in (arg("--tags", "") or "").split(",") if t]
     out = arg("--out", os.path.join(HERE, "results", f"gbdt_pure_{tag}.pkl"))
-    src = os.path.join(HERE, "results", f"gbdt_{tag}")
+    srcs = [os.path.join(HERE, "results", f"gbdt_{t}") for t in (tags or [tag])]
+    src = srcs[0]
+    scale = 1.0 / len(srcs)
     models, stats = {}, {}
     for fam in FAMS:
-        p = os.path.join(src, f"{fam}.txt")
-        if not os.path.exists(p):
+        trees = []
+        for s in srcs:
+            p = os.path.join(s, f"{fam}.txt")
+            if not os.path.exists(p):
+                continue
+            for t in lgb.Booster(model_file=p).dump_model()["tree_info"]:
+                lf, rt, ft, th, ca, vl = flatten(t)
+                trees.append((lf, rt, ft, th, ca,
+                              [v * scale for v in vl] if scale != 1.0 else vl))
+        if not trees:
             continue
-        bst = lgb.Booster(model_file=p)
-        dumped = bst.dump_model()
-        trees = [flatten(t) for t in dumped["tree_info"]]
         models[fam] = trees
         stats[fam] = {"trees": len(trees), "nodes": sum(len(t[0]) for t in trees)}
         print(f"  {fam:<5} trees {stats[fam]['trees']:>4}  nodes {stats[fam]['nodes']:>7}")
