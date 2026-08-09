@@ -165,10 +165,19 @@ def main():
     print(f"target={target} days={len(days)} teacher seats={len(seats)} "
           f"max_dec={max_dec}", flush=True)
 
+    # --deck points the exact-match filter AND the featuriser at another list.
+    # feats.set_deck rebuilds the per-card columns and re-resolves the card roles
+    # (gust / ACE SPEC / biggest ex / main Energy), so the row width follows the
+    # deck -- 360 columns for Grimmsnarl (オーロンゲ), 366 for the Mega Lopunny ex
+    # (メガミミロップex) list, which has 21 distinct cards instead of 19.
+    deck_path = arg("--deck", os.path.join(WS, "exp080_bc", "grimmsnarl_deck.json"))
     exact = None
     if "--exact-deck" in sys.argv:
-        exact = sorted(json.load(open(os.path.join(WS, "exp080_bc", "grimmsnarl_deck.json"))))
-        print("  exact-deck filter ON (teacher must run our 60 cards)", flush=True)
+        exact = sorted(json.load(open(deck_path)))
+        feats.set_deck(exact)
+        print(f"  exact-deck filter ON: {os.path.basename(deck_path)}, "
+              f"{len(feats.DECK_IDS)} distinct cards, "
+              f"{feats.N_FEATURES} features", flush=True)
 
     byid = card_map()
     zips = {}

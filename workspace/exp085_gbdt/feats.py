@@ -45,10 +45,16 @@ load_engine()
 
 from cg.api import AreaType, OptionType, all_attack, all_card_data  # noqa: E402
 
-# The 60-card list is fixed for our submission, so per-card counters are a fixed
-# width. Sorted unique ids of the Grimmsnarl deck.
-DECK_IDS = [7, 104, 112, 646, 647, 648, 860, 1079, 1080, 1086, 1097, 1122, 1137,
-            1152, 1182, 1219, 1227, 1231, 1259]
+# The 60-card list is fixed for a given submission, so per-card counters are a
+# fixed width -- but WHICH 60 is now a parameter. The default is the Grimmsnarl
+# (オーロンゲ) list every model up to v055 was trained on; set_deck() swaps it,
+# and PTCG_DECK_JSON lets the corpus builder and the trainers agree on a deck
+# without editing this file. The shipped main.py calls set_deck() with the
+# deck.csv it carries, so the feature width can never drift from the model.
+DEFAULT_DECK = [7] * 10 + [104] * 2 + [112] * 4 + [646] * 4 + [647] * 3 + \
+    [648] * 3 + [860] * 2 + [1079] * 3 + [1080] + [1086] * 4 + [1097] * 3 + \
+    [1122] + [1137] + [1152] * 4 + [1182] * 2 + [1219] * 4 + [1227] * 4 + \
+    [1231] + [1259] * 4
 BENCH_SLOTS = 5
 HAND_SLOTS = 20
 N_OPT_TYPES = 16
@@ -86,7 +92,6 @@ def _atk_table():
     return _ATK
 
 
-DARK_ENERGY = 7          # attack costs on our line read [7, 7] = Darkness
 _CHEAP = {}
 
 
@@ -209,7 +214,73 @@ def _names():
           "opt_copies_unseen", "opt_evo_base_in_play", "opt_evo_base_in_hand",
           "opt_evo_next_in_hand", "opt_evo_candy_ready", "opt_playable_now",
           "own_bench_free"]
+    # --- v8: what the OPPONENT can do to us ---
+    # /meta-watch on v054: 42% of our ladder games are the Grimmsnarl (オーロンゲ)
+    # mirror, and until now the row said almost nothing about the other side
+    # beyond raw HP and energy counts. Two separate gaps, grounded in how the deck
+    # actually plays:
+    #
+    # 1. THREAT. own_movable_counters told the model how much Adrena-Brain fuel WE
+    #    had; there was no opposite number. A Munkidori (マシマシラ) with a {D}
+    #    Energy attached moves up to 3 damage counters, so "their best attack" is
+    #    not their attack damage -- it is attack damage plus 30 they can shuffle
+    #    across the board. Without it the model cannot tell a safe Active from one
+    #    that dies next turn.
+    #
+    # 2. DECK TRACKING, valid only in the mirror. Their 60 cards are ours, their
+    #    discard and board are fully visible, so unseen = our count minus what we
+    #    can see, and that unseen pile is split between hand, deck and prizes.
+    #    The card this matters most for is Boss's Orders (ボスの指令), 2 copies:
+    #    it drags a benched Pokemon into the Active spot. Whether they plausibly
+    #    hold one decides if it is safe to bench a damaged Munkidori or a second
+    #    Grimmsnarl ex -- and an ex on the bench is 2 prizes handed over.
+    #    opp_is_mirror / opp_seen_offdeck let the trees switch these off when the
+    #    opponent turns out to be running something else.
+    #
+    # Prize math is the third piece. An ex KO gives 2 prizes (Mega ex 3), so
+    # "how many more KOs until each side wins" is not len(prize) alone -- it
+    # depends on what is standing. That is the arithmetic a human plays by and
+    # nothing in the row expressed it.
+    f += ["opp_is_mirror", "opp_seen_offdeck", "opp_hand_frac",
+          "opp_unseen_boss", "opp_exp_boss_in_hand", "opp_unseen_candy",
+          "opp_unseen_acespec", "opp_unseen_primary_ex", "opp_unseen_munkidori",
+          "opp_unseen_energy", "opp_unseen_poffin", "opp_unseen_stretcher",
+          "opp_movable_counters", "opp_munkidori_ready", "opp_best_attack_damage",
+          "opp_attack_ready", "opp_threat_total", "opp_can_ko_our_active",
+          "opp_dark_energy_total",
+          "own_active_prize_value", "opp_active_prize_value",
+          "own_bench_prize_max", "opp_bench_prize_max", "own_bench_gust_risk"]
     return f
+
+
+# Cards whose remaining copies change how the mirror is played. These are ROLES,
+# resolved against whatever deck is loaded, so the same feature code works for a
+# different archetype: the gust card, the evolution shortcut, the ACE SPEC, the
+# biggest ex, the damage-mover, the basic-Pokemon search and the recovery card.
+# A role the deck does not run resolves to 0, and every lookup that uses it then
+# returns 0 rather than a wrong count.
+ROLE_NAMES = {
+    "BOSS": ("Boss's Orders", "Boss’s Orders"),   # two apostrophe encodings exist
+    "RARE_CANDY_ID": ("Rare Candy",),
+    "MUNKIDORI": ("Munkidori",),                  # Adrena-Brain moves 3 counters
+    "POFFIN": ("Buddy-Buddy Poffin",),
+    "STRETCHER": ("Night Stretcher",),
+}
+BOSS = RARE_CANDY_ID = ACE_SPEC = PRIMARY_EX = 0
+MUNKIDORI = POFFIN = STRETCHER = 0
+DARK_ENERGY = 7      # rebound by set_deck to the deck's main basic Energy
+
+
+def prize_value(cid):
+    """Prizes the opponent takes for knocking this Pokemon out.
+
+    Mega ex are worth 3, ex 2, everything else 1. card_meta's ex_rank already
+    separates megaEx / ex / tera, so this is a relabelling rather than new
+    lookups. Our line hands over 2 for every Grimmsnarl ex, which is why benching
+    a second one while they may hold Boss's Orders is a real cost.
+    """
+    ex = card_meta(cid)[4]
+    return 3.0 if ex == 3 else (2.0 if ex == 2 else 1.0)
 
 
 # Copies of each card in OUR 60. Inlined rather than read from
@@ -252,15 +323,73 @@ def _evo_tables():
     return _EVO
 
 
-FEATURES = _names()
-IDX = {n: i for i, n in enumerate(FEATURES)}
-N_FEATURES = len(FEATURES)
-# Trees split on ordered values; ids and enum codes are categorical. LightGBM is
-# told which is which so it does not read "card 1259 > card 7" as a magnitude.
-CATEGORICAL = [n for n in FEATURES if n.endswith("_id") or n in (
-    "context", "select_type", "opt_type", "opt_area", "opt_inplay_area",
-    "src_type", "tgt_type", "prev1_area", "prev2_area", "prev3_area",
-    "prev1_type", "prev2_type", "prev3_type")]
+def set_deck(cards):
+    """Point every deck-dependent global at a new 60-card list.
+
+    Per-card counters are one column per distinct card, so the ROW WIDTH depends
+    on the deck (19 distinct cards for Grimmsnarl / オーロンゲ, 21 for the
+    Mega Lopunny ex / メガミミロップex list). Training and inference must agree,
+    which is why build_submission bakes a set_deck() call into main.py from the
+    deck.csv it ships rather than leaving the default in place.
+
+    Card ROLES are resolved here instead of hardcoded: the gust card, the
+    evolution shortcut, the ACE SPEC, the biggest ex, the damage-mover, the basic
+    search and the recovery card. A role the deck does not run stays 0, and the
+    features that use it then read 0 rather than someone else's count.
+    """
+    global DECK, DECK_IDS, DECK_COUNT, FEATURES, IDX, N_FEATURES, CATEGORICAL
+    global BOSS, RARE_CANDY_ID, ACE_SPEC, PRIMARY_EX, MUNKIDORI, POFFIN
+    global STRETCHER, DARK_ENERGY, RARE_CANDY, _CD
+    cards = [int(x) for x in cards]
+    DECK = cards
+    DECK_COUNT = dict(Counter(cards))
+    DECK_IDS = sorted(DECK_COUNT)
+    if _CD is None:
+        _CD = {int(c.cardId): c for c in all_card_data()}
+
+    def by_name(names):
+        for cid in DECK_IDS:
+            c = _CD.get(cid)
+            if c is not None and str(getattr(c, "name", "")) in names:
+                return cid
+        return 0
+
+    BOSS = by_name(ROLE_NAMES["BOSS"])
+    RARE_CANDY_ID = RARE_CANDY = by_name(ROLE_NAMES["RARE_CANDY_ID"])
+    MUNKIDORI = by_name(ROLE_NAMES["MUNKIDORI"])
+    POFFIN = by_name(ROLE_NAMES["POFFIN"])
+    STRETCHER = by_name(ROLE_NAMES["STRETCHER"])
+    # the ACE SPEC is one per deck by rule, so "the ace spec card" is unambiguous
+    ACE_SPEC = next((cid for cid in DECK_IDS
+                         if getattr(_CD.get(cid), "aceSpec", False)), 0)
+    # the main attacker: highest-HP ex / Mega ex, i.e. the 2-or-3-prize liability
+    exs = [(card_meta(cid)[3], cid) for cid in DECK_IDS if card_meta(cid)[4] >= 2]
+    PRIMARY_EX = max(exs)[1] if exs else 0
+    # the basic Energy the deck runs most of -- attack costs are paid in it
+    ens = [(DECK_COUNT[cid], cid) for cid in DECK_IDS
+           if card_meta(cid)[1] == 5 and _CD.get(cid) is not None
+           and getattr(_CD[cid], "basic", False)]
+    if not ens:      # cardType 5 = Energy; fall back to any Energy in the list
+        ens = [(DECK_COUNT[cid], cid) for cid in DECK_IDS if card_meta(cid)[1] == 5]
+    DARK_ENERGY = max(ens)[1] if ens else 0
+
+    FEATURES = _names()
+    IDX = {n: i for i, n in enumerate(FEATURES)}
+    N_FEATURES = len(FEATURES)
+    # Trees split on ordered values; ids and enum codes are categorical. LightGBM
+    # is told which is which so it does not read "card 1259 > card 7" as a size.
+    CATEGORICAL = [n for n in FEATURES if n.endswith("_id") or n in (
+        "context", "select_type", "opt_type", "opt_area", "opt_inplay_area",
+        "src_type", "tgt_type", "prev1_area", "prev2_area", "prev3_area",
+        "prev1_type", "prev2_type", "prev3_type")]
+
+
+set_deck(DEFAULT_DECK)
+# One env var keeps the corpus builder, the trainers and the exporter on the same
+# deck without editing this file or passing a flag through five scripts.
+if os.environ.get("PTCG_DECK_JSON"):
+    import json as _json
+    set_deck(_json.load(open(os.environ["PTCG_DECK_JSON"])))
 
 
 def _poke(row, base, p):
@@ -417,7 +546,115 @@ def base_state(obs, history):
     row[IDX["turn_evolves_used"]] = float(
         sum(1 for h in this_turn if h[0] == int(OptionType.EVOLVE)))
     row[IDX["own_bench_free"]] = float(BENCH_SLOTS - len(own.bench or []))
+    _opp_view(row, st, yi)
     return row
+
+
+def _opp_view(row, st, yi):
+    """Everything the rules let us know about the other side.
+
+    Split out of base_state only for length; it runs on every decision.
+    """
+    opp = st.players[1 - yi]
+    own = st.players[yi]
+    opp_pokes = [p for p in (list(opp.active[:1]) + list(opp.bench[:BENCH_SLOTS]))
+                 if p is not None]
+    own_pokes = [p for p in (list(own.active[:1]) + list(own.bench[:BENCH_SLOTS]))
+                 if p is not None]
+    opp_active = opp.active[0] if opp.active else None
+    own_active = own.active[0] if own.active else None
+
+    # --- what we have SEEN of their 60 --------------------------------------
+    seen = Counter()
+    off = 0
+    for c in (opp.discard or []):
+        cid = int(getattr(c, "id", 0) or 0)
+        seen[cid] += 1
+    for p in opp_pokes:
+        seen[int(p.id or 0)] += 1
+        for e in (p.energyCards or []):
+            seen[int(getattr(e, "id", 0) or 0)] += 1
+        for t in (p.tools or []):
+            seen[int(getattr(t, "id", 0) or 0)] += 1
+    for cid, n in seen.items():
+        over = n - DECK_COUNT.get(cid, 0)
+        if over > 0:
+            off += over          # a card they cannot be running, or too many of it
+    row[IDX["opp_seen_offdeck"]] = float(off)
+    row[IDX["opp_is_mirror"]] = float(off == 0)
+
+    # unseen copies are somewhere in hand + deck + prizes; the hand share is the
+    # part that can be used against us THIS turn
+    hand_n = float(opp.handCount or 0)
+    hidden = hand_n + float(opp.deckCount or 0) + float(len(opp.prize or []))
+    frac = hand_n / hidden if hidden > 0 else 0.0
+    row[IDX["opp_hand_frac"]] = frac
+
+    def unseen(cid):
+        return float(max(0, DECK_COUNT.get(cid, 0) - seen.get(cid, 0)))
+
+    ub = unseen(BOSS)
+    row[IDX["opp_unseen_boss"]] = ub
+    row[IDX["opp_exp_boss_in_hand"]] = ub * frac
+    row[IDX["opp_unseen_candy"]] = unseen(RARE_CANDY_ID)
+    row[IDX["opp_unseen_acespec"]] = unseen(ACE_SPEC)
+    row[IDX["opp_unseen_primary_ex"]] = unseen(PRIMARY_EX)
+    row[IDX["opp_unseen_munkidori"]] = unseen(MUNKIDORI)
+    row[IDX["opp_unseen_energy"]] = unseen(DARK_ENERGY)
+    row[IDX["opp_unseen_poffin"]] = unseen(POFFIN)
+    row[IDX["opp_unseen_stretcher"]] = unseen(STRETCHER)
+
+    # --- what they can do to us NEXT turn -----------------------------------
+    # Adrena-Brain fuel: damage already sitting on THEIR Pokemon is ammunition,
+    # not just a weakness, because Munkidori moves it onto ours.
+    movable = 0.0
+    dark = 0.0
+    munki_ready = 0.0
+    for p in opp_pokes:
+        movable += ((p.maxHp or 0) - (p.hp or 0)) / 10.0
+        d = sum(1 for e in (p.energies or []) if int(e) == DARK_ENERGY)
+        dark += d
+        if int(p.id or 0) == MUNKIDORI and d > 0:
+            munki_ready = 1.0
+    row[IDX["opp_movable_counters"]] = movable
+    row[IDX["opp_dark_energy_total"]] = dark
+    row[IDX["opp_munkidori_ready"]] = munki_ready
+
+    atk = _atk_table()
+    best = 0.0
+    ready = 0.0
+    if opp_active is not None:
+        have = len(opp_active.energyCards or [])
+        _CDl = _CD if _CD is not None else None
+        if _CDl is None:
+            card_meta(opp_active.id)          # forces _CD to load
+            _CDl = _CD
+        c = _CDl.get(int(opp_active.id or 0))
+        for aid in (getattr(c, "attacks", None) or []):
+            dmg, ecost = atk.get(int(aid), (0, 0))
+            if ecost <= have:
+                ready = 1.0
+                best = max(best, float(dmg))
+    row[IDX["opp_best_attack_damage"]] = best
+    row[IDX["opp_attack_ready"]] = ready
+    # a damage counter is 10 HP and Adrena-Brain moves at most 3
+    threat = best + 10.0 * min(3.0, movable) * munki_ready
+    row[IDX["opp_threat_total"]] = threat
+    own_hp = float(own_active.hp or 0) if own_active is not None else 0.0
+    row[IDX["opp_can_ko_our_active"]] = float(own_hp > 0 and threat >= own_hp)
+
+    # --- prize arithmetic ----------------------------------------------------
+    row[IDX["own_active_prize_value"]] = (
+        prize_value(own_active.id) if own_active is not None else 0.0)
+    row[IDX["opp_active_prize_value"]] = (
+        prize_value(opp_active.id) if opp_active is not None else 0.0)
+    own_bench_max = max([prize_value(p.id) for p in own_pokes[1:]] or [0.0])
+    row[IDX["own_bench_prize_max"]] = own_bench_max
+    row[IDX["opp_bench_prize_max"]] = max(
+        [prize_value(p.id) for p in opp_pokes[1:]] or [0.0])
+    # the cost of leaving a 2-prize Pokemon on the bench, scaled by how likely
+    # they are holding the card that drags it out
+    row[IDX["own_bench_gust_risk"]] = own_bench_max * ub * frac
 
 
 def _card_at(obs, area, index, pi):

@@ -146,9 +146,24 @@ def main():
     # 63 to 511 leaves and then flattened (1023: 0.7128, 2047: 0.7152, both inside
     # noise). 63 was simply too small for 284k training queries. 2047 triples the
     # node count for nothing, so 511 is the operating point.
-    lr = float(arg("--lr", "0.04"))
-    leaves = int(arg("--leaves", "511"))
-    min_leaf = int(arg("--min-leaf", "100"))
+    # Per-family values are allowed: "--leaves 511" sets everybody, while
+    # "--leaves main=511,easy=31" overrides individual families. Until now all
+    # five families shared one setting that was tuned on `main` alone, and the
+    # small ones stop almost immediately under it (easy 14 trees, low 27) --
+    # either they are genuinely easy, or 511 leaves overfits them in a handful of
+    # rounds. A per-family sweep is the only way to tell the two apart.
+    def per_fam(flag, default, cast):
+        raw = arg(flag, None)
+        if raw is None:
+            return lambda _f: cast(default)
+        if "=" not in raw:
+            return lambda _f: cast(raw)
+        tbl = dict(kv.split("=") for kv in raw.split(","))
+        return lambda f: cast(tbl.get(f, default))
+
+    lr_of = per_fam("--lr", "0.04", float)
+    leaves_of = per_fam("--leaves", "511", int)
+    minleaf_of = per_fam("--min-leaf", "100", int)
     seed = int(arg("--seed", "42"))
     # --n-feat truncates the row to its first N columns. The v6 features were
     # appended, so the first 318 columns ARE the v4b row: passing 318 trains the
@@ -186,7 +201,8 @@ def main():
                           categorical_feature=cat_idx, reference=dtr,
                           free_raw_data=False)
         params = {"objective": "lambdarank", "metric": "ndcg", "ndcg_eval_at": [1],
-                  "learning_rate": lr, "num_leaves": leaves, "min_data_in_leaf": min_leaf,
+                  "learning_rate": lr_of(fam), "num_leaves": leaves_of(fam),
+                  "min_data_in_leaf": minleaf_of(fam),
                   "feature_fraction": 0.8, "bagging_fraction": 0.8, "bagging_freq": 1,
                   "lambdarank_truncation_level": 12, "verbosity": -1, "seed": seed,
                   "bagging_seed": seed + 1, "feature_fraction_seed": seed + 2,
@@ -197,7 +213,9 @@ def main():
         sc = bst.predict(Xva, num_iteration=bst.best_iteration)
         acc, n, acc1, n1 = topk_accuracy(sc, yva, qva)
         models[fam] = bst
-        report[fam] = {"queries_train": int(len(np.unique(qtr))),
+        report[fam] = {"leaves": leaves_of(fam), "lr": lr_of(fam),
+                       "min_leaf": minleaf_of(fam),
+                       "queries_train": int(len(np.unique(qtr))),
                        "queries_val": n, "topk": round(acc, 4),
                        "top1": round(acc1, 4), "n_top1": n1,
                        "trees": bst.best_iteration, "sec": round(time.time() - t0)}
@@ -211,8 +229,7 @@ def main():
     os.makedirs(outdir, exist_ok=True)
     for fam, bst in models.items():
         bst.save_model(os.path.join(outdir, f"{fam}.txt"))
-    json.dump({"tag": tag, "rounds": rounds, "lr": lr, "leaves": leaves,
-               "min_leaf": min_leaf, "min_score": min_score, "seed": seed,
+    json.dump({"tag": tag, "rounds": rounds, "min_score": min_score, "seed": seed,
                "n_features": n_feat or feats.N_FEATURES, "report": report},
               open(os.path.join(outdir, "report.json"), "w"), indent=1)
     tw = sum(r["queries_val"] * r["topk"] for r in report.values())
