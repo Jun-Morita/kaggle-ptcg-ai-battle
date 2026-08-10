@@ -75,6 +75,9 @@ def convert_seat(ep, ti, byid, stats, qid0, exact=None, score=None):
     which cost ~70 ladder points that no local gate could see -- most likely the
     same contamination.
     """
+    # the row records who produced it, as a rank inside that day's own field --
+    # see feats.TEACHER_PCT for why this is a percentile and not the raw score
+    feats.TEACHER_PCT = 1.0 if score is None else float(score)
     decks = decks_from_ep(ep)
     if not decks.get(ti) or not decks.get(1 - ti):
         stats["skip_no_deck"] += 1
@@ -155,9 +158,26 @@ def main():
     days = []
     for p in ipaths:
         d = json.load(open(p))
-        # the teacher's ladder score rides along so a threshold can be applied at
-        # TRAIN time instead of costing another two-hour featurisation pass
-        s = [(d["zip"], m, seat, sc) for (m, seat, a, sc) in d["teachers"]
+        # Rank every teacher against THAT DAY's field, not against a fixed number.
+        # The ladder's score level fell through August (the top of 08-08 sits where
+        # the middle of 07-26 was), so an absolute threshold silently selects by
+        # date. A within-day percentile does not.
+        allsc = sorted(float(sc) for (_m, _s, _a, sc) in d["teachers"] if sc)
+        n = len(allsc)
+
+        def pct(sc):
+            if not sc or n < 2:
+                return 1.0
+            lo, hi = 0, n
+            while lo < hi:                      # bisect_left, stdlib-free
+                mid = (lo + hi) // 2
+                if allsc[mid] < float(sc):
+                    lo = mid + 1
+                else:
+                    hi = mid
+            return lo / (n - 1)
+
+        s = [(d["zip"], m, seat, pct(sc)) for (m, seat, a, sc) in d["teachers"]
              if a == target]
         if s:
             days.append(s)

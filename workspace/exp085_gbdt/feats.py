@@ -127,12 +127,28 @@ def card_meta(cid):
     return (stage, int(c.cardType), int(c.retreatCost or 0), int(c.hp or 0), ex)
 
 
+# How strong was the player who produced this row, as a rank within their OWN day?
+#
+# The absolute-score filter we shipped as v055 (>= 1075) turned out to be a date
+# filter in disguise: the ladder's score level fell through August, so 1075 kept
+# 77% of 07-26 teachers but only 29% of 08-08 teachers. It therefore threw away
+# exactly the recent games we most wanted, and measured as worth nothing
+# (0.545 vs 0.541 head-to-head, n=1600).
+#
+# Conditioning replaces filtering. Every decision is kept, and the row simply says
+# where its author stood that day (0 = bottom, 1 = top). At inference we ask for
+# 1.0 -- "play like the best player of the day". Reported externally by Amedeo
+# Biolatti (disc732905): conditioning on rating gave +2% accuracy and ~+2% winrate
+# over conditioning on a mid rating, and extrapolated above the training range.
+TEACHER_PCT = 1.0
+
+
 def _names():
     f = ["turn", "turn_action_count", "first_player", "energy_attached",
          "supporter_played", "stadium_played", "retreated", "context",
          "select_type", "min_count", "max_count", "n_options",
          "remain_damage", "remain_energy", "stadium_id", "context_card_id",
-         "looking_n"]
+         "looking_n", "teacher_pct"]
     for side in ("own", "opp"):
         f += [f"{side}_deck", f"{side}_hand", f"{side}_discard", f"{side}_prize",
               f"{side}_bench_n", f"{side}_poisoned", f"{side}_burned",
@@ -431,6 +447,7 @@ def base_state(obs, history):
     cc = getattr(sel, "contextCard", None)
     row[IDX["context_card_id"]] = float(getattr(cc, "id", 0) or 0) if cc else 0.0
     row[IDX["looking_n"]] = float(len(st.looking or []))
+    row[IDX["teacher_pct"]] = float(TEACHER_PCT)
 
     inplay_ids = Counter()
     for si, side in enumerate(("own", "opp")):
