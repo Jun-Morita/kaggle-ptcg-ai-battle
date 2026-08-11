@@ -149,3 +149,4 @@ workspace/exp085_gbdt/indices/
 workspace/exp085_gbdt/*.log
 workspace/exp084_council/*.log
 workspace/exp084_council/results/
+workspace/exp085_gbdt/idx_*/

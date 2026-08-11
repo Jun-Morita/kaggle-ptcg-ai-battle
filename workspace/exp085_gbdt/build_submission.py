@@ -96,7 +96,7 @@ def main():
     out = os.path.join(HERE, f"build_{tag}")
     pure = os.path.join(HERE, "results", f"gbdt_pure_{tag}.pkl")
     assert os.path.exists(pure), pure
-    deck = json.load(open(DECK))
+    deck = json.load(open(arg("--deck", DECK)))
     assert len(deck) == 60, len(deck)
     os.makedirs(out, exist_ok=True)
 
@@ -121,6 +121,11 @@ def main():
     # Left unfixed this raises NameError on EVERY decision, the except returns a
     # legal-but-arbitrary move, and the agent loses every game with zero errors.
     src = src.replace("    option_rows = _feats.option_rows\n", "")
+    # same reason: feats is inlined, so `_feats` is not a name in the artifact.
+    # Without this the set_deck call raises NameError on load, make_agent's except
+    # swallows it, and the agent ships answering every decision from the legal
+    # fallback. smoke()'s _AGENT assert is what caught it.
+    src = src.replace("    _feats.set_deck(deck)\n", "    set_deck(deck)\n")
     open(os.path.join(out, "main.py"), "w").write(src)
     open(os.path.join(out, "deck.csv"), "w").write("\n".join(map(str, deck)) + "\n")
 

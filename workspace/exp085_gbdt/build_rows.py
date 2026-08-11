@@ -53,7 +53,7 @@ def decks_from_ep(ep):
     return d
 
 
-def convert_seat(ep, ti, byid, stats, qid0, exact=None, score=None):
+def convert_seat(ep, ti, byid, stats, qid0, exact=None, score=None, near=None):
     """Yield (ctx, qid, y[list], X[list of rows], mu) for one teacher seat.
 
     `exact`: if given, the teacher's 60 cards must match this list exactly.
@@ -82,9 +82,22 @@ def convert_seat(ep, ti, byid, stats, qid0, exact=None, score=None):
     if not decks.get(ti) or not decks.get(1 - ti):
         stats["skip_no_deck"] += 1
         return
-    if exact is not None and sorted(decks[ti]) != exact:
-        stats["skip_deck_mismatch"] += 1
-        return
+    if exact is not None:
+        mine = sorted(decks[ti])
+        if near is None:
+            ok = mine == exact
+        else:
+            # multiset overlap. The near misses are not random: 10 distinct lists
+            # cover 802 of the 4,800 seats sampled, and they are our list minus
+            # Tool Scrapper / Pokegear 3.0 plus Handheld Fan / Judge. Two cards of
+            # difference does not change the lines the model is learning, whereas
+            # the 18/60 cluster below is a different deck entirely and is exactly
+            # what poisoned the v2 corpus.
+            a, b = Counter(mine), Counter(exact)
+            ok = sum((a & b).values()) >= near
+        if not ok:
+            stats["skip_deck_mismatch"] += 1
+            return
     rewards = ep.get("rewards") or [None, None]
     r = rewards[ti] if ti < len(rewards) else None
     if r != 1:                      # teacher seats are winners; keep it that way
@@ -199,6 +212,11 @@ def main():
               f"{len(feats.DECK_IDS)} distinct cards, "
               f"{feats.N_FEATURES} features", flush=True)
 
+    # --near N accepts a teacher whose list shares >= N of our 60 cards
+    near = int(arg("--near")) if "--near" in sys.argv else None
+    if near:
+        print(f"  near-deck filter: overlap >= {near}/60", flush=True)
+
     byid = card_map()
     zips = {}
     stats = Counter()
@@ -223,7 +241,7 @@ def main():
                 stats["skip_json"] += 1
                 continue
             for ctx, q, y, rows, _mu, sc in convert_seat(
-                    ep, seat, byid, stats, qid, exact, tscore):
+                    ep, seat, byid, stats, qid, exact, tscore, near):
                 qid = q + 1
                 for yy, rr in zip(y, rows):
                     CTX.append(ctx); QID.append(q); Y.append(yy); X.append(rr)

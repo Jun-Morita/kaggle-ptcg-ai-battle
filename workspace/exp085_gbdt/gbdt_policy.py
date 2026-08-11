@@ -69,6 +69,11 @@ def make_agent(pure_path, deck):
     import feats as _feats
     from cg.api import to_observation_class
 
+    # The row layout follows the deck (per-card columns plus the resolved card
+    # roles), and the shipped main.py has no PTCG_DECK_JSON to read, so without
+    # this the agent would featurise every deck as the module default. Harmless
+    # for our own list; wrong by six columns for anything else.
+    _feats.set_deck(deck)
     pure = load_pure(pure_path)
     state = {"history": [], "fallbacks": 0, "decisions": 0}
     option_rows = _feats.option_rows
