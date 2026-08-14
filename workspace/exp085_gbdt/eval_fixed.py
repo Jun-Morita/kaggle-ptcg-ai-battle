@@ -43,7 +43,7 @@ def main():
         loaded = load_family(rows, fam, None, ev_min)
         if loaded is None:
             continue
-        _ctx, qid, y, X = loaded
+        _ctx, qid, y, X, _opp = loaded
         # the SAME split rule as training, so no model is scored on rows it saw
         uq = np.unique(qid)
         cut = uq[int(len(uq) * (1 - hold))]

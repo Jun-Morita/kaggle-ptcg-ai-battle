@@ -35,7 +35,7 @@ def tail_family(tag, fam, n_q, n_feat=None):
     """
     path = os.path.join(HERE, "results", f"rows_{tag}.pkl")
     keep_q, keep_y, keep_X = [], [], []
-    for ctx, qid, y, X, _sc in _chunks(path):
+    for ctx, qid, y, X, _sc, _opp in _chunks(path):
         m = np.array([family_of(int(c)) == fam for c in ctx])
         if not m.any():
             continue

@@ -51,11 +51,11 @@ def family_of(ctx):
 
 
 def _chunks(path):
-    """Yield (ctx, qid, y, X, score) chunks.
+    """Yield (ctx, qid, y, X, score, opp) chunks.
 
-    Corpora written before the teacher-score column carry 4-tuples; those are
-    padded with zeros so an old corpus stays readable and simply never passes a
-    --min-score filter.
+    Corpora grew columns over time: 4-tuples predate the teacher score and
+    5-tuples predate the opponent archetype. Both are padded with zeros so an
+    old corpus stays readable -- it simply never passes --min-score or --opp-mix.
     """
     with open(path, "rb") as f:
         while True:
@@ -63,8 +63,20 @@ def _chunks(path):
                 c = pickle.load(f)
             except EOFError:
                 return
-            yield c if len(c) == 5 else (c[0], c[1], c[2], c[3],
-                                         np.zeros(len(c[0]), np.float32))
+            n = len(c[0])
+            if len(c) == 6:
+                yield c
+            elif len(c) == 5:
+                yield c + (np.zeros(n, np.int8),)
+            else:
+                yield (c[0], c[1], c[2], c[3], np.zeros(n, np.float32),
+                       np.zeros(n, np.int8))
+
+
+# The field on 08-12, as a target for --opp-mix. Our corpus is dominated by
+# late-July games (63% of the ladder was on our own deck then); these are the
+# opponents the ladder actually finishes against.
+FIELD_0812 = {1: .141, 2: .114, 3: .158, 4: .258, 5: .206, 6: .053, 7: .066}
 
 
 def load_family(tag, fam, n_feat=None, min_score=None):
@@ -86,7 +98,7 @@ def load_family(tag, fam, n_feat=None, min_score=None):
 
     n_rows = 0
     n_cols = None
-    for ctx, qid, y, X, sc in _chunks(path):
+    for ctx, qid, y, X, sc, opp in _chunks(path):
         n_rows += int(keep(ctx, sc).sum())
         n_cols = X.shape[1]
     if n_rows == 0:
@@ -96,16 +108,36 @@ def load_family(tag, fam, n_feat=None, min_score=None):
     QID = np.empty(n_rows, np.int32)
     Y = np.empty(n_rows, np.int8)
     X_ = np.empty((n_rows, cols), np.float32)
+    OPP = np.empty(n_rows, np.int8)
     i = 0
-    for ctx, qid, y, X, sc in _chunks(path):
+    for ctx, qid, y, X, sc, opp in _chunks(path):
         m = keep(ctx, sc)
         k = int(m.sum())
         if not k:
             continue
         CTX[i:i + k] = ctx[m]; QID[i:i + k] = qid[m]; Y[i:i + k] = y[m]
-        X_[i:i + k] = X[m][:, :cols]
+        X_[i:i + k] = X[m][:, :cols]; OPP[i:i + k] = opp[m]
         i += k
-    return CTX, QID, Y, X_
+    return CTX, QID, Y, X_, OPP
+
+
+def opp_weights(opp, target):
+    """Row weights that bend the OPPONENT mix of the corpus toward `target`.
+
+    Not a filter: every decision is kept, and a game against a deck the ladder
+    now barely plays simply counts for less. Opponents outside the table (code 0
+    and anything unlisted) keep weight 1.0 rather than vanishing.
+    """
+    w = np.ones(len(opp), np.float32)
+    seen = {int(k): int(v) for k, v in zip(*np.unique(opp, return_counts=True))}
+    tot = sum(seen.get(k, 0) for k in target)
+    if not tot:
+        return w
+    for code, share in target.items():
+        n = seen.get(code, 0)
+        if n:
+            w[opp == code] = share / (n / tot)
+    return w / w.mean()
 
 
 def groups_from_qid(qid):
@@ -176,6 +208,8 @@ def main():
     # cutting at 1100 keeps 25.7% of seats -- the v6 result says corpus size is
     # worth real winrate, so quality has to beat a 4x data loss to be right.
     min_score = float(arg("--min-score", "0")) or None
+    # Match the training distribution to the field, rather than adding to it.
+    opp_mix = "--opp-mix" in sys.argv
     cat_idx = [feats.IDX[n] for n in feats.CATEGORICAL
                if n_feat is None or feats.IDX[n] < n_feat]
     models, report = {}, {}
@@ -183,7 +217,7 @@ def main():
         loaded = load_family(tag, fam, n_feat, min_score)
         if loaded is None:
             continue
-        ctx, qid, y, X = loaded
+        ctx, qid, y, X, opp = loaded
         # qid is non-decreasing (rows are written in decision order), so the
         # holdout is a suffix and the split can be a SLICE. Boolean masks copied
         # the whole family a second time, which is 4GB+ for `main` on the v6
@@ -195,7 +229,8 @@ def main():
             continue
         Xtr, Xva = X[:i0], X[i0:]
         ytr, yva, qtr, qva = y[:i0], y[i0:], qid[:i0], qid[i0:]
-        dtr = lgb.Dataset(Xtr, label=ytr, group=groups_from_qid(qtr),
+        wtr = opp_weights(opp[:i0], FIELD_0812) if opp_mix else None
+        dtr = lgb.Dataset(Xtr, label=ytr, group=groups_from_qid(qtr), weight=wtr,
                           categorical_feature=cat_idx, free_raw_data=False)
         dva = lgb.Dataset(Xva, label=yva, group=groups_from_qid(qva),
                           categorical_feature=cat_idx, reference=dtr,
@@ -222,14 +257,15 @@ def main():
         print(f"  {fam:<5} train_q {report[fam]['queries_train']:>7}  val_q {n:>6}  "
               f"topk {acc:.4f}  top1 {acc1:.4f} (n={n1})  trees {bst.best_iteration} "
               f"({report[fam]['sec']}s)", flush=True)
-        del ctx, qid, y, X, Xtr, Xva, ytr, yva, qtr, qva, dtr, dva, sc, loaded
+        del ctx, qid, y, X, opp, Xtr, Xva, ytr, yva, qtr, qva, dtr, dva, sc, loaded
         gc.collect()
 
     outdir = os.path.join(HERE, "results", f"gbdt_{otag}")
     os.makedirs(outdir, exist_ok=True)
     for fam, bst in models.items():
         bst.save_model(os.path.join(outdir, f"{fam}.txt"))
-    json.dump({"tag": tag, "rounds": rounds, "min_score": min_score, "seed": seed,
+    json.dump({"tag": tag, "rounds": rounds, "min_score": min_score,
+               "opp_mix": opp_mix, "seed": seed,
                "n_features": n_feat or feats.N_FEATURES, "report": report},
               open(os.path.join(outdir, "report.json"), "w"), indent=1)
     tw = sum(r["queries_val"] * r["topk"] for r in report.values())

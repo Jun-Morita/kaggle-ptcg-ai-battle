@@ -63,7 +63,7 @@ def main():
         loaded = load_family(rows_tag, fam, n_feat)
         if loaded is None:
             continue
-        ctx, qid, y, X = loaded
+        ctx, qid, y, X, _opp = loaded
         bst = lgb.Booster(model_file=p)
         uq = np.unique(qid)
         cut = uq[int(len(uq) * 0.9)]

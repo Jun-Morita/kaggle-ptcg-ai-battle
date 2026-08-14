@@ -37,6 +37,18 @@ from cg.api import to_observation_class  # noqa: E402
 from analyze import card_map, archetype  # noqa: E402
 
 
+# The OPPONENT's archetype rides along with every row. It was computed and
+# thrown away until now (`_mu`), and it is the one thing that lets the training
+# distribution be matched to the field we actually face: the corpus is dominated
+# by late-July games, when 63% of the ladder played our own deck, while on 08-12
+# the field was dragapult 25.8% / ex_beatdown 20.6% / mixed_ex3 14.1%. Reweighting
+# by this column is not more data -- it is different data.
+ARCH_CODE = {"mixed_ex3": 1, "mixed_ex1": 2, "mixed_ex4": 3, "dragapult": 4,
+             "ex_beatdown": 5, "crustle_control": 6, "lucario_ex": 7,
+             "non_ex_attackers": 8, "mixed_ex2": 9}
+ARCH_NAME = {v: k for k, v in ARCH_CODE.items()}
+
+
 def arg(name, default=None):
     return sys.argv[sys.argv.index(name) + 1] if name in sys.argv else default
 
@@ -222,7 +234,7 @@ def main():
     stats = Counter()
     os.makedirs(os.path.join(HERE, "results"), exist_ok=True)
     out = os.path.join(HERE, "results", f"rows_{tag}.pkl")
-    CTX, QID, Y, X, SC = [], [], [], [], []
+    CTX, QID, Y, X, SC, MU = [], [], [], [], [], []
     qid = 0
     with open(out, "wb") as fout:
         def flush():
@@ -230,8 +242,9 @@ def main():
                 return
             pickle.dump((np.array(CTX, np.int16), np.array(QID, np.int32),
                          np.array(Y, np.int8), np.asarray(X, np.float32),
-                         np.array(SC, np.float32)), fout, protocol=4)
-            CTX.clear(); QID.clear(); Y.clear(); X.clear(); SC.clear()
+                         np.array(SC, np.float32), np.array(MU, np.int8)),
+                        fout, protocol=4)
+            CTX.clear(); QID.clear(); Y.clear(); X.clear(); SC.clear(); MU.clear()
 
         for n, (zp, member, seat, tscore) in enumerate(seats):
             try:
@@ -240,12 +253,13 @@ def main():
             except Exception:
                 stats["skip_json"] += 1
                 continue
-            for ctx, q, y, rows, _mu, sc in convert_seat(
+            for ctx, q, y, rows, mu, sc in convert_seat(
                     ep, seat, byid, stats, qid, exact, tscore, near):
                 qid = q + 1
                 for yy, rr in zip(y, rows):
                     CTX.append(ctx); QID.append(q); Y.append(yy); X.append(rr)
                     SC.append(sc if sc is not None else 0.0)
+                    MU.append(ARCH_CODE.get(mu, 0))
                 if len(X) >= 400000:
                     flush()
             if stats["recorded"] >= max_dec:

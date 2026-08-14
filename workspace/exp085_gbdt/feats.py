@@ -127,6 +127,34 @@ def card_meta(cid):
     return (stage, int(c.cardType), int(c.retreatCost or 0), int(c.hp or 0), ex)
 
 
+# The opponent cards worth naming.
+#
+# Everything the row said about the other side was an AGGREGATE -- bench count,
+# total energy, best attack damage. That is enough to pilot our own deck but it
+# throws away the thing a human actually reads: which cards are on the table.
+# Mist Energy on their active changes whether Munkidori's damage-move plan works;
+# Air Balloon changes whether a gust actually traps anything; Jamming Tower turns
+# our Tools off. None of that is expressible as a count of energies.
+#
+# The list is the union of the current archetypes' most common lists, weighted by
+# their 08-12 share, PLUS our own 19. Excluding ours was the first attempt's
+# mistake: they are covered on our side of the board, not on theirs, so in the
+# mirror every added column was zero and the heaviest cell fell 0.593 -> 0.541.
+# Two columns each: how many are on their board (including attached energy and
+# tools) and how many are in their discard.
+# Written out literally, not read from opp_cards.json: the built agent inlines
+# this module into a single main.py and ships no data files beside it, so a file
+# read here would return [] inside the sandbox, silently drop 80 columns, and
+# leave the model reading a row that does not match what it was trained on.
+# regen: uv run python opp_cards_gen.py
+OPP_CARDS = \
+    [1121, 5, 1225, 19, 2, 119, 120, 1120, 305, 6, 11, 162, 163, 1188, 1248,
+    756, 121, 1198, 1229, 66, 1146, 1087, 1264, 140, 1213, 235, 1246, 1197,
+    3, 1174, 1071, 741, 742, 743, 1081, 144, 183, 184, 1123, 848, 7, 104,
+    112, 646, 647, 648, 860, 1079, 1080, 1086, 1097, 1122, 1137, 1152, 1182,
+    1219, 1227, 1231, 1259]
+
+
 # How strong was the player who produced this row, as a rank within their OWN day?
 #
 # The absolute-score filter we shipped as v055 (>= 1075) turned out to be a date
@@ -149,6 +177,8 @@ def _names():
          "select_type", "min_count", "max_count", "n_options",
          "remain_damage", "remain_energy", "stadium_id", "context_card_id",
          "looking_n", "teacher_pct"]
+    for cid in OPP_CARDS:
+        f += [f"oc_play_{cid}", f"oc_disc_{cid}"]
     for side in ("own", "opp"):
         f += [f"{side}_deck", f"{side}_hand", f"{side}_discard", f"{side}_prize",
               f"{side}_bench_n", f"{side}_poisoned", f"{side}_burned",
@@ -583,16 +613,29 @@ def _opp_view(row, st, yi):
 
     # --- what we have SEEN of their 60 --------------------------------------
     seen = Counter()
+    disc = Counter()
+    play = Counter()
     off = 0
     for c in (opp.discard or []):
         cid = int(getattr(c, "id", 0) or 0)
         seen[cid] += 1
+        disc[cid] += 1
     for p in opp_pokes:
         seen[int(p.id or 0)] += 1
+        play[int(p.id or 0)] += 1
         for e in (p.energyCards or []):
-            seen[int(getattr(e, "id", 0) or 0)] += 1
+            cid = int(getattr(e, "id", 0) or 0)
+            seen[cid] += 1
+            play[cid] += 1
         for t in (p.tools or []):
-            seen[int(getattr(t, "id", 0) or 0)] += 1
+            cid = int(getattr(t, "id", 0) or 0)
+            seen[cid] += 1
+            play[cid] += 1
+    for cid in OPP_CARDS:
+        if play.get(cid):
+            row[IDX[f"oc_play_{cid}"]] = float(play[cid])
+        if disc.get(cid):
+            row[IDX[f"oc_disc_{cid}"]] = float(disc[cid])
     for cid, n in seen.items():
         over = n - DECK_COUNT.get(cid, 0)
         if over > 0:

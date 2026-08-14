@@ -18,7 +18,8 @@ W_OBS = dict(ex3=.38, ex1=.22, ex4=.14, dragapult=.05, ebd=.03, crustle=.06, luc
 W_812 = dict(ex3=.141, ex1=.114, ex4=.158, dragapult=.258, ebd=.206, crustle=.053, lucario=.066)
 # which archetype each build IS, so its own cell is the 0.500 self-mirror
 DECK_OF = {"v10rL": "ex3", "v13": "ex3", "v9b": "ex3", "d0812": "ex3",
-           "ex4c": "ex4", "ebd": "ebd", "drg": "dragapult"}
+           "ex4c": "ex4", "ebd": "ebd", "drg": "dragapult",
+           "luc": "lucario", "ak": "ex1"}
 
 
 def read(tag, cell):
