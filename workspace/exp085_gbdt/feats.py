@@ -147,12 +147,30 @@ def card_meta(cid):
 # read here would return [] inside the sandbox, silently drop 80 columns, and
 # leave the model reading a row that does not match what it was trained on.
 # regen: uv run python opp_cards_gen.py
-OPP_CARDS = \
+#
+# OFF by default since 08-15. These 118 columns cost 0.020 of gate on the SAME
+# 12-day corpus (v17 0.6438 vs v059 0.6640) and were never turned back off, so
+# d0813 / d0814 / r10 / r7 were all measured at 479 columns against a 361-column
+# bar. That is a confound, not a comparison: LightGBM samples 80% of the features
+# per tree, so the extra width degrades split quality everywhere, and the deficit
+# was being read as "more data does not help".
+# Set USE_OPP_CARDS = True to restore them.
+USE_OPP_CARDS = False
+# v18 (08-15): nine aggregates for prize mapping and spread. Env-gated so a run
+# already in flight keeps the column count it built its corpus with -- flipping a
+# module constant mid-run silently desynchronises rows from names, and the corpus
+# and the trainer are separate processes.
+# TO SHIP THIS: change the default to "1". build_submission inlines this module,
+# and the sandbox has no PTCG_V18 set, so an env-gated feature would be OFF
+# inside the artifact while the model expects it -- the v16 failure mode.
+USE_V18 = os.environ.get("PTCG_V18", "0") == "1"
+_OPP_CARDS_ALL = \
     [1121, 5, 1225, 19, 2, 119, 120, 1120, 305, 6, 11, 162, 163, 1188, 1248,
     756, 121, 1198, 1229, 66, 1146, 1087, 1264, 140, 1213, 235, 1246, 1197,
     3, 1174, 1071, 741, 742, 743, 1081, 144, 183, 184, 1123, 848, 7, 104,
     112, 646, 647, 648, 860, 1079, 1080, 1086, 1097, 1122, 1137, 1152, 1182,
     1219, 1227, 1231, 1259]
+OPP_CARDS = _OPP_CARDS_ALL if USE_OPP_CARDS else []
 
 
 # How strong was the player who produced this row, as a rank within their OWN day?
@@ -239,6 +257,11 @@ def _names():
           # does this attachment bring its target closer to attacking?
           "opt_src_dark_energy", "opt_src_energy_n",
           "opt_tgt_energy_need", "opt_tgt_need_after",
+          # v18: the trade this option makes, as the guides define it -- prizes
+          # taken minus prizes exposed. Both halves are already columns, but the
+          # DIFFERENCE is the decision rule ("my KO is worth more than theirs"),
+          # and a tree can only approximate a difference with a staircase.
+          ] + (["opt_trade_delta"] if USE_V18 else []) + [
           "dup_count", "dup_rank"]
     # --- v6: what a SEARCH is actually for (c7 / TO_HAND) ---
     # diag_errors on v4b: TO_HAND is 3,741 of 17,320 errors (21.6%) at top-k
@@ -296,6 +319,28 @@ def _names():
           "opp_dark_energy_total",
           "own_active_prize_value", "opp_active_prize_value",
           "own_bench_prize_max", "opp_bench_prize_max", "own_bench_gust_risk"]
+    # --- v18: the two things a tree cannot build out of the per-slot columns ---
+    #
+    # PRIZE MAPPING. prize_diff is a difference of counters, but the lever in
+    # references/knowledge/ptcg_strategy.md is "how many more KNOCKOUTS do I
+    # need", and that depends on the prize VALUES sitting on the other board.
+    # 3-vs-4 on the counter is a losing race if their three come off two of our
+    # ex and our four need four separate KOs. Greedy over the sorted values is
+    # the standard prize map (2-2-2 / 3-3 / 1-1-2-2).
+    #
+    # SPREAD. Dragapult ex wins by putting counters on the bench and then
+    # collecting several small Pokemon at once, and nothing here counts the
+    # bench. The per-slot columns hold every HP, but "three of their bench are
+    # one tick from dying" is a conjunction of five comparisons: depth-5
+    # structure that every tree has to rediscover, and cannot when feature
+    # sampling hides some of the slots. One aggregate is one split.
+    #
+    # This is the distinction v16/v17 missed. Those added 118 raw indicator
+    # columns -- more width, no structure a tree was missing -- and cost 0.020.
+    if USE_V18:
+        f += ["kos_needed_us", "kos_needed_them", "kos_race_diff",
+              "opp_bench_damaged_n", "opp_bench_near_ko_n", "own_bench_near_ko_n",
+              "opp_bench_min_hp", "own_bench_prize_total"]
     return f
 
 
@@ -716,6 +761,54 @@ def _opp_view(row, st, yi):
     # they are holding the card that drags it out
     row[IDX["own_bench_gust_risk"]] = own_bench_max * ub * frac
 
+    # --- v18: prize map and spread ------------------------------------------
+    if not USE_V18:
+        return row
+
+    def kos_to_close(prizes_left, board):
+        """Fewest KOs that take `prizes_left`, biggest prize values first.
+
+        The standard prize map: 6 prizes come off as 3-3, 2-2-2, 1-1-2-2 and so
+        on depending on what the other side has in play. Greedy is exact here
+        because every KO is available independently.
+        """
+        need = float(prizes_left)
+        if need <= 0:
+            return 0.0
+        n = 0.0
+        for v in sorted((prize_value(p.id) for p in board), reverse=True):
+            if need <= 0:
+                break
+            need -= v
+            n += 1
+        # board too small to close: charge the remainder at 1 prize per KO
+        return n + max(0.0, need)
+
+    # own_prize / opp_prize are already len(ps.prize), i.e. cards still face down
+    own_left = float(row[IDX["own_prize"]])
+    opp_left = float(row[IDX["opp_prize"]])
+    k_us = kos_to_close(own_left, opp_pokes)
+    k_them = kos_to_close(opp_left, own_pokes)
+    row[IDX["kos_needed_us"]] = k_us
+    row[IDX["kos_needed_them"]] = k_them
+    row[IDX["kos_race_diff"]] = k_them - k_us
+
+    # Spread: how much of their bench is already collectable. A damage counter
+    # is 10 HP, so "within 30" is one more spread tick plus a counter move.
+    opp_bench = opp_pokes[1:]
+    hps = [float(p.hp or 0) for p in opp_bench]
+    row[IDX["opp_bench_damaged_n"]] = float(sum(
+        1 for p in opp_bench if (p.maxHp or 0) > (p.hp or 0)))
+    row[IDX["opp_bench_near_ko_n"]] = float(sum(1 for h in hps if 0 < h <= 30.0))
+    row[IDX["opp_bench_min_hp"]] = min(hps) if hps else 0.0
+    own_bench = own_pokes[1:]
+    row[IDX["own_bench_near_ko_n"]] = float(sum(
+        1 for p in own_bench if 0 < float(p.hp or 0) <= 30.0))
+    # prize liability: the guides say do not bench more multi-prize bodies than
+    # the plan needs. own_bench_prize_max only sees the worst one.
+    row[IDX["own_bench_prize_total"]] = float(sum(
+        prize_value(p.id) for p in own_bench))
+
 
 def _card_at(obs, area, index, pi):
     """Resolve an option's (area, index) to the card it refers to.
@@ -880,6 +973,12 @@ def option_rows(obs, history=()):
             r[IDX["opt_counters_to_ko"]] = -(-float(tp.hp) // 10.0)
             mh = float(getattr(tp, "maxHp", 0) or 0)
             r[IDX["opt_tgt_hp_ratio"]] = float(tp.hp) / mh if mh else 0.0
+        # v18: prizes this option takes minus prizes it exposes. Only meaningful
+        # when the target is theirs -- aiming at our own Pokemon (Munkidori's
+        # counter move, a retreat) is not a trade, so it stays 0.
+        if USE_V18 and tp is not None and pi != yi:
+            r[IDX["opt_trade_delta"]] = (
+                prize_value(tp.id) - base[IDX["own_active_prize_value"]])
         r[IDX["dup_count"]] = float(counts[s])
         r[IDX["dup_rank"]] = float(rank)
         # --- v6: the option as a CARD, joined to deck / chain state ---

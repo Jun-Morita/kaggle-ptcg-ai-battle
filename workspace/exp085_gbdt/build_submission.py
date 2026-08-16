@@ -181,12 +181,22 @@ def smoke(tarp, n):
             ("dragapult", lambda: B.make_policy_agent("dragapult"))]
     print(f"\n=== smoke (built artifact, n={n}/matchup) ===")
     ok = True
+    # Every shipped build beats all three of these by a wide margin (worst cell
+    # ever recorded: 0.60 vs lucario). A build that scores under this is broken,
+    # not weak. Added 08-15 after a run whose corpus step had died packaged a
+    # stale model, lost 0-25 to two of the three, and still printed SMOKE OK --
+    # the existing guards (_AGENT loaded, fallbacks == 0) were both satisfied.
+    FLOOR = 0.35
     for name, mk in opps:
         st = run_gauntlet(g["agent"], mk(), n_games=n, swap_sides=True)
         print(f"  vs {name:14s} wr={st.winrate0:.3f} ({st.wins0}-{st.wins1}) "
               f"err0={st.errors0} err1={st.errors1}")
         if st.errors0:
             ok = False
+        if st.winrate0 < FLOOR:
+            ok = False
+            print(f"  WINRATE {st.winrate0:.3f} < {FLOOR}: the packaged model is wrong, "
+                  f"not merely weak (stale pickle / feature-count mismatch)")
     st = getattr(g["_AGENT"], "state", {})
     fb, dec = st.get("fallbacks", -1), st.get("decisions", -1)
     print(f"  model-answered decisions {dec}, silent fallbacks {fb}")

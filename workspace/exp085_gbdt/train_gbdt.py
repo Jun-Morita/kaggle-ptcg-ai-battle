@@ -210,6 +210,24 @@ def main():
     min_score = float(arg("--min-score", "0")) or None
     # Match the training distribution to the field, rather than adding to it.
     opp_mix = "--opp-mix" in sys.argv
+    # --boost-opp CODE:K multiplies the weight of decisions played against ONE
+    # opponent archetype. Different intervention from --opp-mix, which bends the
+    # whole distribution to the field and measured at z -3.06: it inflated
+    # dragapult from 3.7% to 25.8% and effectively threw data away. Here only the
+    # single worst cell moves -- mixed_ex4 (code 3), where the gate says 0.514 and
+    # the ladder said 1-4, the only matchup both agree we lose -- and every other
+    # opponent keeps weight 1.0.
+    # Comma-separated so several matchups can be lifted at once: the corpus is
+    # 4.4% dragapult and 4.1% ex_beatdown against a field that is 34.2% and 27.3%,
+    # and those are the two decks the real ladder says we lose to worst (0.341 and
+    # 0.193 over n=264 / n=238).
+    boost = arg("--boost-opp", "")
+    boosts = {}
+    if boost:
+        for part in boost.split(","):
+            c, k = part.split(":")
+            boosts[int(c)] = float(k)
+        print(f"  boosting opponent codes {boosts}", flush=True)
     cat_idx = [feats.IDX[n] for n in feats.CATEGORICAL
                if n_feat is None or feats.IDX[n] < n_feat]
     models, report = {}, {}
@@ -230,6 +248,16 @@ def main():
         Xtr, Xva = X[:i0], X[i0:]
         ytr, yva, qtr, qva = y[:i0], y[i0:], qid[:i0], qid[i0:]
         wtr = opp_weights(opp[:i0], FIELD_0812) if opp_mix else None
+        if boosts:
+            wtr = np.ones(i0, np.float32) if wtr is None else wtr
+            tot_hit = 0
+            for code, k in boosts.items():
+                hit = opp[:i0] == code
+                wtr[hit] *= k
+                tot_hit += int(hit.sum())
+            wtr /= wtr.mean()
+            print(f"    {fam}: {tot_hit:,}/{i0:,} rows boosted "
+                  f"({tot_hit / i0:.1%})", flush=True)
         dtr = lgb.Dataset(Xtr, label=ytr, group=groups_from_qid(qtr), weight=wtr,
                           categorical_feature=cat_idx, free_raw_data=False)
         dva = lgb.Dataset(Xva, label=yva, group=groups_from_qid(qva),
