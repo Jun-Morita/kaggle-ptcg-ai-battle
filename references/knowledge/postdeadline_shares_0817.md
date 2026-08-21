@@ -283,3 +283,101 @@ Eduardo Rocha が「5M と 20M で同じ構成に独立に到達」と応答し�
 - 不正検知後もチーム数は 6,807 → 6,809 とほぼ横ばい。大量除外は確認できない。
 - 評価期間の試合消化が極端に遅い（disc735822）。トップチームでも12時間で5試合。
   08-19 時点の順位は評価期間の実力を反映していない。
+
+---
+
+# 追記 2026-08-21: 同じ入口から逆の分岐を選んだ記録／探索が効く条件
+
+## 12. Anil Ozturk — 最後の1週間で Dragapult BC + RL + MCTS
+
+- 出典: <https://www.kaggle.com/competitions/pokemon-tcg-ai-battle/discussion/736121>（08-19）
+- 到達: 上位ブロンズ〜下位シルバー。参加は最終週のみ。
+
+### (a) デッキ選択 — 我々と同一の入口、逆の分岐
+
+> I first put most of my work into the **Grimmsnarl** deck. It had the largest
+> quantity of replay data (~1.3M decisions).
+> Examined the replays of the top 12 teams. **9 of the 12 top teams played
+> Dragapult.** Dragapult was 40 percent of their games. **Switched to the deck.**
+
+Grimmsnarl を選んだ理由（リプレイ量が最大）は我々と完全に同一で、決定数も近い
+（彼 1.3M / 我々 1.4M）。**違いは上位12チームのリプレイを見てデッキを乗り換えたこと。**
+
+我々はデッキを固定変数として扱い最後まで動かさなかった。hosikusa の GA（§2）と
+合わせ、**「デッキを設計変数に含める」という分岐に別ルートから2件が到達**している。
+我々の対 dragapult 実測 0.341（n=264、フィールドの34.2%）は、この分岐を
+取らなかったことの直接の帰結。
+
+### (b) クローンが弱かった理由 — 横断事前学習からの転移
+
+```
+彼    10アーキタイプ横断の portfolio モデル（6 epoch, 4.65M decisions）
+      → 各デッキの specialist に fine-tune（4 epoch, 1.03M decisions）
+我々  各クローンをそのデッキのコーパスだけでゼロから学習
+      → 5種すべて操れず（最良 0.5418 対 main 0.7181、同一決定数で top-k 0.5841 対 0.7096）
+```
+
+我々は「データ量ではなく表現の問題」までは特定していた（同一決定数での比較）。
+**届かなかったのは解法の側＝横断事前学習からの転移。**
+Ilia Iliev（§9）も全デッキ1本の BC から入っており、
+**マルチデッキ事前学習は上位の共通前提**だったとみられる。
+
+### (c) 探索が効く条件 — value head の出自
+
+> A **BC** value head sees only expert states. Search with a BC value head
+> **decreased the score by 20-30 points**.
+> A **PPO** value head sees on-policy states. Search with the PPO value head was
+> **increasing the score by 50-70 points**.
+
+**我々の探索 A/B が2件とも棄却された理由の説明になる。**模倣由来の価値関数は
+熟練者が訪れる盤面しか見ておらず、探索はまさにその外側を評価させるので悪化側に倒れる。
+
+ただし全員一致ではない。同スレッドで:
+
+- **Dipam Chakraborty**: 相手デッキと自分のドローが未知なので MCTS は機能しにくく、
+  十分な学習後は素の policy head に対して wash
+- **Kh0a**: value head 付き MCTS は 700 で頭打ち、policy head だけは改善し続けた
+
+つまり **PPO の on-policy value を持っているチームだけ探索が効く**、が切り分け。
+我々は PPO 側に行けなかった（§8）ので、探索レーンも構造的に閉じていた。
+
+運用条件も具体的: 1決定あたり 60 simulation × 2 回、総エージェント時間 420 秒で打ち切り、
+以降は素の policy。起動条件は「選択肢2以上」「selection count 3以下」「エンジンが探索
+状態を返す」の3つ。
+
+### (d) スループット工学
+
+190 steps/s → **1400〜4300 steps/s**。相手推論を worker CPU から GPU バッチ呼び出しへ、
+**featurizer の numpy スカラー参照を素の Python リストに置換**、検証の並列化。
+（我々のサンドボックス制約とは別文脈だが、numpy スカラーアクセスが遅い件は同じ現象。）
+
+## 13. 10% ランダムマッチの非対称性
+
+- 出典: <https://www.kaggle.com/competitions/pokemon-tcg-ai-battle/discussion/736361>（08-20、24票）
+
+> 高レート帯にとってこれは**負けしか払い出さない宝くじ**だ。勝って +0、負けて -15。
+
+トップ帯から最終数日のランダムマッチ停止要望。ホスト回答なし。
+反対意見（KawattaTaido）は「レート差ごとの勝率はエージェントによって違うので、
+途中でのルール変更は不公平」。Heisenberg は
+**「完璧なプレイでも マッチアップと引きで 15-20% は落とすのでは」**と提起。
+
+我々は 535 位なので被害側ではないが、**最終順位に乗る運の成分**の議論として
+レポートの評価設計の節で使える。
+
+## 14. 評価期間の実測（08-21 時点）
+
+```
+              08-19      08-21
+v064 v9b      888.1  ->   860.6   (-27.5)
+v063 x4b3     885.0  ->   857.7   (-27.3)
+順位            434  ->      535
+silver cut    914.8  ->    905.2
+top1         1295.7  ->   1300.0
+```
+
+08-20 にホスト（Bovard Doerschuk）が「Should be significantly faster now!」と回答し
+マッチメイキングが正常化。**ここからが本番の消化。**cut の下げ(-9.6)より我々の下げ(-27)が
+大きく、トップは上昇しているので field 全体のデフレではなく、
+**我々の実力が μ に追いついていない**動き。08-16 実測の対フィールド勝率 0.33 と整合する。
+不正チーム除外も公式に確認された（disc735939、Bovard「Yes we've removed some teams already」）。
