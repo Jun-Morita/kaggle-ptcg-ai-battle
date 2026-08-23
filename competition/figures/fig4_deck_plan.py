@@ -1,0 +1,103 @@
+"""Figure 4 -- the deck's game plan as a mechanism, not a card list.
+
+Two panels. Left: what the first two turns assemble, and the energy split that
+makes the rest work. Right: the damage loop that converts 30-point chip damage
+into prizes. One hue for our cards, gray for the opponent's board, one warm
+accent reserved for damage.
+"""
+import matplotlib
+matplotlib.use("Agg")
+import matplotlib.pyplot as plt
+from matplotlib.patches import FancyBboxPatch, FancyArrowPatch
+
+SURFACE = "#fcfcfb"
+INK, INK2, MUTED = "#0b0b0b", "#52514e", "#8a8880"
+OURS, OURS_L = "#184f95", "#dce9f9"
+DMG = "#ec835a"                      # status: serious -- reserved for damage only
+GRAYBOX = "#eeede9"
+
+fig, ax = plt.subplots(figsize=(10.6, 5.6), dpi=220)
+fig.patch.set_facecolor(SURFACE); ax.set_facecolor(SURFACE)
+ax.set_xlim(0, 100); ax.set_ylim(0, 62); ax.axis("off")
+
+
+def box(x, y, w, h, text, fc=OURS_L, ec=OURS, tc=INK, fs=8.6, bold=False, lw=1.2):
+    ax.add_patch(FancyBboxPatch((x, y), w, h, boxstyle="round,pad=0,rounding_size=1.6",
+                                fc=fc, ec=ec, lw=lw, zorder=2))
+    ax.text(x + w / 2, y + h / 2, text, ha="center", va="center", fontsize=fs,
+            color=tc, zorder=3, linespacing=1.45,
+            fontweight="bold" if bold else "normal")
+
+
+def arrow(x1, y1, x2, y2, color=OURS, lw=1.4, style="-|>", rad=0.0, ls="-"):
+    ax.add_patch(FancyArrowPatch((x1, y1), (x2, y2), arrowstyle=style,
+                                 mutation_scale=11, color=color, lw=lw, ls=ls,
+                                 connectionstyle=f"arc3,rad={rad}", zorder=4,
+                                 shrinkA=2, shrinkB=2))
+
+
+# ---------------------------------------------------------------- panel titles
+ax.text(0, 59.5, "1 · Turns 1–2 assemble the line", fontsize=10.5, color=INK,
+        fontweight="bold")
+ax.text(44, 59.5, "2 · Then the same loop runs every turn", fontsize=10.5,
+        color=INK, fontweight="bold")
+ax.plot([41.5, 41.5], [2, 57], color="#e6e5e0", lw=1.2, zorder=0)
+
+# ------------------------------------------------------------------ left panel
+box(0, 47.5, 11.5, 7, "Impidimp\nHP 70")
+arrow(11.9, 51, 14.1, 51)
+box(14.5, 47.5, 11.5, 7, "Morgrem\nHP 100")
+arrow(26.4, 51, 28.6, 51)
+box(29, 46.5, 12.5, 9, "Grimmsnarl ex\nHP 320\ngives 2 prizes", bold=True,
+    fc=OURS, ec=OURS, tc="#ffffff")
+
+ax.text(0, 43.6, "12 slots exist only to find these:\n"
+                 "4 Spikemuth Gym · 4 Petrel · 3 Rare Candy · 1 Dawn",
+        fontsize=8.2, color=INK2, va="top", linespacing=1.5)
+
+box(0, 29.5, 41.5, 8.5,
+    "PUNK UP  ·  on evolving, take up to 5 Basic {D}\nfrom the deck onto your Marnie's Pokémon",
+    bold=True)
+ax.text(11, 27.4, "The attacker never costs a manual attachment,\n"
+                  "so the one attachment per turn is free.",
+        fontsize=8.4, color=INK2, va="top", linespacing=1.5)
+
+arrow(5.5, 29.2, 5.5, 23.6)
+box(2, 15.5, 37.5, 8,
+    "manual attach  →  MUNKIDORI\n(Adrena-Brain needs {D} on it)")
+ax.text(20.7, 12.9, "median turn 2 · 145 of 145 winning seats",
+        fontsize=8.4, color=INK, ha="center", fontweight="bold")
+ax.text(20.7, 10.2, "and 40 of 40 games for our agent",
+        fontsize=8.2, color=INK2, ha="center")
+
+# ----------------------------------------------------------------- right panel
+box(46, 46, 24, 9, "SHADOW BULLET\n180 to the Active\n+30 to one Bench", bold=True)
+box(76, 46, 22, 9, "FREEZING SHROUD\n+10 on every Pokémon\nwith an Ability — both sides",
+    fc=GRAYBOX, ec=MUTED)
+box(76, 27, 22, 9, "ADRENA-BRAIN\nmove up to 30\nfrom ours to theirs", bold=True)
+box(46, 27, 24, 9, "their Bench falls\ninto knockout range", fc=SURFACE, ec=DMG)
+
+arrow(70.4, 50.5, 75.6, 50.5, color=DMG)
+arrow(87, 45.6, 87, 36.4, color=DMG)
+arrow(75.6, 31.5, 70.4, 31.5, color=DMG)
+arrow(58, 36.4, 58, 45.6, color=OURS, ls=(0, (3, 2)))
+ax.text(59, 41, "next turn", fontsize=8, color=MUTED, ha="left")
+
+ax.text(98, 24.2, "Freezing Shroud hits our own board too —\n"
+                  "Adrena-Brain exports that damage back.",
+        fontsize=8.2, color=INK2, va="top", ha="right", linespacing=1.5)
+
+# prize plan strip
+box(46, 6.5, 52, 10.5, "", fc="#f5f4f0", ec="#e6e5e0", lw=1)
+ax.text(48.5, 14.6, "THE PRIZE PLAN", fontsize=8.6, color=INK2, fontweight="bold")
+ax.text(48.5, 12.4, "Three knockouts win it. 320 HP means the field needs two turns to\n"
+                    "remove our attacker — and 180 + 30 + 10 + 30 is enough arithmetic\n"
+                    "that theirs often dies a turn early.",
+        fontsize=8.4, color=INK, va="top", linespacing=1.55)
+
+fig.suptitle("Marnie's Grimmsnarl ex — one ability pays the energy, two abilities do the math",
+             x=0.008, y=0.972, ha="left", fontsize=13, color=INK, fontweight="bold")
+fig.subplots_adjust(left=0.012, right=0.988, top=0.90, bottom=0.02)
+out = __file__.replace(".py", ".png")
+fig.savefig(out, facecolor=SURFACE)
+print("wrote", out)
