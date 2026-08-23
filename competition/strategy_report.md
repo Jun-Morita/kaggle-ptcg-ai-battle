@@ -60,7 +60,7 @@ Checkup, both sides; *Adrena-Brain* on **Munkidori (マシマシラ)** then move
 board too, Grimmsnarl ex included, and Munkidori exports exactly that back onto
 the bench where Shadow Bullet already left 30.
 
-**The energy budget links the two abilities.** Adrena-Brain needs {D} Energy on
+**The energy budget links the two abilities** (Figure 4). Adrena-Brain needs {D} Energy on
 Munkidori, and Punk Up cannot supply it — it attaches only to *Marnie's* Pokémon.
 But because Punk Up pays the attacker out of the deck, the one manual attachment
 per turn is freed entirely for Munkidori. That is not a flex slot, it is the line:
@@ -129,15 +129,18 @@ applies the same bias to every candidate, so the ranking looks stable and never
 reports that it is wrong. Our only calibration signal, real ladder games per
 candidate, was n=4–14. We shipped against this gate for a week.
 
-A second symptom has the same shape: across four corpus sizes, held-out imitation
-accuracy and gate score moved *against* each other. A smaller corpus also draws its
-held-out set from a narrower distribution, which makes it easier to predict. Two
-internal metrics, both self-referential, both confidently wrong.
+A second symptom followed. Our other internal metric — held-out imitation accuracy
+— **selected a different model than the gate did** (Figure 2): across four corpus
+sizes, the most accurate imitator was not the highest-scoring agent, and the
+smallest corpus scored nearly as well on accuracy as one six times its size. A
+smaller corpus also draws its held-out set from a narrower distribution, so it is
+simply easier to predict. Two self-referential metrics that disagree, and nothing
+external to adjudicate.
 
 **4.3 Drift — the format rotates under the instrument.**
 Hold the agent fixed and change only the field composition between 2026-08-09 and
 08-15: expected win rate moves 0.415 → 0.334, about **60 rating points from the
-metagame alone.** An evaluation result without a date does not reproduce.
+metagame alone** (Figure 3). An evaluation result without a date does not reproduce.
 
 **4.4 The fix is not a better gate.**
 Variance yields to technique; bias only yields to opponents you did not choose. The
@@ -220,3 +223,12 @@ others have produced, scored by relative rating, so that a new candidate is
 ranked against opponents we did not choose. Everything else we tried — more data,
 more features, a bigger model, deeper search — was answered by that instrument
 before it was answered by the game.
+
+---
+
+## Figures
+
+1. `fig1_gate_vs_ladder.png` — what the gate predicted vs the real ladder, per archetype, ordered by field share.
+2. `fig2_metrics_disagree.png` — held-out imitation accuracy and gate score select different models.
+3. `fig3_drift.png` — the field rotates in one week; a frozen agent loses 60 rating points.
+4. `fig4_deck_plan.png` — the deck's game plan as a mechanism: one ability pays the energy, two do the math.
