@@ -44,38 +44,38 @@ ax.text(44, 59.5, "2 · Then the same loop runs every turn", fontsize=10.5,
 ax.plot([41.5, 41.5], [2, 57], color="#e6e5e0", lw=1.2, zorder=0)
 
 # ------------------------------------------------------------------ left panel
-box(0, 47.5, 11.5, 7, "Impidimp\nHP 70")
+box(0, 47.5, 11.5, 7, "Marnie's\nImpidimp  70")
 arrow(11.9, 51, 14.1, 51)
-box(14.5, 47.5, 11.5, 7, "Morgrem\nHP 100")
-arrow(26.4, 51, 28.6, 51)
-box(29, 46.5, 12.5, 9, "Grimmsnarl ex\nHP 320\ngives 2 prizes", bold=True,
-    fc=OURS, ec=OURS, tc="#ffffff")
+box(14.5, 47.5, 11.5, 7, "Marnie's\nMorgrem  100")
+arrow(26.4, 51, 28.2, 51)
+box(28.6, 45.5, 12.9, 11, "Marnie's\nGrimmsnarl ex\nHP 320\n2 Prize cards", bold=True,
+    fc=OURS, ec=OURS, tc="#ffffff", fs=8.2)
 
 ax.text(0, 43.6, "12 slots exist only to find these:\n"
-                 "4 Spikemuth Gym · 4 Petrel · 3 Rare Candy · 1 Dawn",
+                 "4 Spikemuth Gym · 4 Team Rocket's Petrel · 3 Rare Candy · 1 Dawn",
         fontsize=8.2, color=INK2, va="top", linespacing=1.5)
 
 box(0, 29.5, 41.5, 8.5,
-    "PUNK UP  ·  on evolving, take up to 5 Basic {D}\nfrom the deck onto your Marnie's Pokémon",
+    "PUNK UP  ·  on evolving, search out up to 5 Basic {D}\nEnergy and attach to your Marnie's Pokémon",
     bold=True)
-ax.text(11, 27.4, "The attacker never costs a manual attachment,\n"
-                  "so the one attachment per turn is free.",
+ax.text(11, 27.4, "The attacker never costs a hand attachment,\n"
+                  "so the one per turn is free.",
         fontsize=8.4, color=INK2, va="top", linespacing=1.5)
 
 arrow(5.5, 29.2, 5.5, 23.6)
 box(2, 15.5, 37.5, 8,
-    "manual attach  →  MUNKIDORI\n(Adrena-Brain needs {D} on it)")
+    "your Energy attachment for the turn  →  MUNKIDORI\n(Adrena-Brain needs {D} attached)")
 ax.text(20.7, 12.9, "median turn 2 · 145 of 145 winning seats",
         fontsize=8.4, color=INK, ha="center", fontweight="bold")
 ax.text(20.7, 10.2, "and 40 of 40 games for our agent",
         fontsize=8.2, color=INK2, ha="center")
 
 # ----------------------------------------------------------------- right panel
-box(46, 46, 24, 9, "SHADOW BULLET\n180 to the Active\n+30 to one Bench", bold=True)
-box(76, 46, 22, 9, "FREEZING SHROUD\n+10 on every Pokémon\nwith an Ability — both sides",
+box(46, 46, 24, 9, "SHADOW BULLET\n180 to the Active Pokémon\n+30 to one Benched Pokémon", bold=True)
+box(76, 46, 22, 9, "FREEZING SHROUD\n1 damage counter on every\nPokémon with an Ability, both sides",
     fc=GRAYBOX, ec=MUTED)
-box(76, 27, 22, 9, "ADRENA-BRAIN\nmove up to 30\nfrom ours to theirs", bold=True)
-box(46, 27, 24, 9, "their Bench falls\ninto knockout range", fc=SURFACE, ec=DMG)
+box(76, 27, 22, 9, "ADRENA-BRAIN\nmove up to 3 damage counters\nfrom ours to theirs", bold=True)
+box(46, 27, 24, 9, "their Benched Pokémon\nfall into Knock Out range", fc=SURFACE, ec=DMG)
 
 arrow(70.4, 50.5, 75.6, 50.5, color=DMG)
 arrow(87, 45.6, 87, 36.4, color=DMG)
@@ -83,19 +83,19 @@ arrow(75.6, 31.5, 70.4, 31.5, color=DMG)
 arrow(58, 36.4, 58, 45.6, color=OURS, ls=(0, (3, 2)))
 ax.text(59, 41, "next turn", fontsize=8, color=MUTED, ha="left")
 
-ax.text(98, 24.2, "Freezing Shroud hits our own board too —\n"
-                  "Adrena-Brain exports that damage back.",
+ax.text(98, 24.2, "Freezing Shroud hits our own board too.\n"
+                  "Adrena-Brain is how it gets exported.",
         fontsize=8.2, color=INK2, va="top", ha="right", linespacing=1.5)
 
 # prize plan strip
 box(46, 6.5, 52, 10.5, "", fc="#f5f4f0", ec="#e6e5e0", lw=1)
 ax.text(48.5, 14.6, "THE PRIZE PLAN", fontsize=8.6, color=INK2, fontweight="bold")
-ax.text(48.5, 12.4, "Three knockouts win it. 320 HP means the field needs two turns to\n"
-                    "remove our attacker — and 180 + 30 + 10 + 30 is enough arithmetic\n"
-                    "that theirs often dies a turn early.",
+ax.text(48.5, 12.4, "Three Knock Outs take all six Prize cards. 320 HP means the format\n"
+                    "needs two turns to remove our attacker, while 180 + 30 + 10 + 30\n"
+                    "is enough arithmetic that theirs often falls a turn early.",
         fontsize=8.4, color=INK, va="top", linespacing=1.55)
 
-fig.suptitle("Marnie's Grimmsnarl ex — one ability pays the energy, two abilities do the math",
+fig.suptitle("Marnie's Grimmsnarl ex — one Ability pays the Energy, two do the arithmetic",
              x=0.008, y=0.972, ha="left", fontsize=13, color=INK, fontweight="bold")
 fig.subplots_adjust(left=0.012, right=0.988, top=0.90, bottom=0.02)
 out = __file__.replace(".py", ".png")
