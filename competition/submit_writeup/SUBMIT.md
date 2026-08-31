@@ -6,7 +6,9 @@ submitted.
 
 ## Before submitting
 - [ ] Re-check the rank line in the Abstract and its date. The evaluation period is
-      still running; the current text reads "rank 430 of 6,809 on 2026-08-22".
+      still running; the current text reads "rank 410 of 6,807 on 2026-08-31".
+      With sd ~50 on a fixed agent, prefer the final settled number if it exists by
+      the time you submit.
 - [ ] Confirm the Simulation Category entry is linked to the same account/team.
 
 ## Steps
