@@ -5,8 +5,12 @@ Four corpus sizes, held-out imitation accuracy against gate score. The point is
 the crossing at the end: the most accurate imitator is not the best-scoring agent,
 and neither metric has anything external to check it against.
 """
+import os, sys
 import matplotlib
 matplotlib.use("Agg")
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from jpfont import use_jp
+use_jp()
 import matplotlib.pyplot as plt
 
 SURFACE = "#fcfcfb"

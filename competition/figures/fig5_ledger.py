@@ -4,8 +4,12 @@ More than seven rows that all carry meaning, so this is a table rather than a
 chart, with a small shared axis for the rows that were scored on the same
 gauntlet. Bar = the score of the build we were trying to beat (0.6640).
 """
+import os, sys
 import matplotlib
 matplotlib.use("Agg")
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from jpfont import use_jp
+use_jp()
 import matplotlib.pyplot as plt
 from matplotlib.patches import Rectangle
 

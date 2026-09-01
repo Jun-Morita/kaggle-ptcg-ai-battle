@@ -5,7 +5,8 @@ open the gallery before the text.
 
 ## 01_gate_vs_ladder.png
 **Every matchup our gauntlet claimed to cover was overstated.**
-Predicted win rate against measured win rate, per opponent archetype, ordered by
+Predicted win rate against measured win rate, per opponent archetype (Japanese card
+names included), ordered by
 share of the metagame. 6,292 ladder games (2026-08-13..15), restricted to seats
 running our exact 60 cards. ex-beatdown had no entry in the gauntlet at all and
 was 27.3% of the field. Field-weighted true win rate: 0.33.

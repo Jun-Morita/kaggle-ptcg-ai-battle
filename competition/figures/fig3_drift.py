@@ -5,8 +5,12 @@ archetype, emphasis form -- the two decks we lose to are in colour, everything e
 recedes to gray. Right: our own measured matchup win rates applied to each day's
 composition, with the agent held completely fixed.
 """
+import os, sys
 import matplotlib
 matplotlib.use("Agg")
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from jpfont import use_jp
+use_jp()
 import matplotlib.pyplot as plt
 
 SURFACE = "#fcfcfb"

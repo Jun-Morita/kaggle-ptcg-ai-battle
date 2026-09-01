@@ -5,8 +5,12 @@ makes the rest work. Right: the damage loop that converts 30-point chip damage
 into prizes. One hue for our cards, gray for the opponent's board, one warm
 accent reserved for damage.
 """
+import os, sys
 import matplotlib
 matplotlib.use("Agg")
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from jpfont import use_jp
+use_jp()
 import matplotlib.pyplot as plt
 from matplotlib.patches import FancyBboxPatch, FancyArrowPatch
 
@@ -44,12 +48,12 @@ ax.text(44, 59.5, "2 · Then the same loop runs every turn", fontsize=10.5,
 ax.plot([41.5, 41.5], [2, 57], color="#e6e5e0", lw=1.2, zorder=0)
 
 # ------------------------------------------------------------------ left panel
-box(0, 47.5, 11.5, 7, "Marnie's\nImpidimp  70")
-arrow(11.9, 51, 14.1, 51)
-box(14.5, 47.5, 11.5, 7, "Marnie's\nMorgrem  100")
-arrow(26.4, 51, 28.2, 51)
-box(28.6, 45.5, 12.9, 11, "Marnie's\nGrimmsnarl ex\nHP 320\n2 Prize cards", bold=True,
-    fc=OURS, ec=OURS, tc="#ffffff", fs=8.2)
+box(0, 47.0, 12.2, 8.2, "Marnie's Impidimp  70\nマリィのベロバー", fs=7.6)
+arrow(12.6, 51.1, 14.3, 51.1)
+box(14.7, 47.0, 12.2, 8.2, "Marnie's Morgrem  100\nマリィのギモー", fs=7.6)
+arrow(27.3, 51.1, 28.4, 51.1)
+box(28.6, 45.5, 12.9, 11, "Marnie's Grimmsnarl ex\nマリィのオーロンゲex\nHP 320 · 2 Prize cards",
+    bold=True, fc=OURS, ec=OURS, tc="#ffffff", fs=7.6)
 
 ax.text(0, 43.6, "12 slots exist only to find these:\n"
                  "4 Spikemuth Gym · 4 Team Rocket's Petrel · 3 Rare Candy · 1 Dawn",
@@ -64,26 +68,28 @@ ax.text(11, 27.4, "The attacker never costs a hand attachment,\n"
 
 arrow(5.5, 29.2, 5.5, 23.6)
 box(2, 15.5, 37.5, 8,
-    "your Energy attachment for the turn  →  MUNKIDORI\n(Adrena-Brain needs {D} attached)")
+    "your Energy attachment for the turn  →  MUNKIDORI マシマシラ\n(Adrena-Brain needs {D} attached)")
 ax.text(20.7, 12.9, "median turn 2 · 145 of 145 winning seats",
         fontsize=8.4, color=INK, ha="center", fontweight="bold")
 ax.text(20.7, 10.2, "and 40 of 40 games for our agent",
         fontsize=8.2, color=INK2, ha="center")
 
 # ----------------------------------------------------------------- right panel
-box(46, 46, 24, 9, "SHADOW BULLET\n180 to the Active Pokémon\n+30 to one Benched Pokémon", bold=True)
-box(76, 46, 22, 9, "FREEZING SHROUD\n1 damage counter on every\nPokémon with an Ability, both sides",
-    fc=GRAYBOX, ec=MUTED)
-box(76, 27, 22, 9, "ADRENA-BRAIN\nmove up to 3 damage counters\nfrom ours to theirs", bold=True)
-box(46, 27, 24, 9, "their Benched Pokémon\nfall into Knock Out range", fc=SURFACE, ec=DMG)
+box(45.5, 45.0, 24.5, 10.5, "SHADOW BULLET\n180 to the Active Pokémon\n+30 to one Benched Pokémon",
+    bold=True, fs=8.2)
+box(74.5, 45.0, 24.0, 10.5, "FREEZING SHROUD · Froslass ユキメノコ\n1 damage counter on every Pokémon\nwith an Ability — both sides",
+    fc=GRAYBOX, ec=MUTED, fs=7.8)
+box(74.5, 26.5, 24.0, 10.0, "ADRENA-BRAIN · Munkidori マシマシラ\nmove up to 3 damage counters\nfrom ours to theirs",
+    bold=True, fs=7.8)
+box(45.5, 26.5, 24.5, 10.0, "their Benched Pokémon\nfall into Knock Out range", fc=SURFACE, ec=DMG)
 
-arrow(70.4, 50.5, 75.6, 50.5, color=DMG)
-arrow(87, 45.6, 87, 36.4, color=DMG)
-arrow(75.6, 31.5, 70.4, 31.5, color=DMG)
-arrow(58, 36.4, 58, 45.6, color=OURS, ls=(0, (3, 2)))
-ax.text(59, 41, "next turn", fontsize=8, color=MUTED, ha="left")
+arrow(70.4, 50.2, 74.1, 50.2, color=DMG)
+arrow(86.5, 44.6, 86.5, 36.9, color=DMG)
+arrow(74.1, 31.5, 70.4, 31.5, color=DMG)
+arrow(57.7, 36.9, 57.7, 44.6, color=OURS, ls=(0, (3, 2)))
+ax.text(58.8, 40.7, "next turn", fontsize=8, color=MUTED, ha="left")
 
-ax.text(98, 24.2, "Freezing Shroud hits our own board too.\n"
+ax.text(98.5, 24.0, "Freezing Shroud hits our own board too.\n"
                   "Adrena-Brain is how it gets exported.",
         fontsize=8.2, color=INK2, va="top", ha="right", linespacing=1.5)
 
