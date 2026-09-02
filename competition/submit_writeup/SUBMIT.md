@@ -26,7 +26,7 @@ submitted.
 6. Select the Track. Attach the Simulation submission if the form asks for one —
    our eligible pair is v063 (x4b3) and v064 (v9b), both dated 2026-08-16.
 7. Read it once in preview. The Strategy overview states no word limit; our body
-   is about 2,040 words excluding headings (rank line updated 2026-09-02), which is
+   is about 2,220 words excluding headings (rank line updated 2026-09-02), which is
    deliberately short — the rubric rewards clarity, not length.
 8. Submit. One writeup per team.
 
