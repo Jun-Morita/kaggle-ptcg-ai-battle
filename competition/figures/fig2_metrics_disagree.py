@@ -22,7 +22,7 @@ ACCV = [0.7096, 0.7054, 0.7098, 0.7323]
 GATEV = [0.5886, 0.6279, 0.6604, 0.6455]
 X = list(range(4))
 
-fig, ax = plt.subplots(figsize=(8.8, 4.9), dpi=220)
+fig, ax = plt.subplots(figsize=(8.2, 5.9), dpi=220)
 fig.patch.set_facecolor(SURFACE); ax.set_facecolor(SURFACE)
 
 for y in (0.60, 0.65, 0.70):
@@ -35,7 +35,7 @@ ax.plot(X, GATEV, "-o", color=GATE, lw=2, ms=8, zorder=3,
 
 for x, v in zip(X, ACCV):
     if x == 3:
-        ax.text(x + 0.075, v, f"{v:.4f}", ha="left", va="center", fontsize=8.4, color=INK2)
+        ax.text(x + 0.13, v, f"{v:.4f}", ha="left", va="center", fontsize=8.4, color=INK2)
     else:
         ax.text(x, v + 0.0085, f"{v:.4f}", ha="center", fontsize=8.4, color=INK2)
 for x, v in zip(X, GATEV):
@@ -76,11 +76,11 @@ ax.tick_params(length=0)
 
 fig.suptitle("Our two internal metrics pick different models",
              x=0.012, y=0.972, ha="left", fontsize=13, color=INK, fontweight="bold")
-fig.text(0.012, 0.898,
+fig.text(0.012, 0.915,
          "Neither is checked against anything outside our own machine. "
          "The gate turned out to be the wrong one (Figure 1).",
          ha="left", fontsize=9, color=INK2)
-fig.subplots_adjust(left=0.075, right=0.985, top=0.815, bottom=0.135)
+fig.subplots_adjust(left=0.080, right=0.984, top=0.846, bottom=0.112)
 out = __file__.replace(".py", ".png")
 fig.savefig(out, facecolor=SURFACE)
 print("wrote", out)

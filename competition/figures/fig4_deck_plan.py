@@ -20,7 +20,7 @@ OURS, OURS_L = "#184f95", "#dce9f9"
 DMG = "#ec835a"                      # status: serious -- reserved for damage only
 GRAYBOX = "#eeede9"
 
-fig, ax = plt.subplots(figsize=(10.6, 5.6), dpi=220)
+fig, ax = plt.subplots(figsize=(10.6, 7.5), dpi=220)
 fig.patch.set_facecolor(SURFACE); ax.set_facecolor(SURFACE)
 ax.set_xlim(0, 100); ax.set_ylim(0, 62); ax.axis("off")
 
@@ -102,8 +102,8 @@ ax.text(48.5, 12.4, "Three Knock Outs take all six Prize cards. 320 HP means the
         fontsize=8.4, color=INK, va="top", linespacing=1.55)
 
 fig.suptitle("Marnie's Grimmsnarl ex — one Ability pays the Energy, two do the arithmetic",
-             x=0.008, y=0.972, ha="left", fontsize=13, color=INK, fontweight="bold")
-fig.subplots_adjust(left=0.012, right=0.988, top=0.90, bottom=0.02)
+             x=0.008, y=0.978, ha="left", fontsize=13, color=INK, fontweight="bold")
+fig.subplots_adjust(left=0.012, right=0.988, top=0.918, bottom=0.018)
 out = __file__.replace(".py", ".png")
 fig.savefig(out, facecolor=SURFACE)
 print("wrote", out)

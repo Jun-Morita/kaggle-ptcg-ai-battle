@@ -20,20 +20,20 @@ DRG, EBD, OURS = "#2a78d6", "#eb6834", "#184f95"
 DAYS = ["08-08", "08-11", "08-13", "08-15"]
 X = list(range(4))
 SHARE = {
-    "Dragapult":            ([10.7, 18.9, 27.7, 34.2], DRG,   2.4),
+    "Dragapult ドラパルトex":  ([10.7, 18.9, 27.7, 34.2], DRG,   2.4),
     "ex-beatdown":          ([12.8,  9.9, 22.5, 27.3], EBD,   2.4),
-    "Mixed-ex (ex4)":       ([18.9, 20.1,  9.3, 12.8], FAINT, 1.6),
-    "Alakazam-type":        ([17.1, 14.1, 15.9, 12.8], FAINT, 1.6),
-    "Grimmsnarl (ours)":    ([25.6, 18.6, 11.6,  6.1], MUTED, 1.8),
-    "Lucario ex":           ([ 4.7, 11.7,  5.5,  3.1], FAINT, 1.6),
-    "Crustle control":      ([ 6.0,  4.4,  6.7,  2.0], FAINT, 1.6),
+    "Mixed-ex (ex4)":        ([18.9, 20.1,  9.3, 12.8], FAINT, 1.6),
+    "Alakazam-type フーディン":  ([17.1, 14.1, 15.9, 12.8], FAINT, 1.6),
+    "Grimmsnarl マリィのオーロンゲex (ours)": ([25.6, 18.6, 11.6,  6.1], MUTED, 1.8),
+    "Lucario ex メガルカリオex": ([ 4.7, 11.7,  5.5,  3.1], FAINT, 1.6),
+    "Crustle control イワパレス": ([ 6.0,  4.4,  6.7,  2.0], FAINT, 1.6),
 }
 WR_DAYS = ["08-09", "08-11", "08-13", "08-15"]
 WR = [0.415, 0.403, 0.368, 0.334]
 ELO = [0, -8, -35, -60]
 
-fig, (axL, axR) = plt.subplots(1, 2, figsize=(11.2, 4.9), dpi=220,
-                               gridspec_kw={"width_ratios": [1.35, 1]})
+fig, (axL, axR) = plt.subplots(2, 1, figsize=(8.6, 7.6), dpi=220,
+                               gridspec_kw={"height_ratios": [1.25, 1]})
 fig.patch.set_facecolor(SURFACE)
 
 # ------------------------------------------------------------------ left panel
@@ -77,10 +77,10 @@ for x, (w, e) in enumerate(zip(WR, ELO)):
     if e:
         axR.text(x, w - 0.011, f"{e} Elo", ha="center", va="top", fontsize=8.3,
                  color=EBD, fontweight="bold")
-axR.annotate("", xy=(2.97, 0.336), xytext=(2.97, 0.4125),
+axR.annotate("", xy=(2.78, 0.3385), xytext=(2.78, 0.4125),
              arrowprops=dict(arrowstyle="-|>", color=EBD, lw=1.4,
                              mutation_scale=11, shrinkA=3, shrinkB=3))
-axR.text(2.86, 0.4285, "60 rating points, with the\nagent never touched",
+axR.text(2.67, 0.4285, "60 rating points, with the\nagent never touched",
          ha="right", va="top", fontsize=8.8, color=INK2, linespacing=1.5)
 
 axR.set_xticks(X); axR.set_xticklabels(WR_DAYS, fontsize=9, color=INK2)
@@ -98,12 +98,12 @@ for ax in (axL, axR):
     ax.tick_params(length=0)
 
 fig.suptitle("An evaluation result without a date on it does not reproduce",
-             x=0.008, y=0.972, ha="left", fontsize=13, color=INK, fontweight="bold")
-fig.text(0.008, 0.898,
-         "Right panel holds our measured per-matchup win rates fixed and swaps only "
-         "the field composition.",
+             x=0.008, y=0.982, ha="left", fontsize=13, color=INK, fontweight="bold")
+fig.text(0.008, 0.934,
+         "The lower panel holds our measured per-matchup win rates fixed and swaps "
+         "only the field composition.",
          ha="left", fontsize=9, color=INK2)
-fig.subplots_adjust(left=0.055, right=0.995, top=0.775, bottom=0.135, wspace=0.30)
+fig.subplots_adjust(left=0.072, right=0.995, top=0.855, bottom=0.075, hspace=0.42)
 out = __file__.replace(".py", ".png")
 fig.savefig(out, facecolor=SURFACE)
 print("wrote", out)
