@@ -5,11 +5,14 @@ models / files / config only), so this is a web-UI task. Nothing here has been
 submitted.
 
 ## Before submitting
-- [ ] Re-check the rank line in the Abstract and its date. The evaluation period is
-      still running; the current text reads "rank 276 of 6,807 on 2026-09-01",
-      which is inside the silver band by 16 points.
-      With sd ~50 on a fixed agent, prefer the final settled number if it exists by
-      the time you submit.
+- [ ] Re-check the rank line in the Abstract and its date. As of 2026-09-02 the
+      leaderboard has been byte-identical for over 24 hours (both slots, the 5%
+      cut, and the top five all unchanged to the decimal) and the forum has been
+      silent since 08-31, so the ladder has almost certainly stopped — but no host
+      post has declared it final. The text reads "rank 276 of 6,807 — the top 4.1%
+      — when the leaderboard stopped moving on 2026-09-01", which is inside the
+      silver band by 16 points. If a host finalization post appears before you
+      submit, change "stopped moving on" to "closed on".
 - [ ] Confirm the Simulation Category entry is linked to the same account/team.
 
 ## Steps
@@ -22,8 +25,9 @@ submitted.
    `CAPTIONS.md`.
 6. Select the Track. Attach the Simulation submission if the form asks for one —
    our eligible pair is v063 (x4b3) and v064 (v9b), both dated 2026-08-16.
-7. Read it once in preview. Kaggle's word counter should read under 2,000; our
-   count is 1,892 excluding headings.
+7. Read it once in preview. The Strategy overview states no word limit; our body
+   is about 2,040 words excluding headings (rank line updated 2026-09-02), which is
+   deliberately short — the rubric rewards clarity, not length.
 8. Submit. One writeup per team.
 
 ## Deadline

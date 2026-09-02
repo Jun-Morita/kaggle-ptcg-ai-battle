@@ -3,7 +3,7 @@
 
 *Strategy Writeup — Pokémon TCG AI Battle Challenge · Team Morita*
 
-<!-- UPDATE BEFORE SUBMITTING: rank line in the Abstract, and the date on it. -->
+<!-- RANK LINE: updated 2026-09-02 (ladder frozen 09-01, no host finalization post yet). Re-check before submitting. -->
 
 ---
 
@@ -11,8 +11,9 @@
 
 Our agent plays **Marnie's Grimmsnarl ex** by imitating strong human pilots, using
 a gradient-boosted ranker over the legal options at each decision. It stood at rank
-276 of 6,807 on 2026-09-01, inside the silver band by 16 rating points, with the
-final evaluation still running — and that number is one draw rather than a
+276 of 6,807 — the top 4.1% — when the leaderboard stopped moving on 2026-09-01,
+inside the silver band by 16 rating points. That margin is smaller than the spread
+between identical submissions (§4.1), so the number is one draw rather than a
 measurement. This report is mostly about the thing that
 set it, which was not the policy but the way we tested it.
 
