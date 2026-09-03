@@ -1,7 +1,8 @@
 # Media Gallery — upload order and captions
 
 Upload in this order. Captions are written to stand alone, because a reader may
-open the gallery before the text.
+open the gallery before the text. All five are exactly 16:9, which is what the
+gallery preview crops to.
 
 ## 01_gate_vs_ladder.png
 **Every matchup our gauntlet claimed to cover was overstated.**
@@ -19,10 +20,10 @@ and neither metric is checked against anything outside our own machine.
 
 ## 03_metagame_drift.png
 **An evaluation result without a date on it does not reproduce.**
-Upper panel: share of the field by archetype over one week; the two decks we lose
-to went from 23.5% to 61.5% while our own archetype fell from 25.6% to 6.1%. Lower
-panel: our measured per-matchup win rates applied to each day's composition, with
-the agent held completely fixed — 0.415 to 0.334, about 60 rating points.
+Left: share of the field by archetype over one week; the two decks we lose to went
+from 23.5% to 61.5% while our own archetype fell from 25.6% to 6.1%. Right: our
+measured per-matchup win rates applied to each day's composition, with the agent
+held completely fixed — 0.415 to 0.334, about 60 rating points.
 
 ## 04_deck_plan.png
 **Marnie's Grimmsnarl ex: one Ability pays the Energy, two do the arithmetic.**

@@ -32,8 +32,8 @@ WR_DAYS = ["08-09", "08-11", "08-13", "08-15"]
 WR = [0.415, 0.403, 0.368, 0.334]
 ELO = [0, -8, -35, -60]
 
-fig, (axL, axR) = plt.subplots(2, 1, figsize=(8.6, 7.6), dpi=220,
-                               gridspec_kw={"height_ratios": [1.25, 1]})
+fig, (axL, axR) = plt.subplots(1, 2, figsize=(11.2, 6.3), dpi=220,
+                               gridspec_kw={"width_ratios": [1.35, 1]})
 fig.patch.set_facecolor(SURFACE)
 
 # ------------------------------------------------------------------ left panel
@@ -98,12 +98,12 @@ for ax in (axL, axR):
     ax.tick_params(length=0)
 
 fig.suptitle("An evaluation result without a date on it does not reproduce",
-             x=0.008, y=0.982, ha="left", fontsize=13, color=INK, fontweight="bold")
-fig.text(0.008, 0.934,
-         "The lower panel holds our measured per-matchup win rates fixed and swaps "
+             x=0.008, y=0.978, ha="left", fontsize=13, color=INK, fontweight="bold")
+fig.text(0.008, 0.921,
+         "The right panel holds our measured per-matchup win rates fixed and swaps "
          "only the field composition.",
          ha="left", fontsize=9, color=INK2)
-fig.subplots_adjust(left=0.072, right=0.995, top=0.855, bottom=0.075, hspace=0.42)
+fig.subplots_adjust(left=0.055, right=0.995, top=0.825, bottom=0.105, wspace=0.30)
 out = __file__.replace(".py", ".png")
 fig.savefig(out, facecolor=SURFACE)
 print("wrote", out)

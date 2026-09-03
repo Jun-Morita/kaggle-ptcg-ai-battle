@@ -32,7 +32,7 @@ ROWS = [
     ("Crustle control\nイワパレス",    0.800, 0.619,  42,  2.0),
 ]
 
-fig, ax = plt.subplots(figsize=(8.6, 6.2), dpi=220)
+fig, ax = plt.subplots(figsize=(9.6, 5.4), dpi=220)
 fig.patch.set_facecolor(SURFACE)
 ax.set_facecolor(SURFACE)
 
@@ -90,13 +90,13 @@ ax.legend(handles=[
    handletextpad=0.5, borderaxespad=0.0, bbox_to_anchor=(-0.01, 1.02))
 
 fig.suptitle("Every cell overstated us, and not by the same amount",
-             x=0.012, y=0.975, ha="left", fontsize=13.5, color=INK, fontweight="bold")
-fig.text(0.012, 0.923,
+             x=0.012, y=0.977, ha="left", fontsize=13.5, color=INK, fontweight="bold")
+fig.text(0.012, 0.912,
          "6,292 ladder games, 2026-08-13..15, seats running our exact list. "
          "Field-weighted true win rate: 0.33.",
          ha="left", fontsize=9, color=INK2)
 
-fig.subplots_adjust(left=0.240, right=0.888, top=0.863, bottom=0.105)
+fig.subplots_adjust(left=0.215, right=0.900, top=0.843, bottom=0.120)
 out = __file__.replace(".py", ".png")
 fig.savefig(out, facecolor=SURFACE)
 print("wrote", out)

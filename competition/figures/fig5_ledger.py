@@ -32,7 +32,7 @@ ROWS = [
     ("Evaluation",    "paired shuffle seeds (CRN)",           "1",  None,   "4.66× less variance — adopted", True),
 ]
 
-fig, ax = plt.subplots(figsize=(10.2, 6.6), dpi=220)
+fig, ax = plt.subplots(figsize=(11.4, 6.4125), dpi=220)
 fig.patch.set_facecolor(SURFACE); ax.set_facecolor(SURFACE)
 ax.set_xlim(0, 100); ax.set_ylim(7.1, 90.5); ax.axis("off")
 
@@ -83,12 +83,12 @@ for i, (lane, what, n, score, note, ok) in enumerate(ROWS):
             color=PASS_C if ok else INK2, fontweight="bold" if ok else "normal")
 
 fig.suptitle("Ten lanes tested, one clean pass on our own gauntlet",
-             x=0.008, y=0.975, ha="left", fontsize=13, color=INK, fontweight="bold")
-fig.text(0.008, 0.925,
+             x=0.008, y=0.972, ha="left", fontsize=13, color=INK, fontweight="bold")
+fig.text(0.008, 0.918,
          "Every lane was judged by the gauntlet in Figure 1, which is the point of "
          "this report. Only the evaluation lane was judged by something else.",
          ha="left", fontsize=9, color=INK2)
-fig.subplots_adjust(left=0.008, right=0.995, top=0.885, bottom=0.016)
+fig.subplots_adjust(left=0.008, right=0.995, top=0.891, bottom=0.016)
 out = __file__.replace(".py", ".png")
 fig.savefig(out, facecolor=SURFACE)
 print("wrote", out, "| recorded runs:", sum(int(r[2]) for r in ROWS if r[2].isdigit()))
