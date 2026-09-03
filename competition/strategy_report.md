@@ -3,7 +3,7 @@
 
 *Strategy Writeup — Pokémon TCG AI Battle Challenge · Team Morita*
 
-<!-- RANK LINE: updated 2026-09-02 (ladder frozen 09-01, no host finalization post yet). Re-check before submitting. -->
+<!-- SUBMITTED 2026-09-03 via the Kaggle web UI. This file and submit_writeup/writeup.md are identical apart from this line; edit both if the writeup is revised before the 09-13 deadline. -->
 
 ---
 
