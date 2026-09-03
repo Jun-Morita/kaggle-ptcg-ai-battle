@@ -24,6 +24,10 @@ by uploading one and looking at it:
 4. `04_deck_plan.png`
 5. `05_ledger.png`
 
+`thumbnail.png` (1672×941, also 16:9) is the writeup's cover/title image — the
+title, subtitle, and the headline 0.865→0.341 gauntlet-vs-ladder number, added
+2026-09-03 after the initial submission.
+
 ## The rank line, as submitted
 
 The Abstract reads "rank 276 of 6,807 — the top 4.1% — when the leaderboard
