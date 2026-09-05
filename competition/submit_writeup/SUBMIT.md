@@ -26,7 +26,13 @@ by uploading one and looking at it:
 
 `thumbnail.png` (1672×941, also 16:9) is the writeup's cover/title image — the
 title, subtitle, and the headline 0.865→0.341 gauntlet-vs-ladder number, added
-2026-09-03 after the initial submission.
+2026-09-03 after the initial submission. **Replaced 2026-09-05** with a version
+using an original "Jun Strategist EX" trainer-card design (invented character,
+invented card name and abilities) instead of real card artwork, after the
+09-03 Kaggle check turned up a host ruling (disc736603) permitting card names
+and official-visualizer screenshots but not addressing reproduced card art —
+the new version sidesteps that ambiguity by not depicting any real card.
+Re-uploaded to the live Writeup page the same day.
 
 ## The rank line, as submitted
 
