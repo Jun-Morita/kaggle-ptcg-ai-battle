@@ -10,7 +10,7 @@ this file plus the writeup page itself.
 | | |
 |---|---|
 | Title | **Playtesting Against Ourselves** |
-| Body | `writeup.md`, ~1,980 words (limit 2,000, per the Rules tab) |
+| Body | `writeup.md`, ~1,970 words (limit 2,000, per the Rules tab) |
 | Media Gallery | the five PNGs below, in numbered order, captions from `CAPTIONS.md` |
 | Simulation entry | v063 (x4b3) and v064 (v9b), both 2026-08-16 |
 | Deadline | 2026-09-13 23:59 UTC (09-14 08:59 JST). Judging 09-14 to 10-11 |
@@ -33,6 +33,44 @@ invented card name and abilities) instead of real card artwork, after the
 and official-visualizer screenshots but not addressing reproduced card art —
 the new version sidesteps that ambiguity by not depicting any real card.
 Re-uploaded to the live Writeup page the same day.
+
+## Revision 2026-09-05 — pasted to the live page
+
+The revised body below was pasted to the Kaggle Writeup on 2026-09-05 and
+verified identical to `writeup.md` by diff. Note: the paste began at
+`## Abstract`, so the subtitle line — "Our offline win rates never matched the
+ladder. Here is the part we could not fix." — is not on the live page. The H1
+title and byline are supplied by Kaggle's own fields and were redundant.
+
+DOI opt-in was offered on the same form. The rank line is date-scoped
+("when the leaderboard stopped moving on 2026-09-01"), so it stays true even if
+the final standings differ, and the thumbnail is original artwork — both were
+the conditions for opting in.
+
+## Revision 2026-09-05
+
+Re-checked against the published rubric and rewritten. The three Model-score
+bullets that the first version under-served now have a home:
+
+- **Consistency under repeated matches** and **not over-relying on initial
+  states, matchups or situational advantages** are §4, a section the first
+  version did not have. The evidence was already in our records — the Munkidori
+  line completed in 40 games of 40, the row weighting stopped at its interior
+  optimum rather than the peak of the matchup it targeted, the deterministic
+  argmax — but it was scattered across three sections and never tied to the
+  criteria. §4 also states plainly what we cannot claim: a repeatable *rank*,
+  which nobody in this format can promise.
+- **Clarity of approach** — the old §1 and §3 were merged into one §2, so the
+  agent is described once.
+- Old §4 (the three error terms) became §3; cross-references updated.
+
+Also folded in from the 2026-09-03 forum check: the Ogerpon counter is now
+supported by two independent measurements (kiyomiya-k's 95% over 222 games and
+a 23,313-game post-deadline survey's 87% over 69), and §5 uses that survey's
+skill-controlled 48.0% to say what the deck was and was not responsible for.
+The stale "most-played archetype on the ladder" claim now carries its date.
+Team Preferred's 117M/1.68B figure was dropped for length; five competitors are
+still credited by name and link.
 
 ## The rank line, as submitted
 
